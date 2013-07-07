@@ -11,13 +11,13 @@ import com.actionbarsherlock.view.MenuInflater;
 
 public class BaseFragment extends SherlockFragment {
 
-	private int resLayout = -1;
-	private int resMenu = -1;
+	private int layoutRes = -1;
+	private int menuRes = -1;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-		if (resLayout != -1) {
-			return inflater.inflate(resLayout, container, false);
+		if (layoutRes != -1) {
+			return inflater.inflate(layoutRes, container, false);
 		} else {
 			return super.onCreateView(inflater, container, savedInstanceState);
 		}
@@ -29,20 +29,20 @@ public class BaseFragment extends SherlockFragment {
 		super.onPrepareOptionsMenu(menu);
 	}
 
-	public int getResLayout() {
-		return resLayout;
+	public int getLayoutRes() {
+		return layoutRes;
 	}
 
-	public void setResLayout(int resLayout) {
-		this.resLayout = resLayout;
+	public void setLayoutRes(int resLayout) {
+		this.layoutRes = resLayout;
 	}
 
-	public int getResMenu() {
-		return resMenu;
+	public int getMenuRes() {
+		return menuRes;
 	}
 
-	public void setResMenu(int resMenu) {
-		this.resMenu = resMenu;
+	public void setMenuRes(int resMenu) {
+		this.menuRes = resMenu;
 	}
 	
 }

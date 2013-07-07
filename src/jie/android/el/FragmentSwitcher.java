@@ -32,13 +32,16 @@ public class FragmentSwitcher {
 	
 	public FragmentSwitcher(final ELActivity activity) {
 		this.activity = activity;
+		fragmentManager = this.activity.getSupportFragmentManager();
 	}
 	
 	public boolean show(Type type) {
-		if (curType != null && curType == type) {
-			return true;
-		} else if (curType != type) {
-			hide(curType);
+		if (curType != null) {
+			if (curType == type) {
+				return true;
+			} else {
+				hide(curType);
+			}
 		}
 		
 		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
@@ -56,12 +59,18 @@ public class FragmentSwitcher {
 	}
 
 	private BaseFragment create(Type type) {
+		BaseFragment fragment = null;
 		switch(type) {
 		case LIST:
-			return new ListFragment();
+			fragment = new ListFragment();
+			break;
 		default:
 			return null;
 		}
+		
+		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+		
+		return fragment;
 	}
 
 	private void hide(Type type) {
