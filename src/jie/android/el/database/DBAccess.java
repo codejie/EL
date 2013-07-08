@@ -2,7 +2,9 @@ package jie.android.el.database;
 
 import java.io.File;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
@@ -53,6 +55,14 @@ public class DBAccess {
 		db.execSQL(sql);
 		
 		return true;
+	}
+	
+	public boolean insertESL(final ContentValues values) {
+		return (db.insert("esl", null, values) != -1);
+	}
+	
+	public Cursor queryESL(final String selection, final String[] selectionArgs) {
+		return db.query("esl", null, selection, selectionArgs, null, null, null);
 	}
 	
 }
