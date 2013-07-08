@@ -1,5 +1,6 @@
 package jie.android.el;
 
+import jie.android.el.fragment.BaseFragment;
 import jie.android.el.fragment.ListFragment;
 import android.support.v4.app.FragmentManager;
 

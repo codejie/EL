@@ -4,23 +4,27 @@ import java.util.HashMap;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
-import jie.android.el.BaseFragment;
+import android.widget.TextView;
+import jie.android.el.ELActivity;
 import jie.android.el.R;
+import jie.android.el.database.DBAccess;
 
 public class ListFragment extends BaseFragment {
 	
 	class Adapter extends CursorAdapter {
 
-		private HashMap<Integer, Integer> idxMap = new HashMap<Integer, Integer>();
+		//private HashMap<Integer, Integer> idxMap = new HashMap<Integer, Integer>();
 		
 		private LayoutInflater inflater = null;
 		public Adapter(Context context, Cursor c) {
@@ -32,37 +36,23 @@ public class ListFragment extends BaseFragment {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			
+			TextView tv = (TextView) view.findViewById(R.id.textView1);
+			tv.setText(cursor.getString(1));
+			view.setId(cursor.getInt(0));
 		}
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
 			return inflater.inflate(R.layout.layout_record, parent, false); 
-		}
-		
+		}		
 	}
-
 	
 	
 	private static final int LOADER_LIST	=	1;
 	
+	private DBAccess dbAccess = null;
 	private ListView listView = null;
-	
-	private LoaderCallbacks<Cursor> loadCallbacks = new LoaderCallbacks<Cursor>() {
-
-		@Override
-		public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-			return null;
-		}
-
-		@Override
-		public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
-		}
-
-		@Override
-		public void onLoaderReset(Loader<Cursor> arg0) {
-		}
-		
-	};
+	private Adapter adapter = null;
 	
 	public ListFragment() {
 		this.setLayoutRes(R.layout.fragment_list);
@@ -71,11 +61,14 @@ public class ListFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
+		
+		dbAccess = getELActivity().getDBAccess();
 
+		adapter = new Adapter(getActivity(), dbAccess.queryESL(new String[] { "idx as _id", "title" }, null, null));
+		
 		listView = (ListView) view.findViewById(R.id.listView1);
-		
-		this.getLoaderManager().initLoader(LOADER_LIST, savedInstanceState, loadCallbacks);
-		
+		listView.setAdapter(adapter);
+
 	}	
 	
 }

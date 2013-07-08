@@ -1,5 +1,6 @@
-package jie.android.el;
+package jie.android.el.fragment;
 
+import jie.android.el.ELActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,10 @@ public class BaseFragment extends SherlockFragment {
 
 	public void setMenuRes(int resMenu) {
 		this.menuRes = resMenu;
+	}
+	
+	public ELActivity getELActivity() {
+		return (ELActivity)this.getSherlockActivity();
 	}
 	
 }

@@ -50,6 +50,10 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	public DBAccess getDBAccess() {
+		return dbAccess;
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// TODO Auto-generated method stub

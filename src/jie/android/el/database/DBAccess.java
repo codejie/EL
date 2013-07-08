@@ -61,8 +61,8 @@ public class DBAccess {
 		return (db.insert("esl", null, values) != -1);
 	}
 	
-	public Cursor queryESL(final String selection, final String[] selectionArgs) {
-		return db.query("esl", null, selection, selectionArgs, null, null, null);
+	public Cursor queryESL(final String[] columns, final String selection, final String[] selectionArgs) {
+		return db.query("esl", columns, selection, selectionArgs, null, null, null);
 	}
 	
 }
