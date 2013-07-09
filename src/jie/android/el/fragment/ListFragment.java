@@ -44,19 +44,19 @@ public class ListFragment extends BaseFragment {
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
 			return inflater.inflate(R.layout.layout_record, parent, false); 
-		}		
+		}
 	}
-	
-	
-	private static final int LOADER_LIST	=	1;
 	
 	private DBAccess dbAccess = null;
 	private ListView listView = null;
 	private Adapter adapter = null;
 	
-	public ListFragment() {
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
 		this.setLayoutRes(R.layout.fragment_list);
-	}
+	}	
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {

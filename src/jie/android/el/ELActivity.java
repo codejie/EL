@@ -22,8 +22,9 @@ public class ELActivity extends SherlockFragmentActivity {
 	private Handler handler = new Handler() {
 
 		@Override
-		public void handleMessage(Message msg) {
-			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+		public void handleMessage(Message msg) {			
+			//fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+			fragmentSwitcher.show(FragmentSwitcher.Type.SHOW);
 		}
 		
 	};

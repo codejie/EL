@@ -2,6 +2,7 @@ package jie.android.el;
 
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.fragment.ListFragment;
+import jie.android.el.fragment.ShowFragment;
 import android.support.v4.app.FragmentManager;
 
 public class FragmentSwitcher {
@@ -64,6 +65,9 @@ public class FragmentSwitcher {
 		switch(type) {
 		case LIST:
 			fragment = new ListFragment();
+			break;
+		case SHOW:
+			fragment = new ShowFragment();
 			break;
 		default:
 			return null;
