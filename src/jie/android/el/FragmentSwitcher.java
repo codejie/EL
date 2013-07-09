@@ -3,13 +3,14 @@ package jie.android.el;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.fragment.ListFragment;
 import jie.android.el.fragment.ShowFragment;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 
 public class FragmentSwitcher {
 	
 	public enum Type {
 		
-		LIST("list", false), SHOW("show", false), ABOUT("about", true), SETTING("setting", true);
+		LIST("list", false), SHOW("show", true), ABOUT("about", true), SETTING("setting", true);
 		
 		private final String title;
 		private final boolean removed;
@@ -38,6 +39,10 @@ public class FragmentSwitcher {
 	}
 	
 	public boolean show(Type type) {
+		return show(type, null);
+	}
+	
+	public boolean show(Type type, Bundle args) {
 		if (curType != null) {
 			if (curType == type) {
 				return true;
@@ -53,6 +58,8 @@ public class FragmentSwitcher {
 				return false;
 			}				
 		}
+		
+		fragment.setArguments(args);
 		
 		fragmentManager.beginTransaction().show(fragment).commit();
 		curType = type;
