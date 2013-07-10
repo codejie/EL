@@ -77,12 +77,26 @@ public class ShowFragment extends BaseFragment {
 		Cursor cursor = db.queryESLIssue(index);
 		try {
 			
+			String title = cursor.getString(0);
+			String data = cursor.getString(1);
+			String audio = cursor.getString(2);
 			
-			
+			loadData(index, title, data);
+			playAudio(audio);
 			
 		} finally {
 			cursor.close();
 		}
+		
+	}
+
+	private void loadData(int index, String title, String data) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void playAudio(String audio) {
+		// TODO Auto-generated method stub
 		
 	}	
 }

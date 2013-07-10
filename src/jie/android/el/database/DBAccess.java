@@ -50,8 +50,8 @@ public class DBAccess {
 		String sql = "CREATE TABLE IF NOT EXISTS [esl] ("
 					+ "[idx] INTEGER PRIMARY KEY,"
 					+ "[title] TEXT,"
-					+ "[doc] TEXT,"
-					+ "[playfile] TEXT)";
+					+ "[data] TEXT,"
+					+ "[audio] TEXT)";
 		db.execSQL(sql);
 		
 		return true;
@@ -63,6 +63,10 @@ public class DBAccess {
 	
 	public Cursor queryESL(final String[] columns, final String selection, final String[] selectionArgs) {
 		return db.query("esl", columns, selection, selectionArgs, null, null, null);
+	}
+
+	public Cursor queryESLIssue(int index) {
+		return db.query("els", new String[] { "title", "data", "audio" }, "idx=" + index, null, null, null, null);
 	}
 	
 }
