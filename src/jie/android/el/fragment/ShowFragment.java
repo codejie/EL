@@ -8,9 +8,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.TextView;
 import jie.android.el.R;
 import jie.android.el.database.DBAccess;
+import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.PopupLayout;
 
 public class ShowFragment extends BaseFragment {
@@ -24,7 +27,9 @@ public class ShowFragment extends BaseFragment {
 	private Animation animHide = null;
 	
 	private PopupLayout popupLayout = null;
-
+	private TextView textView = null;
+	private WebView webView = null;
+	
 	private Handler handler = new Handler() {
 
 		@Override
@@ -55,6 +60,9 @@ public class ShowFragment extends BaseFragment {
 		initAnimation();
 		
 		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);
+		textView = (TextView) view.findViewById(R.id.textView2);
+		webView = (WebView) view.findViewById(R.id.webView1);
+		webView.setWebViewClient(new LACWebViewClient());
 	}
 
 	private void initAnimation() {
@@ -91,12 +99,12 @@ public class ShowFragment extends BaseFragment {
 	}
 
 	private void loadData(int index, String title, String data) {
-		// TODO Auto-generated method stub
+		textView.setText(String.format("%i : %s", index, title));
 		
+		webView.loadData(data, "text/html", "utf-8");
 	}
 
 	private void playAudio(String audio) {
-		// TODO Auto-generated method stub
-		
+		// post message to service
 	}	
 }

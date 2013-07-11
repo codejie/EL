@@ -10,7 +10,12 @@ public class LACWebViewClient extends WebViewClient {
 	public boolean shouldOverrideUrlLoading(WebView view, String url) {
 //		return super.shouldOverrideUrlLoading(view, url);
 		Toast.makeText(view.getContext(), "url = " + url, Toast.LENGTH_SHORT).show();
-		return true;
+		if (url.startsWith("lac://")) {
+			
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 }
