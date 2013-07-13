@@ -13,14 +13,18 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import jie.android.el.ELActivity;
+import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.DBAccess;
 
-public class ListFragment extends BaseFragment {
+public class ListFragment extends BaseFragment implements OnItemClickListener {
 	
 	class Adapter extends CursorAdapter {
 
@@ -67,8 +71,16 @@ public class ListFragment extends BaseFragment {
 		adapter = new Adapter(getActivity(), dbAccess.queryESL(new String[] { "idx as _id", "title" }, null, null));
 		
 		listView = (ListView) view.findViewById(R.id.listView1);
+		listView.setOnItemClickListener(this);
+		
 		listView.setAdapter(adapter);
+	}
 
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		Bundle args = new Bundle();
+		args.putInt("index", (int) id);
+		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
 	}	
 	
 }

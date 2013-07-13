@@ -23,8 +23,8 @@ public class ELActivity extends SherlockFragmentActivity {
 
 		@Override
 		public void handleMessage(Message msg) {			
-			//fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
-			fragmentSwitcher.show(FragmentSwitcher.Type.SHOW);
+			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+			//fragmentSwitcher.show(FragmentSwitcher.Type.SHOW);
 		}
 		
 	};
@@ -67,4 +67,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	public void showFragment(FragmentSwitcher.Type type, Bundle args) {
+		fragmentSwitcher.show(type, args);
+	}
 }

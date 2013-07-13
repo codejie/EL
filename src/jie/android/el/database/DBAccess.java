@@ -66,7 +66,7 @@ public class DBAccess {
 	}
 
 	public Cursor queryESLIssue(int index) {
-		return db.query("els", new String[] { "title", "data", "audio" }, "idx=" + index, null, null, null, null);
+		return db.query("esl", new String[] { "title", "data", "audio" }, "idx=" + index, null, null, null, null);
 	}
 	
 }

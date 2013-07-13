@@ -83,23 +83,24 @@ public class ShowFragment extends BaseFragment {
 	protected void onIndex(int index) {
 		DBAccess db = getELActivity().getDBAccess();
 		Cursor cursor = db.queryESLIssue(index);
-		try {
-			
-			String title = cursor.getString(0);
-			String data = cursor.getString(1);
-			String audio = cursor.getString(2);
-			
-			loadData(index, title, data);
-			playAudio(audio);
-			
-		} finally {
-			cursor.close();
-		}
-		
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					String title = cursor.getString(0);
+					String data = cursor.getString(1);
+					String audio = cursor.getString(2);
+					
+					loadData(index, title, data);
+					playAudio(audio);
+				}				
+			} finally {
+				cursor.close();
+			}
+		}		
 	}
 
 	private void loadData(int index, String title, String data) {
-		textView.setText(String.format("%i : %s", index, title));
+		textView.setText(String.format("%d : %s", index, title));
 		
 		webView.loadData(data, "text/html", "utf-8");
 	}
