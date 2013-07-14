@@ -56,10 +56,10 @@ public class FragmentSwitcher {
 			fragment = create(type);
 			if (fragment == null) {
 				return false;
-			}				
+			}
 		}
 		
-		fragment.setArguments(args);
+		fragment.onArguments(args);
 		
 		fragmentManager.beginTransaction().show(fragment).commit();
 		curType = type;
@@ -95,5 +95,12 @@ public class FragmentSwitcher {
 			}
 			curType = null;			
 		}
+	}
+
+	public BaseFragment getFragment() {
+		if (curType == null) {
+			return null;
+		}
+		return (BaseFragment) fragmentManager.findFragmentByTag(curType.getTitle());
 	}
 }

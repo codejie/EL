@@ -5,12 +5,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
+import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.DBAccess;
 import jie.android.el.view.LACWebViewClient;
@@ -47,10 +49,10 @@ public class ShowFragment extends BaseFragment {
 		
 		this.setLayoutRes(R.layout.fragment_show);
 		
-		Bundle b = this.getArguments();
-		if (b != null) {
-			handler.sendMessage(Message.obtain(handler, MSG_INDEX, b.getInt("index"), -1));
-		}
+//		Bundle b = this.getArguments();
+//		if (b != null) {
+//			handler.sendMessage(Message.obtain(handler, MSG_INDEX, b.getInt("index"), -1));
+//		}
 	}
 
 	@Override
@@ -65,6 +67,13 @@ public class ShowFragment extends BaseFragment {
 		webView.setWebViewClient(new LACWebViewClient());
 	}
 
+	@Override
+	public void onArguments(Bundle args) {
+		if (args != null) {
+			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args.getInt("index"), -1));
+		}
+	}	
+	
 	private void initAnimation() {
     	animShow = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_show);
     	animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
@@ -107,5 +116,14 @@ public class ShowFragment extends BaseFragment {
 
 	private void playAudio(String audio) {
 		// post message to service
-	}	
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
+			return true;			
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

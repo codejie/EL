@@ -2,6 +2,7 @@ package jie.android.el.fragment;
 
 import jie.android.el.ELActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,5 +50,11 @@ public class BaseFragment extends SherlockFragment {
 	public ELActivity getELActivity() {
 		return (ELActivity)this.getSherlockActivity();
 	}
+
+	public void onArguments(Bundle args) {		
+	}
 	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return false;
+	}
 }

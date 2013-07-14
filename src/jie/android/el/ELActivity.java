@@ -1,10 +1,12 @@
 package jie.android.el;
 
 import jie.android.el.database.DBAccess;
+import jie.android.el.fragment.BaseFragment;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -69,5 +71,17 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	public void showFragment(FragmentSwitcher.Type type, Bundle args) {
 		fragmentSwitcher.show(type, args);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		BaseFragment fragment = fragmentSwitcher.getFragment();
+		if (fragment != null) {
+			if(fragment.onKeyDown(keyCode, event)) {
+				return true;
+			}
+		}
+		// TODO Auto-generated method stub
+		return super.onKeyDown(keyCode, event);
 	}
 }
