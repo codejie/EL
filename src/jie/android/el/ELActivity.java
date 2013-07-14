@@ -1,6 +1,6 @@
 package jie.android.el;
 
-import jie.android.el.database.DBAccess;
+import jie.android.el.database.ELDBAccess;
 import jie.android.el.fragment.BaseFragment;
 import android.os.Bundle;
 import android.os.Handler;
@@ -16,7 +16,7 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	private static String Tag = ELActivity.class.getSimpleName();
 	
-	private DBAccess dbAccess = null;
+	private ELDBAccess dbAccess = null;
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
@@ -47,13 +47,13 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	private void initDatabase() {
-		dbAccess = new DBAccess(this);
+		dbAccess = new ELDBAccess(this);
 		if(!dbAccess.open()) {
 			Log.e(Tag, "init database failed.");
 		}
 	}
 
-	public DBAccess getDBAccess() {
+	public ELDBAccess getDBAccess() {
 		return dbAccess;
 	}
 	

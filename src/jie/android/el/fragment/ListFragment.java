@@ -22,7 +22,7 @@ import android.widget.TextView;
 import jie.android.el.ELActivity;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
-import jie.android.el.database.DBAccess;
+import jie.android.el.database.ELDBAccess;
 
 public class ListFragment extends BaseFragment implements OnItemClickListener {
 	
@@ -51,7 +51,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		}
 	}
 	
-	private DBAccess dbAccess = null;
+	private ELDBAccess dbAccess = null;
 	private ListView listView = null;
 	private Adapter adapter = null;
 	

@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
-import jie.android.el.database.DBAccess;
+import jie.android.el.database.ELDBAccess;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.PopupLayout;
 
@@ -90,7 +90,7 @@ public class ShowFragment extends BaseFragment {
 	}
 	
 	protected void onIndex(int index) {
-		DBAccess db = getELActivity().getDBAccess();
+		ELDBAccess db = getELActivity().getDBAccess();
 		Cursor cursor = db.queryESLIssue(index);
 		if (cursor != null) {
 			try {

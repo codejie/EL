@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
-public class DBAccess {
+public class ELDBAccess {
 
 	private static int VERSIION		=	1;
 	
@@ -16,7 +16,7 @@ public class DBAccess {
 	
 	private SQLiteDatabase db = null;
 	
-	public DBAccess(Context context) {
+	public ELDBAccess(Context context) {
 		this.context = context;
 	}
 	
