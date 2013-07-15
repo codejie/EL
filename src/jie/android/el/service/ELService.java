@@ -34,4 +34,15 @@ public class ELService extends Service {
 		return new AccessStub();
 	}
 
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		
+		initDatabase();		
+	}
+
+	private void initDatabase() {
+
+	}
+
 }

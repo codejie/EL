@@ -8,42 +8,30 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Environment;
 
-public class ELDBAccess {
+public class ELDBAccess extends DBAccess {
 
-	private static int VERSIION		=	1;
+	private static final int VERSION		=	1;
+	private static final String FILE		=	"/jie/el/el.db";
 	
 	private Context context = null;
 	
 	private SQLiteDatabase db = null;
 	
 	public ELDBAccess(Context context) {
+		super(VERSION);
 		this.context = context;
 	}
 	
-	public void close() {
-		if (db != null) {
-			db.close();
-		}
-	}
-	
+	@Override
 	public boolean open() {
 		
-		String path = Environment.getExternalStorageDirectory() + "/jie/el";
-		File f = new File(path);
-		if (!f.exists()) {
-			if (!f.mkdirs()) {
-				return false;
-			}
-		}
+		String path = Environment.getExternalStorageDirectory() + FILE;
 		
-		path += "/el.db";
-		
-		db = SQLiteDatabase.openOrCreateDatabase(path, null);
-		if (db == null) {
+		if(openDb(path, false)) {
+			return createTables();
+		} else {
 			return false;
 		}
-				
-		return createTables();
 	}
 	
 	private boolean createTables() {
