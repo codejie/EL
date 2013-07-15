@@ -8,10 +8,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import jie.android.lac.data.Word.Info;
-import jie.android.lac.service.DBAccess;
-import jie.android.lac.service.XmlResultLoader;
-
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;

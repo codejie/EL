@@ -1,8 +1,8 @@
 package jie.android.el.database;
 
 import java.io.File;
-
-import jie.android.lac.service.DBAccess.Projection;
+import java.io.IOException;
+import java.io.InputStream;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -28,10 +28,41 @@ public class LACDBAccess extends DBAccess {
 
 	@Override
 	public boolean open() {
+		if (!checkDataFile()) {
+			return false;
+		}
+		
 		File f = context.getDatabasePath(FILE);
 		return openDb(f, true);
 	}
+	
+	private boolean checkDataFile() {
+		if (context.getDatabasePath(FILE).exists()) {
+			return unzipDataFile();
+		}
+		return true;
+	}
 
+	private boolean unzipDataFile() {
+		
+		File target = context.getDatabasePath(FILE).getParentFile();		
+
+		if (!target.exists()) {
+			target.mkdir();
+		}
+		
+		InputStream input;
+		try {
+			input = context.getAssets().open("lac2.zip");
+			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);
+		} catch (IOException e) {
+			e.printStackTrace();			
+			return false;
+		}
+		
+		return true;
+	}	
+	
 	public Cursor getWord(String condition, int offset, int limit) {
 		condition = "word LIKE '" + condition + "%'";
 		String sql = "SELECT idx, word, flag FROM word_info";
