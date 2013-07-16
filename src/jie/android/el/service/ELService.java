@@ -72,11 +72,16 @@ public class ELService extends Service {
 	}
 	
 	private void initDictionary() {
-
+		dictionary = new Dictionary(dbAccess, this.getDatabasePath(LACDBAccess.FILE).getParent());
+		if (!dictionary.load()) {
+			Log.e(Tag, "load dictionary data failed.");
+		}
 	}
 	
 	private void releaseDictionary() {
-		
+		if (dictionary != null) {
+			dictionary.close();
+		}
 	}
 	
 }

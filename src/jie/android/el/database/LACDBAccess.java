@@ -10,7 +10,7 @@ import android.database.Cursor;
 public class LACDBAccess extends DBAccess {
 
 	private static int VERSION			=	1;
-	private static final String FILE	=	"lac.db";
+	public static final String FILE	=	"lac.db";
 	
 	private static final class Projection {
 		public static final String[] DictionaryInfo = new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"};

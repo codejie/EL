@@ -20,6 +20,11 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <service android:name=".service.ELService" android:process=":el_service">
+            <intent-filter>
+                <action android:name="elService"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>
