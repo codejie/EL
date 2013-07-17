@@ -51,6 +51,8 @@ public class ELService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		
+		android.os.Debug.waitForDebugger();
+		
 		initDatabase();
 		initDictionary();
 	}

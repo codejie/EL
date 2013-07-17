@@ -15,8 +15,6 @@ public class ELDBAccess extends DBAccess {
 	
 	private Context context = null;
 	
-	private SQLiteDatabase db = null;
-	
 	public ELDBAccess(Context context) {
 		super(VERSION);
 		this.context = context;

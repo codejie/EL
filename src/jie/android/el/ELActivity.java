@@ -57,6 +57,7 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	private void initService() {
 		Intent intent = new Intent("elService");
+		
 		ServiceConnection conn = new ServiceConnection() {
 
 			@Override
@@ -70,6 +71,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			}
 			
 		};
+		
 		this.bindService(intent, conn, Context.BIND_AUTO_CREATE);
 	}
 
