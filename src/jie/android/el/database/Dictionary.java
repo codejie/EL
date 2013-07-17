@@ -208,6 +208,15 @@ public class Dictionary {
 			entity.close();
 		}
 	}
+	
+	public Word.XmlResult getWordXmlResult(final String word) {
+		int index = dbAccess.getWordIndex(word);
+		if (index == -1) {
+			return null;
+		}
+
+		return getWordXmlResult(index);
+	}
 		
 	public Word.XmlResult getWordXmlResult(int index) {
 		Word.XmlResult result = new Word.XmlResult();		

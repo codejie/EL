@@ -2,8 +2,14 @@ package jie.android.el;
 
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.fragment.BaseFragment;
+import jie.android.el.service.ServiceAccess;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -16,7 +22,10 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	private static String Tag = ELActivity.class.getSimpleName();
 	
+	
+	
 	private ELDBAccess dbAccess = null;
+	private ServiceAccess serviceAccess = null;
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
@@ -27,8 +36,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		public void handleMessage(Message msg) {			
 			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
 			//fragmentSwitcher.show(FragmentSwitcher.Type.SHOW);
-		}
-		
+		}		
 	};
 	
 	@Override
@@ -39,11 +47,30 @@ public class ELActivity extends SherlockFragmentActivity {
 		
 		this.setContentView(R.layout.activity_el);
 
+		initService();
 		initDatabase();
 		
 		handler.sendEmptyMessage(0);
 		
 //		fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+	}
+
+	private void initService() {
+		Intent intent = new Intent("elService");
+		ServiceConnection conn = new ServiceConnection() {
+
+			@Override
+			public void onServiceConnected(ComponentName name, IBinder binder) {
+				serviceAccess = ServiceAccess.Stub.asInterface(binder);
+			}
+
+			@Override
+			public void onServiceDisconnected(ComponentName name) {
+				serviceAccess = null;
+			}
+			
+		};
+		this.bindService(intent, conn, Context.BIND_AUTO_CREATE);
 	}
 
 	private void initDatabase() {
@@ -52,9 +79,19 @@ public class ELActivity extends SherlockFragmentActivity {
 			Log.e(Tag, "init database failed.");
 		}
 	}
+	
+	private void releaseDatabase() {
+		if (dbAccess != null) {
+			dbAccess.close();
+		}
+	}
 
 	public ELDBAccess getDBAccess() {
 		return dbAccess;
+	}
+	
+	public ServiceAccess getServiceAccess() {
+		return serviceAccess;
 	}
 	
 	@Override
@@ -84,4 +121,5 @@ public class ELActivity extends SherlockFragmentActivity {
 		// TODO Auto-generated method stub
 		return super.onKeyDown(keyCode, event);
 	}
+	 
 }

@@ -10,12 +10,13 @@ import android.database.Cursor;
 public class LACDBAccess extends DBAccess {
 
 	private static int VERSION			=	1;
-	public static final String FILE	=	"lac.db";
+	public static final String FILE	=	"lac2.db";
 	
 	private static final class Projection {
+		public static final String[] WordIndex = new String[] { "idx" };
 		public static final String[] DictionaryInfo = new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"};
 		public static final String[] DictionaryBlock = new String[] {"offset", "length", "start", "end"};
-		public static final String[] WordIndex = new String[] { "offset", "length", "block1" };
+		public static final String[] WordXmlIndex = new String[] { "offset", "length", "block1" };
 	}
 	
 	private Context context = null;
@@ -37,7 +38,7 @@ public class LACDBAccess extends DBAccess {
 	}
 	
 	private boolean checkDataFile() {
-		if (context.getDatabasePath(FILE).exists()) {
+		if (!context.getDatabasePath(FILE).exists()) {
 			return unzipDataFile();
 		}
 		return true;
@@ -73,6 +74,23 @@ public class LACDBAccess extends DBAccess {
 		
 		return db.rawQuery(sql, null);
 	}
+
+	public int getWordIndex(String word) {
+		Cursor cursor = db.query("word_info", Projection.WordIndex, "word=?", new String[] { word }, null, null, null);
+		if (cursor == null) {
+			return -1;
+		}
+		
+		try {
+			if (cursor.getCount() == 1 && cursor.moveToFirst()) {
+				return cursor.getInt(0);
+			} else {
+				return -1;
+			}
+		} finally {
+			cursor.close();
+		}
+	}
 	
 	public Cursor queryDictionaryInfo() {
 		return db.query("dict_info", Projection.DictionaryInfo, null, null, null, null, null);
@@ -83,7 +101,7 @@ public class LACDBAccess extends DBAccess {
 	}
 
 	public Cursor queryWordXmlIndex(int dictIndex, int wordIndex) {
-		return db.query("word_index_" + dictIndex, Projection.WordIndex, "wordid=" + wordIndex, null, null,null, null);
+		return db.query("word_index_" + dictIndex, Projection.WordXmlIndex, "wordid=" + wordIndex, null, null,null, null);
 	}
 	
 }

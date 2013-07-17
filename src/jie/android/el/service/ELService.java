@@ -2,6 +2,7 @@ package jie.android.el.service;
 
 import jie.android.el.database.Dictionary;
 import jie.android.el.database.LACDBAccess;
+import jie.android.el.database.Word;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -30,6 +31,11 @@ public class ELService extends Service {
 		public void pauseAudio(int token) throws RemoteException {
 			// TODO Auto-generated method stub
 			
+		}
+
+		@Override
+		public Word.XmlResult queryWordResult(String word) throws RemoteException {
+			return dictionary.getWordXmlResult(word);
 		}		
 	}
 	
