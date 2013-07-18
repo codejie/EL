@@ -18,6 +18,7 @@ import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.database.Word;
+import jie.android.el.database.XmlTranslator;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnUrlLoadingListener;
 import jie.android.el.view.PopupLayout;
@@ -148,8 +149,12 @@ public class ShowFragment extends BaseFragment {
 		int pos = url.indexOf("lac://", 0);
 		if (pos != -1) {
 			try {
-				Word.XmlResult result = getELActivity().getServiceAccess().queryWordResult(url.substring(6));
-				Log.d(Tag, "result = " + result.toString());
+				String word = url.substring(6);
+				Word.XmlResult result = getELActivity().getServiceAccess().queryWordResult(word);
+				String xml = assembleXmlResult(word, result);
+				String html = XmlTranslator.trans(xml);
+				
+				Log.d(Tag, "result = " + html);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -159,5 +164,20 @@ public class ShowFragment extends BaseFragment {
 		
 		return false;
 	}
+	
+	private final String assembleXmlResult(final String word, final Word.XmlResult result) {
+		
+		String ret = "<LAC><LAC-W>" + word + "</LAC-W>";
+		for (final Word.XmlResult.XmlData data : result.getXmlData()) {
+			ret += "<LAC-R><LAC-D>" + "Vicon E-C" + "</LAC-D>";
+			for(final String xml : data.getXml()) {
+				ret += xml;
+			}
+			ret += "</LAC-R>";
+		}
+		ret += "</LAC>";
+		
+		return ret;
+	}	
 	
 }

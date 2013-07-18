@@ -101,7 +101,7 @@ public class LACDBAccess extends DBAccess {
 	}
 
 	public Cursor queryWordXmlIndex(int dictIndex, int wordIndex) {
-		return db.query("word_index_" + dictIndex, Projection.WordXmlIndex, "wordid=" + wordIndex, null, null,null, null);
+		return db.query("word_index_" + dictIndex, Projection.WordXmlIndex, "word_idx=" + wordIndex, null, null,null, null);
 	}
 	
 }

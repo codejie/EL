@@ -1,6 +1,9 @@
 package jie.android.el;
 
+import java.io.IOException;
+
 import jie.android.el.database.ELDBAccess;
+import jie.android.el.database.XmlTranslator;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.service.ServiceAccess;
 import android.content.ComponentName;
@@ -62,11 +65,29 @@ public class ELActivity extends SherlockFragmentActivity {
 		this.setContentView(R.layout.activity_el);
 
 		initService();
+		initTranslator();
 		initDatabase();
 		
 		handler.sendEmptyMessage(0);
 		
 //		fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+	}
+
+	@Override
+	protected void onDestroy() {
+		releaseDatabase();
+		releaseService();
+		
+		super.onDestroy();
+	}
+
+	private void initTranslator() {
+    	try {
+			XmlTranslator.init(this.getResources().getAssets().open("ld2.xsl"));
+		} catch (IOException e) {
+			Log.e(Tag, "init transformer failed.");
+		}
+
 	}
 
 	private void initService() {
