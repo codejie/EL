@@ -49,7 +49,7 @@ public class LACDBAccess extends DBAccess {
 		File target = context.getDatabasePath(FILE).getParentFile();		
 
 		if (!target.exists()) {
-			target.mkdir();
+			target.mkdirs();
 		}
 		
 		InputStream input;

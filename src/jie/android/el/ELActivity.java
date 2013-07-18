@@ -39,6 +39,20 @@ public class ELActivity extends SherlockFragmentActivity {
 		}		
 	};
 	
+	ServiceConnection serviceConnection = new ServiceConnection() {
+
+		@Override
+		public void onServiceConnected(ComponentName name, IBinder binder) {
+			serviceAccess = ServiceAccess.Stub.asInterface(binder);
+		}
+
+		@Override
+		public void onServiceDisconnected(ComponentName name) {
+			serviceAccess = null;
+		}
+		
+	};	
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -58,23 +72,15 @@ public class ELActivity extends SherlockFragmentActivity {
 	private void initService() {
 		Intent intent = new Intent("elService");
 		
-		ServiceConnection conn = new ServiceConnection() {
-
-			@Override
-			public void onServiceConnected(ComponentName name, IBinder binder) {
-				serviceAccess = ServiceAccess.Stub.asInterface(binder);
-			}
-
-			@Override
-			public void onServiceDisconnected(ComponentName name) {
-				serviceAccess = null;
-			}
-			
-		};
-		
-		this.bindService(intent, conn, Context.BIND_AUTO_CREATE);
+		this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
+	private void releaseService() {
+		if (serviceAccess != null) {
+			this.unbindService(serviceConnection);
+		}
+	}
+	
 	private void initDatabase() {
 		dbAccess = new ELDBAccess(this);
 		if(!dbAccess.open()) {

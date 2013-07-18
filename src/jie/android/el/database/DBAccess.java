@@ -3,6 +3,7 @@ package jie.android.el.database;
 import java.io.File;
 
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 public abstract class DBAccess {
 
@@ -25,19 +26,23 @@ public abstract class DBAccess {
 			return false;
 		}
 		
-		if (onlyOpen) {
-			if (!file.exists()) {
-				return false;
-			}
-			db = SQLiteDatabase.openDatabase(file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
-		} else {
-			File p = file.getParentFile();
-			if (!p.exists()) {
-				if (!p.mkdirs()) {
+		try {
+			if (onlyOpen) {
+				if (!file.exists()) {
 					return false;
 				}
+				db = SQLiteDatabase.openDatabase(file.getAbsolutePath(), null, SQLiteDatabase.OPEN_READWRITE);
+			} else {
+				File p = file.getParentFile();
+				if (!p.exists()) {
+					if (!p.mkdirs()) {
+						return false;
+					}
+				}
+				db = SQLiteDatabase.openOrCreateDatabase(file, null);
 			}
-			db = SQLiteDatabase.openOrCreateDatabase(file, null);
+		} catch (SQLiteException e) {
+			e.printStackTrace();
 		}
 		
 		return (db != null);
