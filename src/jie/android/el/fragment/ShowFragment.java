@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -27,6 +28,31 @@ public class ShowFragment extends BaseFragment {
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
 	
+	private class WordLoader extends AsyncTask<String, Void, String> {
+
+		private String word = null;
+		@Override
+		protected String doInBackground(String... arg0) {
+			word = arg0[0];
+			Word.XmlResult result;
+			try {
+				result = getELActivity().getServiceAccess().queryWordResult(word);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				return null;
+			}
+			return XmlTranslator.trans(assembleXmlResult(word, result));
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (result != null) {
+				showPopWindow(word, result);				
+			}
+		}
+	};
+	
+	
 	private static int MSG_INDEX	=	1;
 	private static int MSG_AUDIO	=	2;
 	
@@ -35,9 +61,12 @@ public class ShowFragment extends BaseFragment {
 	private Animation animShow = null;
 	private Animation animHide = null;
 	
-	private PopupLayout popupLayout = null;
 	private TextView textView = null;
 	private WebView webView = null;
+	
+	private PopupLayout popupLayout = null;
+	private TextView popTextView = null;
+	private WebView popWebView = null;
 	
 	private Handler handler = new Handler() {
 
@@ -68,7 +97,6 @@ public class ShowFragment extends BaseFragment {
 		
 		initAnimation();
 		
-		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);
 		textView = (TextView) view.findViewById(R.id.textView2);
 		webView = (WebView) view.findViewById(R.id.webView1);
 		LACWebViewClient client = new LACWebViewClient();
@@ -81,6 +109,10 @@ public class ShowFragment extends BaseFragment {
 			
 		});
 		webView.setWebViewClient(client);
+
+		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
+		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
+		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
 	}
 
 	@Override
@@ -105,6 +137,10 @@ public class ShowFragment extends BaseFragment {
 		}
 	}
 	
+	private boolean isPopupWindowOpen() {
+		return popupLayout.getVisibility() == View.VISIBLE;
+	}
+	
 	protected void onIndex(int index) {
 		ELDBAccess db = getELActivity().getDBAccess();
 		Cursor cursor = db.queryESLIssue(index);
@@ -127,7 +163,7 @@ public class ShowFragment extends BaseFragment {
 	private void loadData(int index, String title, String data) {
 		textView.setText(String.format("%d : %s", index, title));
 		
-		webView.loadData(data, "text/html", "utf-8");
+		webView.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
 	}
 
 	private void playAudio(String audio) {
@@ -137,28 +173,23 @@ public class ShowFragment extends BaseFragment {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
+			if (isPopupWindowOpen()) {
+				togglePopupWindow();
+			} else {
+				getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
+			}
 			return true;			
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 	
 	protected boolean onUrlLoading(String url) {
-		Toast.makeText(getELActivity(), "url = " + url, Toast.LENGTH_SHORT).show();
+//		Toast.makeText(getELActivity(), "url = " + url, Toast.LENGTH_SHORT).show();
 		
 		int pos = url.indexOf("lac://", 0);
 		if (pos != -1) {
-			try {
-				String word = url.substring(6);
-				Word.XmlResult result = getELActivity().getServiceAccess().queryWordResult(word);
-				String xml = assembleXmlResult(word, result);
-				String html = XmlTranslator.trans(xml);
-				
-				Log.d(Tag, "result = " + html);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String word = url.substring(6);
+			new WordLoader().execute(word);
 			return true;
 		}
 		
@@ -179,5 +210,12 @@ public class ShowFragment extends BaseFragment {
 		
 		return ret;
 	}	
+
+	private void showPopWindow(final String word, final String html) {
+		popTextView.setText(word);
+		popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+		
+		togglePopupWindow();
+	}
 	
 }
