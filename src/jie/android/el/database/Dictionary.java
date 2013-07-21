@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import jie.android.el.utils.XmlResultLoader;
+
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;

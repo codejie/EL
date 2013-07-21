@@ -3,9 +3,10 @@ package jie.android.el;
 import java.io.IOException;
 
 import jie.android.el.database.ELDBAccess;
-import jie.android.el.database.XmlTranslator;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.service.ServiceAccess;
+import jie.android.el.utils.Speaker;
+import jie.android.el.utils.XmlTranslator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,8 +25,6 @@ import com.actionbarsherlock.view.MenuItem;
 public class ELActivity extends SherlockFragmentActivity {
 
 	private static String Tag = ELActivity.class.getSimpleName();
-	
-	
 	
 	private ELDBAccess dbAccess = null;
 	private ServiceAccess serviceAccess = null;
@@ -65,6 +64,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		this.setContentView(R.layout.activity_el);
 
 		initService();
+		initSpeaker();
 		initTranslator();
 		initDatabase();
 		
@@ -76,9 +76,18 @@ public class ELActivity extends SherlockFragmentActivity {
 	@Override
 	protected void onDestroy() {
 		releaseDatabase();
+		releaseSpeasker();
 		releaseService();
 		
 		super.onDestroy();
+	}
+
+	private void initSpeaker() {
+		Speaker.init(this);
+	}
+	
+	private void releaseSpeasker() {
+		Speaker.release();
 	}
 
 	private void initTranslator() {

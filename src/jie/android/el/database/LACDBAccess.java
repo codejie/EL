@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import jie.android.el.utils.AssetsHelper;
+
 import android.content.Context;
 import android.database.Cursor;
 

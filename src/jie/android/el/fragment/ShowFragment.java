@@ -21,12 +21,13 @@ import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.database.Word;
-import jie.android.el.database.XmlTranslator;
+import jie.android.el.utils.Speaker;
+import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnUrlLoadingListener;
 import jie.android.el.view.PopupLayout;
 
-public class ShowFragment extends BaseFragment {
+public class ShowFragment extends BaseFragment implements OnClickListener{
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
 	
@@ -115,16 +116,10 @@ public class ShowFragment extends BaseFragment {
 
 		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
 		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
+		popTextView.setOnClickListener(this);
 		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
 		popCloseButton = (ImageButton) popupLayout.findViewById(R.id.imageButton1);
-		popCloseButton.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				togglePopupWindow();
-			}
-			
-		});
+		popCloseButton.setOnClickListener(this);
 	}
 
 	@Override
@@ -228,6 +223,23 @@ public class ShowFragment extends BaseFragment {
 		popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
 		
 		togglePopupWindow();
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.textView1:
+			ttsPlay(popTextView.getText().toString());
+			break;
+		case R.id.imageButton1:
+			togglePopupWindow();
+			break;
+		default:;
+		}
+	}
+
+	private void ttsPlay(final String text) {
+		Speaker.speak(text);
 	}
 	
 }
