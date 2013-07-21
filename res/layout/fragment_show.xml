@@ -44,6 +44,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
+            android:layout_margin="3dp"
             android:orientation="horizontal" >
 
             <TextView
@@ -54,26 +55,19 @@
                 android:layout_weight="1"
                 android:text="TextView" />
 
-            <Button
-                android:id="@+id/button1"
+            <ImageButton
+                android:id="@+id/imageButton1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text="Button" />
-
-            <Button
-                android:id="@+id/button2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:text="Button" />
+                android:src="@drawable/el_close" />
 
         </LinearLayout>
 
         <WebView
             android:id="@+id/webView2"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:layout_margin="3dp" />
 
     </jie.android.el.view.PopupLayout>
     

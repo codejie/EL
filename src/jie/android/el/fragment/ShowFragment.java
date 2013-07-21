@@ -9,10 +9,12 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.FragmentSwitcher;
@@ -66,7 +68,8 @@ public class ShowFragment extends BaseFragment {
 	
 	private PopupLayout popupLayout = null;
 	private TextView popTextView = null;
-	private WebView popWebView = null;
+	private WebView popWebView = null;	
+	private ImageButton popCloseButton = null; 
 	
 	private Handler handler = new Handler() {
 
@@ -113,6 +116,15 @@ public class ShowFragment extends BaseFragment {
 		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
 		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
 		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
+		popCloseButton = (ImageButton) popupLayout.findViewById(R.id.imageButton1);
+		popCloseButton.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				togglePopupWindow();
+			}
+			
+		});
 	}
 
 	@Override
