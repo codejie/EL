@@ -17,20 +17,19 @@ public class ELService extends Service {
 
 		@Override
 		public void playAudio(String file, PlayAudioListener listener) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			player.setOnPlayAudioListener(listener);
+			player.setData(file);
+			player.play();
 		}
 
 		@Override
 		public void stopAudio(int token) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			player.stop();
 		}
 
 		@Override
 		public void pauseAudio(int token) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			player.pause();
 		}
 
 		@Override
@@ -41,6 +40,7 @@ public class ELService extends Service {
 	
 	private LACDBAccess dbAccess = null;
 	private Dictionary dictionary = null;
+	private AudioPlayer player = null;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -55,16 +55,28 @@ public class ELService extends Service {
 		
 		initDatabase();
 		initDictionary();
+		initPlayer();
 	}
-	
+
 	@Override
 	public void onDestroy() {
 		
+		releasePlayer();
 		releaseDictionary();
 		releaseDatabase();
 
 		super.onDestroy();
 	}	
+
+	private void initPlayer() {
+		player = new AudioPlayer(this);
+	}
+
+	private void releasePlayer() {
+		if (player != null) {
+			player.release();
+		}
+	}
 
 	private void initDatabase() {
 		dbAccess = new LACDBAccess(this);

@@ -1,6 +1,10 @@
 package jie.android.el.service;
 
 interface PlayAudioListener {
-	void onStart(in int token);
-	void onStop(in int token);
+	void onPrepared(in int duration);
+	void onStart();
+	void onPlaying(in int sec);
+	void onCompleted();
+	void onPause();
+	void onError(in String what);
 }

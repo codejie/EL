@@ -3,6 +3,7 @@ package jie.android.el.fragment;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
@@ -174,7 +175,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	}
 
 	private void playAudio(String audio) {
-		// post message to service
+		audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
+		try {
+			getELActivity().getServiceAccess().playAudio(audio, null);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
