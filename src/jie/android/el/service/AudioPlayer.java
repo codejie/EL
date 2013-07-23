@@ -11,12 +11,37 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 
 public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
+
+	private class TickCounter extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... arg0) {
+			while (player.isPlaying()) {
+				try {
+					if (listener != null) {
+						listener.onPlaying(player.getCurrentPosition());
+					}
+					Thread.sleep(500);
+				
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+			return null;
+		}
 		
+	}
+	
 	private Context context = null;
 	
 	private MediaPlayer player = null;
-	private PlayAudioListener listener = null;
-		
+	private OnPlayAudioListener listener = null;
+	
 	
 	public AudioPlayer(Context context) {
 		this.context = context;
@@ -67,7 +92,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		}
 	}
 	
-	public void setOnPlayAudioListener(PlayAudioListener listener) {
+	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
 		this.listener = listener;
 	}
 	
@@ -78,6 +103,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		}
 		
 		try {
+			player.reset();
+			
 			player.setDataSource(file);
 			player.prepare();
 			
@@ -103,6 +130,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	
 	public void play() {
 		player.start();
+		new TickCounter().execute();
 	}
 	
 	public void pause() {

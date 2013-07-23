@@ -17,12 +17,14 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.database.Word;
+import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.LACWebViewClient;
@@ -57,6 +59,38 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 		}
 	};
 	
+	private class OnPlayListener extends OnPlayAudioListener.Stub {
+
+		@Override
+		public void onPrepared(int duration) throws RemoteException {
+			playTime.setText(String.valueOf(duration));
+		}
+
+		@Override
+		public void onPlaying(int msec) throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onCompleted() throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onError(String what) throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onSeekTo(int msec) throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}  
+		
+	}
 	
 	private static int MSG_INDEX	=	1;
 	private static int MSG_AUDIO	=	2;
@@ -74,6 +108,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	private WebView popWebView = null;	
 	private ImageButton popCloseButton = null;
 	
+	private TextView playTime = null;
+	private SeekBar playBar = null;
 	private ImageView playRepeat = null;
 	private ImageView playShuffle = null;
 	private ImageView playPrev = null;
@@ -131,16 +167,18 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
 		popCloseButton = (ImageButton) popupLayout.findViewById(R.id.imageButton1);
 		popCloseButton.setOnClickListener(this);
-		
-		playRepeat = (ImageView) view.findViewById(R.id.imageView1);
+	
+		playTime = (TextView) view.findViewById(R.id.playTextTime);
+		playBar = (SeekBar) view.findViewById(R.id.playSeekBar);
+		playRepeat = (ImageView) view.findViewById(R.id.playImageView1);
 		playRepeat.setOnClickListener(this);
-		playShuffle = (ImageView) view.findViewById(R.id.imageView2);
+		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
 		playShuffle.setOnClickListener(this);
-		playPrev = (ImageView) view.findViewById(R.id.imageView3);
+		playPrev = (ImageView) view.findViewById(R.id.playImageView3);
 		playPrev.setOnClickListener(this);
-		playPlay = (ImageView) view.findViewById(R.id.imageView4);
+		playPlay = (ImageView) view.findViewById(R.id.playImageView4);
 		playPlay.setOnClickListener(this);
-		playNext = (ImageView) view.findViewById(R.id.imageView5);
+		playNext = (ImageView) view.findViewById(R.id.playImageView5);
 		playNext.setOnClickListener(this);
 		
 		playRepeat.setSelected(true);
@@ -202,7 +240,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
 		
 		try {
-			getELActivity().getServiceAccess().setAudio(this.audio, null);
+			getELActivity().getServiceAccess().setAudio(this.audio, new OnPlayListener());
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -300,16 +338,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 		case R.id.imageButton1:
 			togglePopupWindow();
 			break;
-		case R.id.imageView1:
+		case R.id.playImageView1:
 			break;
-		case R.id.imageView2:
+		case R.id.playImageView2:
 			break;
-		case R.id.imageView3:
+		case R.id.playImageView3:
 			break;
-		case R.id.imageView4:
+		case R.id.playImageView4:
 			togglePlay();
 			break;
-		case R.id.imageView5:
+		case R.id.playImageView5:
 			break;
 		default:;
 		}

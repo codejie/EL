@@ -1,6 +1,6 @@
 package jie.android.el.service;
 
-interface PlayAudioListener {
+interface OnPlayAudioListener {
 	void onPrepared(in int duration);
 	void onPlaying(in int msec);
 	void onCompleted();

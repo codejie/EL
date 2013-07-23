@@ -9,21 +9,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp" >
 
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="TextView" />
-
         <SeekBar
-            android:id="@+id/seekBar1"
+            android:id="@+id/playSeekBar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/playTextTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
@@ -38,39 +31,41 @@
         android:layout_marginRight="5dp" >
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/playImageView1"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.1"
             android:background="@drawable/el_player_bg"
             android:clickable="true"
+            android:scaleType="center"
             android:src="@drawable/el_audio_repeat" />
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/playImageView2"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.1"
             android:background="@drawable/el_player_bg"
             android:clickable="true"
+            android:scaleType="center"
             android:src="@drawable/el_audio_shuffle" />
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/playImageView3"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
-            android:layout_weight="0.2"
+            android:layout_weight="0.22"
             android:background="@drawable/el_player_bg"
             android:clickable="true"
             android:scaleType="fitCenter"
             android:src="@drawable/el_audio_prev" />
 
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/playImageView4"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_weight="0.2"
+            android:layout_weight="0.22"
             android:background="@drawable/el_player_bg"
             android:clickable="true"
             android:longClickable="false"
@@ -78,11 +73,11 @@
             android:src="@drawable/el_player_play" />
 
         <ImageView
-            android:id="@+id/imageView5"
+            android:id="@+id/playImageView5"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="right"
-            android:layout_weight="0.2"
+            android:layout_weight="0.22"
             android:background="@drawable/el_player_bg"
             android:clickable="true"
             android:scaleType="fitCenter"

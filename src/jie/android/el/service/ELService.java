@@ -21,7 +21,7 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public void setAudio(String audio, PlayAudioListener listener)	throws RemoteException {
+		public void setAudio(String audio, OnPlayAudioListener listener) throws RemoteException {
 			player.setOnPlayAudioListener(listener);
 			player.setData(audio);
 		}
