@@ -16,6 +16,7 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.FragmentSwitcher;
@@ -71,7 +72,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	private PopupLayout popupLayout = null;
 	private TextView popTextView = null;
 	private WebView popWebView = null;	
-	private ImageButton popCloseButton = null; 
+	private ImageButton popCloseButton = null;
+	
+	private ImageView playRepeat = null;
+	private ImageView playShuffle = null;
+	private ImageView playPrev = null;
+	private ImageView playPlay = null;
+	private ImageView playNext = null;
+	
+	private String audio = null;
+	private int position = -1;
 	
 	private Handler handler = new Handler() {
 
@@ -121,6 +131,19 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
 		popCloseButton = (ImageButton) popupLayout.findViewById(R.id.imageButton1);
 		popCloseButton.setOnClickListener(this);
+		
+		playRepeat = (ImageView) view.findViewById(R.id.imageView1);
+		playRepeat.setOnClickListener(this);
+		playShuffle = (ImageView) view.findViewById(R.id.imageView2);
+		playShuffle.setOnClickListener(this);
+		playPrev = (ImageView) view.findViewById(R.id.imageView3);
+		playPrev.setOnClickListener(this);
+		playPlay = (ImageView) view.findViewById(R.id.imageView4);
+		playPlay.setOnClickListener(this);
+		playNext = (ImageView) view.findViewById(R.id.imageView5);
+		playNext.setOnClickListener(this);
+		
+		playRepeat.setSelected(true);
 	}
 
 	@Override
@@ -160,7 +183,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 					String audio = cursor.getString(2);
 					
 					loadData(index, title, data);
-					playAudio(audio);
+					setAudio(audio);
+					playAudio();
 				}				
 			} finally {
 				cursor.close();
@@ -174,10 +198,44 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 		webView.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
 	}
 
-	private void playAudio(String audio) {
-		audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
+	private void setAudio(String audio) {
+		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
+		
 		try {
-			getELActivity().getServiceAccess().playAudio(audio, null);
+			getELActivity().getServiceAccess().setAudio(this.audio, null);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void playAudio() {
+		
+		try {
+			getELActivity().getServiceAccess().playAudio();
+			playPlay.setSelected(true);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void pauseAudio() {
+		try {
+			getELActivity().getServiceAccess().pauseAudio();
+			playPlay.setSelected(false);
+			
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void stopAudio() {
+		try {
+			getELActivity().getServiceAccess().stopAudio();
+			playPlay.setSelected(false);
+			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -190,6 +248,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 			if (isPopupWindowOpen()) {
 				togglePopupWindow();
 			} else {
+				stopAudio();
 				getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
 			}
 			return true;			
@@ -236,16 +295,35 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.textView1:
-			ttsPlay(popTextView.getText().toString());
+			speak(popTextView.getText().toString());
 			break;
 		case R.id.imageButton1:
 			togglePopupWindow();
+			break;
+		case R.id.imageView1:
+			break;
+		case R.id.imageView2:
+			break;
+		case R.id.imageView3:
+			break;
+		case R.id.imageView4:
+			togglePlay();
+			break;
+		case R.id.imageView5:
 			break;
 		default:;
 		}
 	}
 
-	private void ttsPlay(final String text) {
+	private void togglePlay() {
+		if (playPlay.isSelected()) {
+			pauseAudio();
+		} else {
+			playAudio();
+		}
+	}
+
+	private void speak(final String text) {
 		Speaker.speak(text);
 	}
 	

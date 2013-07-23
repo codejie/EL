@@ -8,55 +8,15 @@ import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.os.AsyncTask;
+import android.os.RemoteException;
 
 public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
 		
-	private MediaPlayer player = null;
 	private Context context = null;
 	
-	private AsyncTask<Integer, Integer, Boolean> PlayTask = new AsyncTask<Integer, Integer, Boolean>() {
-
-//		private Thread counter = new Thread() {
-//			
-//		};
+	private MediaPlayer player = null;
+	private PlayAudioListener listener = null;
 		
-		@Override
-		protected void onPreExecute() {
-//			player.reset();
-		}
-
-		@Override
-		protected void onCancelled(Boolean result) {
-			int pos = player.getCurrentPosition();
-			player.stop();
-		}
-
-		@Override
-		protected void onPostExecute(Boolean result) {
-			if (result) {
-				
-			} else {
-				
-			}
-		}
-
-		@Override
-		protected void onProgressUpdate(Integer... values) {
-			super.onProgressUpdate(values);
-		}
-
-		@Override
-		protected Boolean doInBackground(Integer... arg0) {
-			int pos = arg0[0].intValue();
-			if (pos > 0) {
-				player.seekTo(pos);
-			}
-			player.start();
-
-			return Boolean.TRUE;
-		}
-		
-	};	
 	
 	public AudioPlayer(Context context) {
 		this.context = context;
@@ -78,34 +38,53 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 
 	@Override
 	public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
-		// TODO Auto-generated method stub
+		if (listener != null) {
+			String what = String.format("code:%d extra:%d",  arg1, arg2);
+			try {
+				listener.onError(what);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 		return false;
 	}
 
 	@Override
 	public void onSeekComplete(MediaPlayer arg0) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public void onCompletion(MediaPlayer arg0) {
-		// TODO Auto-generated method stub
-		
+		if (listener != null) {
+			try {
+				listener.onCompleted();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void setOnPlayAudioListener(PlayAudioListener listener) {
-		
+		this.listener = listener;
 	}
 	
-	public void setData(final String file) {
-		if (PlayTask.getStatus() == AsyncTask.Status.RUNNING) {
-			PlayTask.cancel(true);
+	public void setData(final String file){
+
+		if (player.isPlaying()) {
+			player.stop();
 		}
 		
 		try {
 			player.setDataSource(file);
 			player.prepare();
+			
+			if (listener != null) {
+				listener.onPrepared(player.getDuration());
+			}
+		} catch (RemoteException e) {
 			
 		} catch (IllegalArgumentException e) {
 			// TODO Auto-generated catch block
@@ -119,12 +98,11 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-		
+		}		
 	}
 	
 	public void play() {
-		PlayTask.execute(0);
+		player.start();
 	}
 	
 	public void pause() {

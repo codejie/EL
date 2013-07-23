@@ -16,26 +16,35 @@ public class ELService extends Service {
 	private class AccessStub extends ServiceAccess.Stub {
 
 		@Override
-		public void playAudio(String file, PlayAudioListener listener) throws RemoteException {
-			player.setOnPlayAudioListener(listener);
-			player.setData(file);
-			player.play();
-		}
-
-		@Override
-		public void stopAudio(int token) throws RemoteException {
-			player.stop();
-		}
-
-		@Override
-		public void pauseAudio(int token) throws RemoteException {
-			player.pause();
-		}
-
-		@Override
 		public Word.XmlResult queryWordResult(String word) throws RemoteException {
 			return dictionary.getWordXmlResult(word);
-		}		
+		}
+
+		@Override
+		public void setAudio(String audio, PlayAudioListener listener)	throws RemoteException {
+			player.setOnPlayAudioListener(listener);
+			player.setData(audio);
+		}
+
+		@Override
+		public void playAudio() throws RemoteException {
+			player.play();			
+		}
+
+		@Override
+		public void stopAudio() throws RemoteException {
+			player.stop();			
+		}
+
+		@Override
+		public void pauseAudio() throws RemoteException {
+			player.pause();			
+		}
+
+		@Override
+		public void seekAudio(int poistion) throws RemoteException {
+			player.seekTo(poistion);
+		}
 	}
 	
 	private LACDBAccess dbAccess = null;
