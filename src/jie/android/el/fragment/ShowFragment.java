@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.FragmentSwitcher;
@@ -26,12 +27,13 @@ import jie.android.el.database.ELDBAccess;
 import jie.android.el.database.Word;
 import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.utils.Speaker;
+import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnUrlLoadingListener;
 import jie.android.el.view.PopupLayout;
 
-public class ShowFragment extends BaseFragment implements OnClickListener{
+public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener{
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
 	
@@ -60,40 +62,41 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	};
 	
 	private class OnPlayListener extends OnPlayAudioListener.Stub {
-
+		
 		@Override
 		public void onPrepared(int duration) throws RemoteException {
-			playTime.setText(String.valueOf(duration));
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
 		}
 
 		@Override
 		public void onPlaying(int msec) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPLAYING, msec, -1));
 		}
 
 		@Override
 		public void onCompleted() throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONCOMPLETED));
 		}
 
 		@Override
-		public void onError(String what) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+		public void onError(int what, int extra) throws RemoteException {
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONERROR, what, extra));		
 		}
+		
 
 		@Override
 		public void onSeekTo(int msec) throws RemoteException {
-			// TODO Auto-generated method stub
-			
-		}  
-		
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONSEEKTO, msec, -1));			
+		}
 	}
-	
-	private static int MSG_INDEX	=	1;
-	private static int MSG_AUDIO	=	2;
+		
+	private static final int MSG_INDEX				=	1;
+	private static final int MSG_AUDIO				=	2;
+	private static final int MSG_PLAY_ONPREPARED	=	3;
+	private static final int MSG_PLAY_ONPLAYING		=	4;
+	private static final int MSG_PLAY_ONCOMPLETED	=	5;
+	private static final int MSG_PLAY_ONERROR		=	6;
+	private static final int MSG_PLAY_ONSEEKTO		=	7;
 	
 	private int dataIndex = -1;
 	
@@ -119,12 +122,32 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	private String audio = null;
 	private int position = -1;
 	
+	private String audioDuration = null;
+	
 	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
-			if (msg.what == MSG_INDEX) {
+			switch (msg.what) {
+			case MSG_INDEX:
 				onIndex(msg.arg1);
+				break;
+			case MSG_PLAY_ONPREPARED:
+				OnPlayPrepared(msg.arg1);
+				break;
+			case MSG_PLAY_ONPLAYING:
+				OnPlayPlaying(msg.arg1);
+				break;
+			case MSG_PLAY_ONCOMPLETED:
+				OnPlayCompleted();
+				break;
+			case MSG_PLAY_ONERROR:
+				OnPlayError(msg.arg1, msg.arg2);
+				break;
+			case MSG_PLAY_ONSEEKTO:
+				OnPlaySeekTo(msg.arg1);
+				break;
+			default:;
 			}
 		}
 		
@@ -141,6 +164,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 //			handler.sendMessage(Message.obtain(handler, MSG_INDEX, b.getInt("index"), -1));
 //		}
 	}
+
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -170,6 +194,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	
 		playTime = (TextView) view.findViewById(R.id.playTextTime);
 		playBar = (SeekBar) view.findViewById(R.id.playSeekBar);
+		playBar.setOnSeekBarChangeListener(this);
 		playRepeat = (ImageView) view.findViewById(R.id.playImageView1);
 		playRepeat.setOnClickListener(this);
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
@@ -364,5 +389,49 @@ public class ShowFragment extends BaseFragment implements OnClickListener{
 	private void speak(final String text) {
 		Speaker.speak(text);
 	}
-	
+
+	protected void OnPlaySeekTo(int arg1) {
+		// TODO Auto-generated method stub		
+	}
+
+	protected void OnPlayError(int what, int extra) {
+		stopAudio();
+		Toast.makeText(getELActivity(), String.format("ERROR:%d Extra:%d", what, extra), Toast.LENGTH_SHORT).show();
+	}
+
+	protected void OnPlayCompleted() {
+		stopAudio();		
+	}
+
+	protected void OnPlayPlaying(int msec) {
+		
+		playBar.setProgress(msec / 1000);
+		
+		playTime.setText(Utils.formatMSec(msec) + "/" + audioDuration);
+	}
+
+	protected void OnPlayPrepared(int duration) {
+		audioDuration = Utils.formatMSec(duration);
+		
+		playBar.setMax(duration / 1000 - 1);
+		playBar.setProgress(0);
+		
+		playTime.setText(audioDuration);
+	}
+
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+		pauseAudio();
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+		playAudio();
+	}	
 }

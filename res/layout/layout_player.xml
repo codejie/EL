@@ -11,16 +11,20 @@
 
         <SeekBar
             android:id="@+id/playSeekBar"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
+            android:layout_gravity="left|center_vertical|fill_horizontal"
+            android:layout_weight="0.8" />
 
         <TextView
             android:id="@+id/playTextTime"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical"
-            android:text="TextView" />
+            android:layout_gravity="right|center_vertical|fill_horizontal"
+            android:layout_weight="0.28"
+            android:gravity="right"
+            android:text="00:00/00:00"
+            android:textAlignment="textEnd" />
 
     </LinearLayout>
 
@@ -38,7 +42,7 @@
             android:background="@drawable/el_player_bg"
             android:clickable="true"
             android:scaleType="center"
-            android:src="@drawable/el_audio_repeat" />
+            android:src="@drawable/el_player_repeat" />
 
         <ImageView
             android:id="@+id/playImageView2"
@@ -48,7 +52,7 @@
             android:background="@drawable/el_player_bg"
             android:clickable="true"
             android:scaleType="center"
-            android:src="@drawable/el_audio_shuffle" />
+            android:src="@drawable/el_player_shuffle" />
 
         <ImageView
             android:id="@+id/playImageView3"
