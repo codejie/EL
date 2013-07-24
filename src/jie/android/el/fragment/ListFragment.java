@@ -2,6 +2,7 @@ package jie.android.el.fragment;
 
 import java.util.HashMap;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
@@ -25,7 +26,7 @@ import jie.android.el.R;
 import jie.android.el.database.ELDBAccess;
 
 public class ListFragment extends BaseFragment implements OnItemClickListener {
-	
+
 	class Adapter extends CursorAdapter {
 
 		//private HashMap<Integer, Integer> idxMap = new HashMap<Integer, Integer>();

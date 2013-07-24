@@ -8,7 +8,8 @@ interface ServiceAccess {
 	void playAudio();
 	void stopAudio();
 	void pauseAudio();
-	void seekAudio(in int poistion);
+	void seekAudio(in int position);
+	boolean isAudioPlaying();
 	
 	Word.XmlResult queryWordResult(in String word);
 }

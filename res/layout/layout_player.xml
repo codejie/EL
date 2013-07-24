@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical|fill_horizontal"
             android:layout_weight="0.28"
-            android:gravity="right"
+            android:gravity="center_horizontal"
             android:text="00:00/00:00"
             android:textAlignment="textEnd" />
 

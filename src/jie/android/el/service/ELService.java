@@ -45,6 +45,11 @@ public class ELService extends Service {
 		public void seekAudio(int poistion) throws RemoteException {
 			player.seekTo(poistion);
 		}
+
+		@Override
+		public boolean isAudioPlaying() throws RemoteException {
+			return player.isPlaying(); 
+		}
 	}
 	
 	private LACDBAccess dbAccess = null;

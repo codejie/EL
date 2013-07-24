@@ -120,8 +120,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private ImageView playNext = null;
 	
 	private String audio = null;
-	private int position = -1;
-	
 	private String audioDuration = null;
 	
 	private Handler handler = new Handler() {
@@ -149,9 +147,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				break;
 			default:;
 			}
-		}
-		
+		}		
 	};
+	
+	private boolean isPlayingSeek = false;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -195,6 +194,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playTime = (TextView) view.findViewById(R.id.playTextTime);
 		playBar = (SeekBar) view.findViewById(R.id.playSeekBar);
 		playBar.setOnSeekBarChangeListener(this);
+		playBar.setEnabled(false);
 		playRepeat = (ImageView) view.findViewById(R.id.playImageView1);
 		playRepeat.setOnClickListener(this);
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
@@ -258,6 +258,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private void loadData(int index, String title, String data) {
 		textView.setText(String.format("%d : %s", index, title));
 		
+		getELActivity().setTitle(title);		
+		
 		webView.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
 	}
 
@@ -305,6 +307,15 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}
 	}
 
+	private void seekAudio(int position) {
+		try {
+			getELActivity().getServiceAccess().seekAudio(position * 1000);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -391,7 +402,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	protected void OnPlaySeekTo(int arg1) {
-		// TODO Auto-generated method stub		
+		if (isPlayingSeek) {
+			playAudio();
+			
+			isPlayingSeek = false;
+		}
 	}
 
 	protected void OnPlayError(int what, int extra) {
@@ -400,7 +415,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	protected void OnPlayCompleted() {
-		stopAudio();		
+		stopAudio();
+		playBar.setEnabled(false);
+		playTime.setText(audioDuration);
 	}
 
 	protected void OnPlayPlaying(int msec) {
@@ -416,22 +433,29 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playBar.setMax(duration / 1000 - 1);
 		playBar.setProgress(0);
 		
+		playBar.setEnabled(true);
+		
 		playTime.setText(audioDuration);
 	}
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-		// TODO Auto-generated method stub
-		
+		if (fromUser) {
+			seekAudio(progress);
+		}
 	}
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		pauseAudio();
+		isPlayingSeek = playPlay.isSelected();
+		
+		if (isPlayingSeek) {
+			pauseAudio();
+		}
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-		playAudio();
+//		playAudio();
 	}	
 }
