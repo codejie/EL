@@ -31,40 +31,40 @@ public class LACDBAccess extends DBAccess {
 
 	@Override
 	public boolean open() {
-		if (!checkDataFile()) {
-			return false;
-		}
+//		if (!checkDataFile()) {
+//			return false;
+//		}
 		
 		File f = context.getDatabasePath(FILE);
 		return openDb(f, true);
 	}
 	
-	private boolean checkDataFile() {
-		if (!context.getDatabasePath(FILE).exists()) {
-			return unzipDataFile();
-		}
-		return true;
-	}
-
-	private boolean unzipDataFile() {
-		
-		File target = context.getDatabasePath(FILE).getParentFile();		
-
-		if (!target.exists()) {
-			target.mkdirs();
-		}
-		
-		InputStream input;
-		try {
-			input = context.getAssets().open("lac2.zip");
-			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);
-		} catch (IOException e) {
-			e.printStackTrace();			
-			return false;
-		}
-		
-		return true;
-	}	
+//	private boolean checkDataFile() {
+//		if (!context.getDatabasePath(FILE).exists()) {
+//			return unzipDataFile();
+//		}
+//		return true;
+//	}
+//
+//	private boolean unzipDataFile() {
+//		
+//		File target = context.getDatabasePath(FILE).getParentFile();		
+//
+//		if (!target.exists()) {
+//			target.mkdirs();
+//		}
+//		
+//		InputStream input;
+//		try {
+//			input = context.getAssets().open("lac2.zip");
+//			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);
+//		} catch (IOException e) {
+//			e.printStackTrace();			
+//			return false;
+//		}
+//		
+//		return true;
+//	}	
 	
 	public Cursor getWord(String condition, int offset, int limit) {
 		condition = "word LIKE '" + condition + "%'";

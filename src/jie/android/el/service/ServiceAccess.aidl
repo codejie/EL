@@ -1,10 +1,15 @@
 package jie.android.el.service;
 
+import jie.android.el.service.ServiceNotification;
 import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.database.Word;
 
 interface ServiceAccess {
-	void setAudio(in String audio, in OnPlayAudioListener listener);
+	void regServiceNotification(in int token, in ServiceNotification notification);
+	void unregServiceNotification(in int token);
+	
+	void setAudio(in int index, in String audio);
+	void setAudioListener(in OnPlayAudioListener listener);
 	void playAudio();
 	void stopAudio();
 	void pauseAudio();

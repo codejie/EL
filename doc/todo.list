@@ -1,0 +1,2 @@
+1. [P1] post the index of current audio to service, then, as UI restore, it can open the previous audio correctly;
+2. [P2] add the notification interface from service to UI; 

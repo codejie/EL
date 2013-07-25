@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.fragment.BaseFragment;
+import jie.android.el.service.ELService;
 import jie.android.el.service.ServiceAccess;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.XmlTranslator;
@@ -78,7 +79,7 @@ public class ELActivity extends SherlockFragmentActivity {
 	protected void onDestroy() {
 		releaseDatabase();
 		releaseSpeasker();
-		releaseService();
+		releaseService(false);
 		
 		super.onDestroy();
 	}
@@ -101,16 +102,20 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	private void initService() {
-		Intent intent = new Intent("elService");
+		Intent intent = new Intent("elService");		
+		this.startService(intent);
 		
-//		this.startService(intent);
-		
+		intent = new Intent("elService");
 		this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
-	private void releaseService() {
+	private void releaseService(boolean stop) {
 		if (serviceAccess != null) {
-			//this.unbindService(serviceConnection);
+			this.unbindService(serviceConnection);
+			if (stop) {
+				this.stopService(new Intent("elService"));
+			}
+			serviceAccess = null;
 		}
 	}
 	
@@ -159,6 +164,12 @@ public class ELActivity extends SherlockFragmentActivity {
 				return true;
 			}
 		}
+		
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			releaseService(true);
+			finish();
+		}
+		
 		// TODO Auto-generated method stub
 		return super.onKeyDown(keyCode, event);
 	}
