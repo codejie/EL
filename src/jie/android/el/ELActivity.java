@@ -7,6 +7,7 @@ import jie.android.el.fragment.BaseFragment;
 import jie.android.el.service.ServiceAccess;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.XmlTranslator;
+import jie.android.el.R;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -102,12 +103,14 @@ public class ELActivity extends SherlockFragmentActivity {
 	private void initService() {
 		Intent intent = new Intent("elService");
 		
+//		this.startService(intent);
+		
 		this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private void releaseService() {
 		if (serviceAccess != null) {
-			this.unbindService(serviceConnection);
+			//this.unbindService(serviceConnection);
 		}
 	}
 	
@@ -131,12 +134,12 @@ public class ELActivity extends SherlockFragmentActivity {
 	public ServiceAccess getServiceAccess() {
 		return serviceAccess;
 	}
-	
+
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// TODO Auto-generated method stub
-		return super.onCreateOptionsMenu(menu);
-	}
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
+		return super.onPrepareOptionsMenu(menu);
+	}	
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

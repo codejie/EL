@@ -1,6 +1,7 @@
 package jie.android.el;
 
 import jie.android.el.fragment.BaseFragment;
+import jie.android.el.fragment.DownloadFragment;
 import jie.android.el.fragment.ListFragment;
 import jie.android.el.fragment.ShowFragment;
 import android.os.Bundle;
@@ -10,7 +11,8 @@ public class FragmentSwitcher {
 	
 	public enum Type {
 		
-		LIST("list", false), SHOW("show", true), ABOUT("about", true), SETTING("setting", true);
+		LIST("list", false), SHOW("show", true), ABOUT("about", true), SETTING("setting", true),
+		DOWNLOAD("download", true);
 		
 		private final String title;
 		private final boolean removed;
@@ -75,6 +77,9 @@ public class FragmentSwitcher {
 			break;
 		case SHOW:
 			fragment = new ShowFragment();
+			break;
+		case DOWNLOAD:
+			fragment = new DownloadFragment();
 			break;
 		default:
 			return null;
