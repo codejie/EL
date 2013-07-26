@@ -24,6 +24,10 @@ public class ELService extends Service {
 		@Override
 		public void regServiceNotification(int token, ServiceNotification notification) throws RemoteException {
 			serviceNotification = notification;
+			
+			if (isServiceReady) {
+				postServiceState(ServiceState.READY);
+			}
 		}
 
 		@Override
@@ -80,6 +84,8 @@ public class ELService extends Service {
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
 	
+	private boolean isServiceReady = false;
+	
 	private ServiceNotification serviceNotification = null;
 	
 	@Override
@@ -96,6 +102,8 @@ public class ELService extends Service {
 		initDatabase();
 		initDictionary();
 		initPlayer();
+		
+		isServiceReady = true;
 	}
 
 	@Override
@@ -150,6 +158,7 @@ public class ELService extends Service {
 	
 	private boolean checkDataFile() {
 		if (!getDatabasePath(LACDBAccess.FILE).exists()) {
+			postServiceState(ServiceState.UNZIP);
 			return unzipDataFile();
 		}
 		return true;
@@ -175,21 +184,10 @@ public class ELService extends Service {
 		return true;
 	}	
 
-	private void postNotification(int state) {
+	private void postServiceState(ServiceState state) {
 		if (serviceNotification != null) {
 			try {
-				switch (state) {
-				case STATE_READY:
-					serviceNotification.onReady();
-					break;
-				case STATE_UNZIP:
-					serviceNotification.onUnzip();
-					break;
-				case STATE_PLAYING:
-					//serviceNotification.onAudioPlaying(index, duration, position)
-					break;
-				default:;
-				}
+				serviceNotification.onServiceState(state.getId());
 			} catch (DeadObjectException e) {
 				serviceNotification = null;
 			} catch (RemoteException e) {

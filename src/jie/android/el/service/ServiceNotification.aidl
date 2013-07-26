@@ -1,8 +1,7 @@
 package jie.android.el.service;
 
 interface ServiceNotification {
-	void onUnzip();
-	void onReady();
+	void onServiceState(in int state);
 	
 	void onAudioPlaying(in int index, in int duration, in int position);
 }
