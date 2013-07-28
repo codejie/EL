@@ -8,6 +8,9 @@ interface ServiceAccess {
 	void regServiceNotification(in int token, in ServiceNotification notification);
 	void unregServiceNotification(in int token);
 	
+	boolean canExit(); 
+	
+	
 	void setAudio(in int index, in String audio);
 	void setAudioListener(in OnPlayAudioListener listener);
 	void playAudio();

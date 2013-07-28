@@ -76,6 +76,12 @@ public class ELService extends Service {
 		public boolean isAudioPlaying() throws RemoteException {
 			return player.isPlaying(); 
 		}
+
+		@Override
+		public boolean canExit() throws RemoteException {
+			// TODO Auto-generated method stub
+			return false;
+		}
 	}
 	
 	private static final int STATE_READY	=	0;
@@ -156,6 +162,10 @@ public class ELService extends Service {
 		if (dictionary != null) {
 			dictionary.close();
 		}
+	}
+	
+	public LACDBAccess getDBAccess() {
+		return dbAccess;
 	}
 	
 	private boolean checkDataFile() {
