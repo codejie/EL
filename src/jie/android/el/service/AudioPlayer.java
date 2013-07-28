@@ -189,4 +189,12 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		return audioIndex;
 	}
 	
+	public int getDuration() {
+		return player.getDuration();
+	}
+	
+	public int getCurrentPosition() {
+		return player.getCurrentPosition();
+	}
+
 }

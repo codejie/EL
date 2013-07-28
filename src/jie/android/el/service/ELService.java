@@ -25,7 +25,9 @@ public class ELService extends Service {
 		public void regServiceNotification(int token, ServiceNotification notification) throws RemoteException {
 			serviceNotification = notification;
 			
-			if (isServiceReady) {
+			if (player.isPlaying()) {
+				postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
+			} else if (isServiceReady) {
 				postServiceState(ServiceState.READY);
 			}
 		}
@@ -196,4 +198,15 @@ public class ELService extends Service {
 			}
 		}
 	}
+	
+	public void postServiceIsPlaying(int index, int duration, int position) {
+		if (serviceNotification != null) {
+			try {
+				serviceNotification.onAudioPlaying(index, duration, position);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+	}	
 }

@@ -98,8 +98,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private static final int MSG_PLAY_ONERROR		=	6;
 	private static final int MSG_PLAY_ONSEEKTO		=	7;
 	
-	private int dataIndex = -1;
-	
 	private Animation animShow = null;
 	private Animation animHide = null;
 	
@@ -122,13 +120,15 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private String audio = null;
 	private String audioDuration = null;
 	
+	private boolean isServiceNotification = false; 
+	
 	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_INDEX:
-				onIndex(msg.arg1);
+				onIndex((Bundle)msg.obj);
 				break;
 			case MSG_PLAY_ONPREPARED:
 				OnPlayPrepared(msg.arg1);
@@ -212,7 +212,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public void onArguments(Bundle args) {
 		if (args != null) {
-			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args.getInt("index"), -1));
+			//isServiceNotification = args.getBoolean("servicenotification", false);
+			//handler.sendMessage(Message.obtain(handler, MSG_INDEX, args.getInt("index"), -1));
+			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 		}
 	}	
 	
@@ -235,7 +237,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		return popupLayout.getVisibility() == View.VISIBLE;
 	}
 	
-	protected void onIndex(int index) {
+	protected void onIndex(Bundle obj) {
+		int index = obj.getInt("index");
 		ELDBAccess db = getELActivity().getDBAccess();
 		Cursor cursor = db.queryESLIssue(index);
 		if (cursor != null) {
@@ -244,15 +247,29 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					String title = cursor.getString(0);
 					String data = cursor.getString(1);
 					String audio = cursor.getString(2);
-					
+
+					setAudioPlayListener();					
 					loadData(index, title, data);
-					setAudio(index, audio);
-					playAudio();
+					if (!obj.getBoolean("serviceNotification", false)) {
+						setAudio(index, audio);
+						playAudio();
+					} else {
+						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt("duration"), -1));						
+					}
 				}				
 			} finally {
 				cursor.close();
 			}
 		}		
+	}
+
+	private void setAudioPlayListener() {
+		try {
+			getELActivity().getServiceAccess().setAudioListener(new OnPlayListener());
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void loadData(int index, String title, String data) {
@@ -267,8 +284,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
 		
 		try {
-			getELActivity().getServiceAccess().setAudioListener(new OnPlayListener());
-			
 			getELActivity().getServiceAccess().setAudio(index, this.audio);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

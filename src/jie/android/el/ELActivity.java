@@ -119,7 +119,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		initTranslator();
 		initDatabase();
 		
-		handler.sendEmptyMessage(0);
+//		handler.sendEmptyMessage(0);
 		
 //		fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
 	}
@@ -224,8 +224,8 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	protected void onServiceAudioPlaying(Bundle data) {
-		// TODO Auto-generated method stub
-		
+		data.putBoolean("serviceNotification", true);
+		fragmentSwitcher.show(FragmentSwitcher.Type.SHOW, data);
 	}
 
 	protected void onServiceNotification(int state) {
