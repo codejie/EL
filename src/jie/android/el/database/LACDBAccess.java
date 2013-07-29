@@ -6,6 +6,7 @@ import java.io.InputStream;
 
 import jie.android.el.utils.AssetsHelper;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 
@@ -104,6 +105,28 @@ public class LACDBAccess extends DBAccess {
 
 	public Cursor queryWordXmlIndex(int dictIndex, int wordIndex) {
 		return db.query("word_index_" + dictIndex, Projection.WordXmlIndex, "word_idx=" + wordIndex, null, null,null, null);
+	}
+
+	public boolean checkHasUpdate() {
+		Cursor cursor = db.query("sys_update", new String[] { "count(*)" }, "status != 0", null, null, null, null);
+		if (cursor != null && cursor.moveToFirst()) {
+			return (cursor.getInt(0) > 0);
+		}
+		return false;
+	}
+
+	public boolean insertUpdateData(String request, String uricode, int type, String file, int syncid, int status, int update) {
+		
+		ContentValues values = new ContentValues();
+		values.put("request_no", request);
+		values.put("uri_code", uricode);
+		values.put("type", type);
+		values.put("file", file);
+		values.put("sync_id", syncid);
+		values.put("status", status);
+		values.put("update", update);
+		
+		return (db.insert("sys_update", null, values) != -1);
 	}
 	
 }
