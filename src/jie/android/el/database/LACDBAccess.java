@@ -115,13 +115,12 @@ public class LACDBAccess extends DBAccess {
 		return false;
 	}
 
-	public boolean insertUpdateData(String request, String uricode, int type, String file, int syncid, int status, int update) {
+	public boolean insertUpdateData(String request, String url, int type, int syncid, int status, int update) {
 		
 		ContentValues values = new ContentValues();
 		values.put("request_no", request);
-		values.put("uri_code", uricode);
 		values.put("type", type);
-		values.put("file", file);
+		values.put("url", url);
 		values.put("sync_id", syncid);
 		values.put("status", status);
 		values.put("update", update);

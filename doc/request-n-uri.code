@@ -1,17 +1,21 @@
-request_no: XXXX-X-XX-XX-XX to get XXXX_package.xml
+request_no: XXXX-X-XX-XX to get XXXX_package.xml
 XXXX: user code
 X	: provider code
 XX	: first path code
 XX	: second path code
-XX	: third path code
 
 
-uri_code: X-XX-XX-XX to get common files
-
-X	: provider code
-XX	: first path code
-XX	: second path code
-XX	: third path code
-
+check_code: X-XX-XX to get common files
+just for checking request command.
 
 insert provider code into sys_info table, and can be updated by request command.
+
+X :
+	1: skydrive.live.com
+	2: www.rapidshare.com
+	3: www.cppblog.com
+	
+XX :
+	1 = A
+	2 = B
+	3 = C			 	

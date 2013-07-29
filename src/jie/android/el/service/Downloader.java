@@ -25,11 +25,11 @@ public class Downloader {
 		public int syncid = -1;
 		public int status = -1; //-1: initial; 0: done; 1: start; 2: update 
 		public int type = -1; //0: update.xml; 1: package.zip
-		public String uri = null;
+		public String url = null;
 		
-		public UpdateData(int type, final String uri) {
+		public UpdateData(int type, final String url) {
 			this.type = type;
-			this.uri = uri;
+			this.url = url;
 		}
 	}
 	
@@ -60,37 +60,56 @@ public class Downloader {
 		return false;
 	}
 	
-	public boolean addDownloadRequest(final String request, final String uricode) {
+	public boolean addDownloadRequest(final String request) {
 		final String file = "update.xml";
-		if (!dbAccess.insertUpdateData(request, uricode, 0, file, -1, -1, 0)) {
+		final String url = request2Url(request, file);
+		
+		if (url == null) {
 			return false;
 		}
 		
-		String uri = request2Uri(request, uricode, file);		
+		if (!dbAccess.insertUpdateData(request, url, 0, -1, -1, 0)) {
+			return false;
+		}
 		
 		if (updateData == null) {
 			updateData = new ArrayList<UpdateData>();			
 		}
 		
-		UpdateData data = new UpdateData(0, uri);
+		UpdateData data = new UpdateData(0, url);
 		updateData.add(data);
+		
+		return true;
 	}
 	
-//	private boolean updateDownloadReqest(int syncid, int status) {
-//		
-//	}
+	private String request2Url(String request, String file) {
+		//XXXX-X-XX-XX
+		int s = 0;
+		int e = request.indexOf("-", s);
+		if (e == -1) {
+			return null;
+		}
+		String uc = request.substring(s, e);
+		s = e + 1;
+		e = request.indexOf("-", s);
+		if (e == -1) {
+			return null;
+		}
+		
+		String p = request.substring(s, e);
+		//
+		
+		if (p == "3") {
+			return "http://www.cppblog.com/Files/codejie/" + uc + "_" + file;
+		}
+		
+		return null;
+	}
 
-//	private void clearDownload() {
-//		
-//	}
+	private int download(final String url) {
+		//downloadManager.d
+	}
 	
-//	private boolean addDownloadPackage(final String requet, final String uricode, final String file) {
-//		
-//	}
-//	
-//	private boolean loadUpdateInfo() {
-//		
-//	}
 	
 	public void release() {
 		unregistReceiver();
