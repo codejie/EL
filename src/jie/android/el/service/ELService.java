@@ -80,7 +80,17 @@ public class ELService extends Service {
 		@Override
 		public boolean canExit() throws RemoteException {
 			// TODO Auto-generated method stub
-			return false;
+			return true;
+		}
+
+		@Override
+		public void addDownloadRequest(String request) throws RemoteException {
+			onDownloadRequest(request);
+		}
+
+		@Override
+		public void onPackageImported(long syncid) throws RemoteException {
+			onPackageImported(syncid);
 		}
 	}
 	
@@ -91,6 +101,7 @@ public class ELService extends Service {
 	private LACDBAccess dbAccess = null;
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
+	private Downloader downloader = null;
 	
 	private boolean isServiceReady = false;
 	
@@ -111,12 +122,17 @@ public class ELService extends Service {
 		initDictionary();
 		initPlayer();
 		
+		if (Downloader.check(dbAccess)) {
+			initDownloader();
+		}
+		
 		isServiceReady = true;
 	}
 
 	@Override
 	public void onDestroy() {
 		
+		releaseDownloader();
 		releasePlayer();
 		releaseDictionary();
 		releaseDatabase();
@@ -161,6 +177,19 @@ public class ELService extends Service {
 	private void releaseDictionary() {
 		if (dictionary != null) {
 			dictionary.close();
+		}
+	}
+	
+	private void initDownloader() {
+		downloader = new Downloader(this);
+		if (!downloader.init()) {
+			Log.e(Tag, "downloader init failed.");
+		}
+	}
+	
+	private void releaseDownloader() {
+		if (downloader != null) {
+			downloader.release();
 		}
 	}
 	
@@ -218,5 +247,30 @@ public class ELService extends Service {
 				e.printStackTrace();
 			}
 		}		
-	}	
+	}
+	
+	public void onDownloadRequest(String request) {
+		if (downloader == null) {
+			initDownloader();
+		}
+		
+		downloader.addDownloadRequest(request);
+	}
+	
+	public void onPackageReady(long syncid, final String url) {
+		try {
+			serviceNotification.onPackageReady(syncid, url);
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public void onPackageImported(int syncid) {
+		if (downloader == null) {
+			initDownloader();
+		}
+		
+		//downloader.onPackageImported(syncid);
+	}
 }

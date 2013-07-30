@@ -20,4 +20,7 @@ interface ServiceAccess {
 	boolean isAudioPlaying();
 	
 	Word.XmlResult queryWordResult(in String word);
+	
+	void addDownloadRequest(in String request);
+	void onPackageImported(in long syncid);
 }

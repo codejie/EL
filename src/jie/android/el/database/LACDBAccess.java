@@ -20,6 +20,7 @@ public class LACDBAccess extends DBAccess {
 		public static final String[] DictionaryInfo = new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"};
 		public static final String[] DictionaryBlock = new String[] {"offset", "length", "start", "end"};
 		public static final String[] WordXmlIndex = new String[] { "offset", "length", "block1" };
+		public static final String[] UpdateData = new String[] { "idx", "request", "type", "url", "syncid", "status", "updatetime" };
 	}
 	
 	private Context context = null;
@@ -118,14 +119,44 @@ public class LACDBAccess extends DBAccess {
 	public boolean insertUpdateData(String request, String url, int type, int syncid, int status, int update) {
 		
 		ContentValues values = new ContentValues();
-		values.put("request_no", request);
+		values.put("request", request);
 		values.put("type", type);
 		values.put("url", url);
-		values.put("sync_id", syncid);
+		values.put("syncid", syncid);
 		values.put("status", status);
-		values.put("update", update);
+		values.put("updatetime", update);
 		
 		return (db.insert("sys_update", null, values) != -1);
+	}
+
+	public int updateUpdateData(long syncid, String url, int status) {
+		Cursor cursor = db.query("sys_update", new String[] { "type" }, "syncid=" + syncid, null, null, null, null);
+		int type = -1;
+		try {
+			if (cursor.moveToFirst()) {
+				type = cursor.getInt(0);
+				
+				ContentValues values = new ContentValues();
+				values.put("url", url);
+				values.put("status", status);
+				db.update("sys_update", values, "syncid=" + syncid, null);
+			}
+		} finally {
+			cursor.close();
+		}
+		
+		return type;
+	}
+
+	public Cursor getNextUpdateData() {
+		return  db.query("sys_update", Projection.UpdateData, "status != 0", null, null, null, "idx");
+	}
+
+	public boolean updateUpdateData(int idx, long syncid, int status) {
+		ContentValues values = new ContentValues();
+		values.put("syncid", syncid);
+		values.put("status", status);
+		return (db.update("sys_update", values, "idx=" + idx, null) > 0);
 	}
 	
 }

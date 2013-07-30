@@ -77,6 +77,12 @@ public class ELActivity extends SherlockFragmentActivity {
 			msg.sendToTarget();
 		}
 
+		@Override
+		public void onPackageReady(long syncid, String file) throws RemoteException {
+			// TODO Auto-generated method stub
+			
+		}
+
 	};
 	
 	ServiceConnection serviceConnection = new ServiceConnection() {
@@ -197,7 +203,11 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
+		switch (item.getItemId()) {
+		case R.id.el_menu_download:
+			showFragment(FragmentSwitcher.Type.DOWNLOAD, null);
+			break;
+		}
 		return super.onOptionsItemSelected(item);
 	}
 
