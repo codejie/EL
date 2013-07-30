@@ -1,8 +1,14 @@
 package jie.android.el.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import jie.android.el.database.LACDBAccess;
+import jie.android.el.utils.Utils;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -10,6 +16,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 public class Downloader {
@@ -115,7 +123,7 @@ public class Downloader {
 			if (cursor.moveToFirst()) {
 				int status = cursor.getInt(5);
 				if (status == STATUS_INIT || status == STATUS_START) {
-					return startDownload(cursor.getInt(0), cursor.getString(3));
+					return startDownload(cursor.getInt(0), cursor.getInt(2), cursor.getString(3));
 				} else if (status == STATUS_DOWNLOADED) {
 					return processDownload(cursor.getInt(0), cursor.getInt(2), cursor.getLong(4), cursor.getString(3));
 				} else {
@@ -130,17 +138,25 @@ public class Downloader {
 		return false;
 	}	
 
-	private boolean startDownload(int idx, final String url) {
-		DownloadManager.Request req = new DownloadManager.Request(Uri.parse(url));
+	private boolean startDownload(int idx, int type, final String url) {
+		DownloadManager.Request req = null;
+		if (type == TYPE_UPDATE) {
+			req = new DownloadManager.Request(Uri.parse(url));
+			req.setTitle("EL");
+			req.setDescription("update.xml");
+		} else {
+			
+		}
+		
 		long syncid = downloadManager.enqueue(req);
 		return dbAccess.updateUpdateData(idx, syncid, STATUS_START);
 	}
 
-	private boolean processDownload(int idx, int type, long syncid, String file) {
+	private boolean processDownload(int idx, int type, long syncid, String url) {
 		if (type == TYPE_UPDATE) {
-			onUpdateDownloaded(syncid, file);
+			onUpdateDownloaded(syncid, url);
 		} else if (type == TYPE_PACKAGE) {
-			onPackageDownloaded(syncid, file);
+			onPackageDownloaded(syncid, url);
 		}
 		
 		return false;
@@ -186,29 +202,71 @@ public class Downloader {
 		}
 	}
 
-	private void onUpdateDownloaded(long syncid, String file) {
-		Log.d(Tag, "onUpdateDownloaded() syncid:" + syncid + " url:" + file);
-		Uri uri = Uri.parse(file);
+	private void onUpdateDownloaded(long syncid, String url) {
+		Log.d(Tag, "onUpdateDownloaded() syncid:" + syncid + " url:" + url);
+		Uri uri = Uri.parse(url);
 		Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
-		Log.d(Tag, "count =" + cursor.getCount());
-		for (final String str : cursor.getColumnNames()) {
-			Log.d(Tag, "col:" + str);
-		}
-		cursor.moveToFirst();
-		Log.d(Tag, "uri = " + cursor.getString(cursor.getColumnIndex("uri")));
-		Log.d(Tag, "title = " + cursor.getString(cursor.getColumnIndex("title")));
-		Log.d(Tag, "mdeiaprovider_uri = " + cursor.getString(cursor.getColumnIndex("mediaprovider_uri")));
-		Log.d(Tag, "entity = " + cursor.getString(cursor.getColumnIndex("entity")));
-		Log.d(Tag, "_display_name = " + cursor.getString(cursor.getColumnIndex("_display_name")));
-		Log.d(Tag, "destination = " + cursor.getString(cursor.getColumnIndex("destination")));
-		Log.d(Tag, "_data = " + cursor.getString(cursor.getColumnIndex("_data")));
-		
-		
-		cursor.close();
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					final String file = unzipUpdate(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
+					if (analyseUpdated(file)) {
+						Utils.removeFile(file);
+						dbAccess.updateUpdateData(syncid, STATUS_DONE);
+						
+						this.checkUpdateData();
+					}
+				}
+			} finally {
+				cursor.close();
+			}			
+		}		
 	}
 
-	private void onPackageDownloaded(long syncid, String file) {
-		service.onPackageReady(syncid, file);		
+	private String unzipUpdate(String file) {
+		final String output = Environment.getExternalStorageDirectory() + "/tmp/jie/cache";
+		File f = new File(output);
+		if (!f.exists()) {
+			f.mkdirs();
+		}
+		String[] ret = Utils.unzipFile(file, output);
+		if (ret.length > 0) {
+			return output + File.separator + ret[0];
+		}
+				
+		return null;
+	}
+
+	private boolean analyseUpdated(String file) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+	
+	private void onPackageDownloaded(long syncid, String url) {
+		Uri uri = Uri.parse(url);
+		Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					final String dbfile = unzipPackage(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
+					service.onPackageReady(syncid, dbfile);
+				}
+			} finally {
+				cursor.close();
+			}			
+		}	
+	}
+
+	private String unzipPackage(String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void onPackageImported(int syncid, String dbfile) {
+		Utils.removeFile(dbfile);		
+		dbAccess.updateUpdateData(syncid, STATUS_DONE);
+		
+		this.checkUpdateData();
 	}
 	
 }

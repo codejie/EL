@@ -89,8 +89,8 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public void onPackageImported(long syncid) throws RemoteException {
-			onPackageImported(syncid);
+		public void onPackageImported(long syncid, String file) throws RemoteException {
+			onPackageImported(syncid, file);
 		}
 	}
 	
@@ -257,20 +257,20 @@ public class ELService extends Service {
 		downloader.addDownloadRequest(request);
 	}
 	
-	public void onPackageReady(long syncid, final String url) {
+	public void onPackageReady(long syncid, final String file) {
 		try {
-			serviceNotification.onPackageReady(syncid, url);
+			serviceNotification.onPackageReady(syncid, file);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
 	
-	public void onPackageImported(int syncid) {
+	public void onPackageImported(int syncid, final String file) {
 		if (downloader == null) {
 			initDownloader();
 		}
 		
-		//downloader.onPackageImported(syncid);
+		downloader.onPackageImported(syncid, file);
 	}
 }

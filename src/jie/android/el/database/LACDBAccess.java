@@ -158,5 +158,11 @@ public class LACDBAccess extends DBAccess {
 		values.put("status", status);
 		return (db.update("sys_update", values, "idx=" + idx, null) > 0);
 	}
+
+	public boolean updateUpdateData(long syncid, int status) {
+		ContentValues values = new ContentValues();
+		values.put("status", status);
+		return (db.update("sys_update", values, "syncid=" + syncid, null) > 0);
+	}
 	
 }
