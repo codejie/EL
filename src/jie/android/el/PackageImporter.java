@@ -9,14 +9,18 @@ import jie.android.el.utils.Utils;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
 
 public class PackageImporter {
 	
+	public static final String Tag = PackageImporter.class.getSimpleName();
+
 	private class ImportTask extends AsyncTask<String, Void, String> {
 
 		@Override
 		protected String doInBackground(String... arg0) {
 			String file = Environment.getExternalStorageDirectory() + "/jie/el" + File.separator + arg0[0];
+			Log.d(Tag, "doInBackground()!");
 			// TODO Auto-generated method stub
 			return arg0[0];
 		}
@@ -34,7 +38,6 @@ public class PackageImporter {
 			
 			startImport();
 		}
-		
 	}
 	
 	
@@ -52,6 +55,10 @@ public class PackageImporter {
 		}
 	}
 
+	public void release() {
+		
+	}
+	
 	public static String[] check() {
 		String path = Environment.getExternalStorageDirectory() + "/jie/el";
 		File p = new File(path);
@@ -75,7 +82,7 @@ public class PackageImporter {
 		startImport();
 	}
 	
-	private void startImport() {
+	public void startImport() {
 		if (packageList.size() > 0) {
 			if (!taskRunning) {
 				

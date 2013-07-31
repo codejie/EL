@@ -24,6 +24,7 @@ import jie.android.el.ELActivity;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELDBAccess;
+import jie.android.el.utils.Utils;
 
 public class ListFragment extends BaseFragment implements OnItemClickListener {
 
@@ -41,8 +42,15 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			
-			TextView tv = (TextView) view.findViewById(R.id.textView1);
-			tv.setText(cursor.getString(1));
+			TextView idx = (TextView) view.findViewById(R.id.textView2);
+			idx.setText(cursor.getString(0));
+			
+			TextView title = (TextView) view.findViewById(R.id.textView3);
+			title.setText(cursor.getString(1));
+			
+			TextView duration = (TextView) view.findViewById(R.id.textView4);
+			duration.setText(Utils.formatMSec(cursor.getInt(2) * 1000));
+			
 			view.setId(cursor.getInt(0));
 		}
 
@@ -69,7 +77,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		
 		dbAccess = getELActivity().getDBAccess();
 
-		adapter = new Adapter(getActivity(), dbAccess.queryESL(new String[] { "idx as _id", "title" }, null, null));
+		adapter = new Adapter(getActivity(), dbAccess.queryESL(new String[] { "idx as _id", "title", "duration" }, null, null));
 		
 		listView = (ListView) view.findViewById(R.id.listView1);
 		listView.setOnItemClickListener(this);
@@ -81,6 +89,8 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Bundle args = new Bundle();
 		args.putInt("index", (int) id);
+		args.putInt("position", position);
+		args.putInt("total", adapter.getCount());
 		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
 	}	
 	

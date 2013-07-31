@@ -1,2 +1,6 @@
 1. [D] post the index of current audio to service, then, as UI restore, it can open the previous audio correctly;
 2. [D] add the notification interface from service to UI; 
+3. [p2] Prev and Next operation supported in show UI;
+4. [p2] can move while playing audio end;
+5. [p3] support fast move to particular position of audio;
+6. [p2] do not forget NOIFICATION function;

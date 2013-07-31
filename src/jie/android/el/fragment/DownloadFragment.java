@@ -1,8 +1,10 @@
 package jie.android.el.fragment;
 
+import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import android.os.Bundle;
 import android.os.RemoteException;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -47,6 +49,16 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
+			return true;
+		}
+		// TODO Auto-generated method stub
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	

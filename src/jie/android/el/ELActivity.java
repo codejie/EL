@@ -34,9 +34,11 @@ public class ELActivity extends SherlockFragmentActivity {
 	
 	private static final int MSG_SERVICE_NOTIFICATION	=	1;
 	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
+	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
 	
 	private ELDBAccess dbAccess = null;
 	private ServiceAccess serviceAccess = null;
+	private PackageImporter packageImporter = null;
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
@@ -52,6 +54,9 @@ public class ELActivity extends SherlockFragmentActivity {
 				break;
 			case MSG_SERVICE_AUDIOPLAYING:
 				onServiceAudioPlaying((Bundle)msg.obj);
+				break;
+			case MSG_SERVICE_PACKAGE_READY:
+				OnServicePackageReady();
 				break;
 			default:;
 			}
@@ -80,6 +85,8 @@ public class ELActivity extends SherlockFragmentActivity {
 		@Override
 		public void onPackageReady(long syncid, String file) throws RemoteException {
 			Log.d(Tag, "onPackageReady : syncid = " + syncid + " file = " + file);
+			Message msg = Message.obtain(handler, MSG_SERVICE_PACKAGE_READY);
+			msg.sendToTarget();
 		}
 
 	};
@@ -109,7 +116,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			serviceAccess = null;
 		}
 		
-	};	
+	};
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -123,6 +130,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		initSpeaker();
 		initTranslator();
 		initDatabase();
+		initPackageImporter();
 		
 //		handler.sendEmptyMessage(0);
 		
@@ -185,6 +193,14 @@ public class ELActivity extends SherlockFragmentActivity {
 			dbAccess.close();
 		}
 	}
+	
+	private void initPackageImporter() {
+		final String[] res = PackageImporter.check();
+		if (res != null && res.length > 0) {
+			packageImporter = new PackageImporter(this, res);
+			packageImporter.startImport();
+		}
+	}	
 
 	public ELDBAccess getDBAccess() {
 		return dbAccess;
@@ -261,8 +277,13 @@ public class ELActivity extends SherlockFragmentActivity {
 				progressDialog.dismiss();
 			}
 		}
-		
 	}
-	
-	
+
+	protected void OnServicePackageReady() {
+		if (packageImporter == null) {
+			initPackageImporter();			
+		} else {
+			packageImporter.refresh();
+		}
+	}	
 }

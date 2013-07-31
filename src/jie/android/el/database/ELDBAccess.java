@@ -36,8 +36,13 @@ public class ELDBAccess extends DBAccess {
 		String sql = "CREATE TABLE IF NOT EXISTS [esl] ("
 					+ "[idx] INTEGER PRIMARY KEY,"
 					+ "[title] TEXT,"
-					+ "[data] TEXT,"
-					+ "[audio] TEXT)";
+					+ "[script] TEXT,"
+					+ "[audio] TEXT,"
+					+ "[duration] INTEGER DEFAULT (0),"
+					+ "[slowdialog] INTEGER DEFAULT (-1)," 
+					+ "[explanations] INTEGER DEFAULT (-1)," 
+					+ "[fastdialog] INTEGER DEFAULT (-1)," 
+					+ "[flag] INTEGER DEFAULT (-1))";
 		db.execSQL(sql);
 		
 		return true;
@@ -52,7 +57,7 @@ public class ELDBAccess extends DBAccess {
 	}
 
 	public Cursor queryESLIssue(int index) {
-		return db.query("esl", new String[] { "title", "data", "audio" }, "idx=" + index, null, null, null, null);
+		return db.query("esl", new String[] { "title", "script", "audio" }, "idx=" + index, null, null, null, null);
 	}
 	
 }
