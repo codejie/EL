@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<check_code>X-XX-XX</check_code>
-<provider_update>
-    <item id="1">skydrive.live.com</item>
-</provider_update>
-<package>
-    <item>
-    	<file>package.zip</file>
-    	<url></url>    
-    </item>
-    <item>
-    	<file>package.zip</file>
-    	<url></url>    
-    </item>    
-</package>
+<update>
+	<check_code>X-XX-XX</check_code>
+	<provider_update>
+	    <item id="1">skydrive.live.com</item>
+	</provider_update>
+	<packages>
+	    <package>
+    		<file>test_package.zip</file>
+    		<url>http://rapidshare.com/files/2397786523/test_package.zip?directstart=1</url>    
+    	</package>
+	</packages>
+</update>

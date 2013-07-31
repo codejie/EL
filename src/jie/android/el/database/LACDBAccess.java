@@ -20,7 +20,7 @@ public class LACDBAccess extends DBAccess {
 		public static final String[] DictionaryInfo = new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"};
 		public static final String[] DictionaryBlock = new String[] {"offset", "length", "start", "end"};
 		public static final String[] WordXmlIndex = new String[] { "offset", "length", "block1" };
-		public static final String[] UpdateData = new String[] { "idx", "request", "type", "url", "syncid", "status", "updatetime" };
+		public static final String[] UpdateData = new String[] { "idx", "request", "type", "url", "local", "syncid", "status", "updatetime" };
 	}
 	
 	private Context context = null;
@@ -116,12 +116,13 @@ public class LACDBAccess extends DBAccess {
 		return false;
 	}
 
-	public boolean insertUpdateData(String request, String url, int type, int syncid, int status, int update) {
+	public boolean insertUpdateData(String request, String url, String local, int type, int syncid, int status, int update) {
 		
 		ContentValues values = new ContentValues();
 		values.put("request", request);
 		values.put("type", type);
 		values.put("url", url);
+		values.put("local", local);
 		values.put("syncid", syncid);
 		values.put("status", status);
 		values.put("updatetime", update);

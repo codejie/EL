@@ -79,8 +79,7 @@ public class ELActivity extends SherlockFragmentActivity {
 
 		@Override
 		public void onPackageReady(long syncid, String file) throws RemoteException {
-			// TODO Auto-generated method stub
-			
+			Log.d(Tag, "onPackageReady : syncid = " + syncid + " file = " + file);
 		}
 
 	};

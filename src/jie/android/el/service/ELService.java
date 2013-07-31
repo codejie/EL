@@ -88,10 +88,6 @@ public class ELService extends Service {
 			onDownloadRequest(request);
 		}
 
-		@Override
-		public void onPackageImported(long syncid, String file) throws RemoteException {
-			onPackageImported(syncid, file);
-		}
 	}
 	
 	private static final int STATE_READY	=	0;
@@ -265,12 +261,5 @@ public class ELService extends Service {
 			e.printStackTrace();
 		}
 	}
-	
-	public void onPackageImported(int syncid, final String file) {
-		if (downloader == null) {
-			initDownloader();
-		}
-		
-		downloader.onPackageImported(syncid, file);
-	}
+
 }
