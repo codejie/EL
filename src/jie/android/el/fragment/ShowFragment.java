@@ -251,7 +251,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					setAudioPlayListener();					
 					loadData(index, title, data);
 					if (!obj.getBoolean("serviceNotification", false)) {
-						setAudio(index, audio);
+						setAudio(index, title, audio);
 						playAudio();
 					} else {
 						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt("duration"), -1));						
@@ -280,11 +280,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		webView.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
 	}
 
-	private void setAudio(int index, String audio) {
+	private void setAudio(int index, String title, String audio) {
 		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
 		
 		try {
-			getELActivity().getServiceAccess().setAudio(index, this.audio);
+			getELActivity().getServiceAccess().setAudio(index, title, this.audio);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

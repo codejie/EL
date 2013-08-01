@@ -28,7 +28,7 @@ public class ELService extends Service {
 			if (player.isPlaying()) {
 				postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
 			} else if (isServiceReady) {
-				postServiceState(ServiceState.READY);
+				postServiceState(CommonState.Service.READY);
 			}
 		}
 
@@ -43,8 +43,8 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public void setAudio(int index, String audio) throws RemoteException {
-			player.setData(index, audio);
+		public void setAudio(int index, String title, String audio) throws RemoteException {
+			player.setData(index, title, audio);
 		}
 
 		@Override
@@ -88,6 +88,10 @@ public class ELService extends Service {
 			onDownloadRequest(request);
 		}
 
+		@Override
+		public void setUIState(int state) throws RemoteException {
+			onUIStateChanged(state);
+		}
 	}
 	
 	private static final int STATE_READY	=	0;
@@ -195,7 +199,7 @@ public class ELService extends Service {
 	
 	private boolean checkDataFile() {
 		if (!getDatabasePath(LACDBAccess.FILE).exists()) {
-			postServiceState(ServiceState.UNZIP);
+			postServiceState(CommonState.Service.UNZIP);
 			return unzipDataFile();
 		}
 		return true;
@@ -221,7 +225,7 @@ public class ELService extends Service {
 		return true;
 	}	
 
-	private void postServiceState(ServiceState state) {
+	private void postServiceState(CommonState.Service state) {
 		if (serviceNotification != null) {
 			try {
 				serviceNotification.onServiceState(state.getId());
@@ -262,4 +266,9 @@ public class ELService extends Service {
 		}
 	}
 
+	public void onUIStateChanged(int state) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 }

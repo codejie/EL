@@ -4,10 +4,9 @@ import java.io.IOException;
 
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.fragment.BaseFragment;
-import jie.android.el.service.ELService;
 import jie.android.el.service.ServiceAccess;
 import jie.android.el.service.ServiceNotification;
-import jie.android.el.service.ServiceState;
+import jie.android.el.service.CommonState;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.R;
@@ -138,7 +137,16 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	@Override
+	protected void onStop() {
+		Log.d(Tag, "onStop()");
+		
+		super.onStop();
+	}
+	
+	@Override
 	protected void onDestroy() {
+		Log.d(Tag, "onDestroy");
+		
 		releaseDatabase();
 		releaseSpeasker();
 		releaseService(false);
@@ -254,10 +262,10 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	protected void onServiceNotification(int state) {
-		if (state == ServiceState.READY.getId()) {
+		if (state == CommonState.Service.READY.getId()) {
 			showProgressDialog(false, null);
 			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);			
-		} else if (state == ServiceState.UNZIP.getId()) {
+		} else if (state == CommonState.Service.UNZIP.getId()) {
 			showProgressDialog(true, "Unzip...");
 		}
 	}

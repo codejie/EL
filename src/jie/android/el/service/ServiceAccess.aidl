@@ -10,8 +10,7 @@ interface ServiceAccess {
 	
 	boolean canExit(); 
 	
-	
-	void setAudio(in int index, in String audio);
+	void setAudio(in int index, in String title, in String audio);
 	void setAudioListener(in OnPlayAudioListener listener);
 	void playAudio();
 	void stopAudio();
@@ -22,4 +21,6 @@ interface ServiceAccess {
 	Word.XmlResult queryWordResult(in String word);
 	
 	void addDownloadRequest(in String request);
+	
+	void setUIState(in int state);
 }

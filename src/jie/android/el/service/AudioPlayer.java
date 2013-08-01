@@ -48,6 +48,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private OnPlayAudioListener listener = null;
 	
 	private int audioIndex = -1;
+	private String audioTitle = null;
 
 	
 	public AudioPlayer(Context context) {
@@ -115,7 +116,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		this.listener = listener;
 	}
 	
-	public void setData(int index, final String file){
+	public void setData(int index, final String title, final String file){
 
 		if (player.isPlaying()) {
 			player.stop();
@@ -128,6 +129,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			player.prepare();
 			
 			audioIndex = index;
+			audioTitle = title;
 			
 			if (listener != null) {
 				try {
@@ -187,6 +189,10 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	
 	public int getAudioIndex() {
 		return audioIndex;
+	}
+	
+	public String getAudioTitle() {
+		return audioTitle;
 	}
 	
 	public int getDuration() {

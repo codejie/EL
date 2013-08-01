@@ -42,7 +42,7 @@
             android:background="@drawable/el_player_bg"
             android:clickable="true"
             android:scaleType="center"
-            android:src="@drawable/el_player_repeat" />
+            android:src="@drawable/el_audio_move" />
 
         <ImageView
             android:id="@+id/playImageView2"
