@@ -15,6 +15,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -130,6 +131,8 @@ public class ELActivity extends SherlockFragmentActivity {
 		initTranslator();
 		initDatabase();
 		initPackageImporter();
+		
+		this.getContentResolver().insert(Uri.parse("content://jie.android.el/el/esl"), null);
 		
 //		handler.sendEmptyMessage(0);
 		

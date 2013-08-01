@@ -23,4 +23,5 @@ interface ServiceAccess {
 	void addDownloadRequest(in String request);
 	
 	void setUIState(in int state);
+
 }

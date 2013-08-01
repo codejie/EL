@@ -26,6 +26,7 @@
                 <action android:name="elService"/>
             </intent-filter>
         </service>
+        <provider android:multiprocess="true" android:name=".database.ELContentProvider" android:process=":el_service" android:exported="false" android:authorities="jie.android.el"></provider>
     </application>
 
 </manifest>

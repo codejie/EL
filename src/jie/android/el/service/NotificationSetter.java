@@ -38,7 +38,7 @@ public class NotificationSetter {
 	}
 	
 	public void remove() {
-		
+		manager.cancel(NID);
 	}
 	
 }

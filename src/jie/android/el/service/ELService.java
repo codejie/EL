@@ -10,6 +10,7 @@ import jie.android.el.database.Word;
 import jie.android.el.utils.AssetsHelper;
 import android.app.Service;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -127,6 +128,8 @@ public class ELService extends Service {
 		}
 		
 		isServiceReady = true;
+		
+//		this.getContentResolver().insert(Uri.parse("content://abc"), null);
 	}
 
 	@Override
