@@ -25,11 +25,15 @@ public class ELContentProvider extends ContentProvider {
 	
 	public static final Uri URI_EL_ESL = Uri.parse("content://" + AUTHORITY + "/el/esl");
 	public static final Uri URI_LAC_WORD_INFO = Uri.parse("content://" + AUTHORITY + "/lac/word_info");
+	public static final Uri URI_LAC_SYS_UPDATE = Uri.parse("content://" + AUTHORITY + "/lac/sys_update");
+	public static final Uri URI_LAC_DICT_INFO = Uri.parse("content://" + AUTHORITY + "/lac/dict_info");
 	
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
 	private static final int MATCH_LAC_WORD_INFO = 20;
 	private static final int MATCH_ITEM_LAC_WORD_INFO = 21;
+	private static final int MATCH_LAC_SYS_UPDATE = 30;
+	private static final int MATCH_LAC_DICT_INFO = 40;
 	
 
 	private UriMatcher matcher = null;
@@ -37,8 +41,6 @@ public class ELContentProvider extends ContentProvider {
 	private ELDBAccess elDBAccess = null;
 	
 	private SQLiteDatabase db = null;
-	private boolean isDBReady = false;
-
 	
 	@Override
 	public boolean onCreate() {
@@ -46,8 +48,7 @@ public class ELContentProvider extends ContentProvider {
 		initDatabases();
 		initMatcher();
 		
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	@Override
@@ -56,6 +57,8 @@ public class ELContentProvider extends ContentProvider {
 		switch (res) {
 		case MATCH_EL_ESL:
 		case MATCH_LAC_WORD_INFO:
+		case MATCH_LAC_SYS_UPDATE:
+		case MATCH_LAC_DICT_INFO:
 			return CONTENT_TYPE;
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
@@ -67,34 +70,61 @@ public class ELContentProvider extends ContentProvider {
 	
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
-		Log.d(Tag, "ContentProvider insert()");
-		// TODO Auto-generated method stub
-		return null;
+		int res = matcher.match(uri);
+		
+		String table = null;
+		
+		switch (res) {
+		case MATCH_LAC_SYS_UPDATE:
+			db = lacDBAccess.getWritableDatabase();
+			table = "sys_update";
+			break;
+		default:
+			throw new IllegalArgumentException("insert() Unknown uri: " + uri);
+		}
+		
+		long rowid = db.insert(table, null, values);
+		return ContentUris.withAppendedId(uri, rowid);
 	}
 	
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		int res = matcher.match(uri);
+		String table = null;
 		switch (res) {
 		case MATCH_EL_ESL:
 		case MATCH_ITEM_EL_ESL:
 			db = elDBAccess.getReadableDatabase();
+			table = "esl";
+			
 			if (res == MATCH_ITEM_EL_ESL) {
 	            selection = "idx=?";  
 	            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};  				
 			}
-			return db.query("esl", projection, selection, selectionArgs, null, null, sortOrder); 
+			break;
 		case MATCH_LAC_WORD_INFO:
 		case MATCH_ITEM_LAC_WORD_INFO:
 			db = lacDBAccess.getReadableDatabase();
+			table = "word_info";
+			
 			if (res == MATCH_ITEM_LAC_WORD_INFO) {
 	            selection = "idx=?";  
 	            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};  				
 			}			
-			return db.query("word_info", projection, selection, selectionArgs, null, null, sortOrder);
+			break;
+		case MATCH_LAC_SYS_UPDATE:
+			db = lacDBAccess.getReadableDatabase();
+			table = "sys_update";
+			break;
+		case MATCH_LAC_DICT_INFO:
+			db = lacDBAccess.getReadableDatabase();
+			table = "dict_info";
+			break;
 		default:
-			throw new IllegalArgumentException("Unknown uri: " + uri); 			
+			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
 		}
+		
+		return db.query(table, projection, selection, selectionArgs, null, null, sortOrder);
 	}
 
 	@Override
@@ -116,10 +146,8 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl/#", MATCH_ITEM_EL_ESL);
 		matcher.addURI(AUTHORITY, "lac/word_info", MATCH_LAC_WORD_INFO);
 		matcher.addURI(AUTHORITY, "lac/word_info/#", MATCH_ITEM_LAC_WORD_INFO);
-	}
-	
-	public boolean isDBReady() {
-		return isDBReady;
+		matcher.addURI(AUTHORITY, "lac/sys_update", MATCH_LAC_SYS_UPDATE);
+		matcher.addURI(AUTHORITY, "lac/dict_info", MATCH_LAC_DICT_INFO);
 	}
 	
 	private void initDatabases() {
@@ -131,8 +159,6 @@ public class ELContentProvider extends ContentProvider {
 
 		db = getContext().getDatabasePath(LACDBAccess.DBFILE).getAbsolutePath();
 		lacDBAccess = new LACDBAccess(this.getContext(), db);
-		
-		isDBReady = true;
 	}
 
 	private void checkLACDatabase() {

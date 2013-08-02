@@ -2,7 +2,7 @@ package jie.android.el;
 
 import java.io.IOException;
 
-import jie.android.el.database.ELDBAccess;
+import jie.android.el.database.ELContentProvider;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.service.ServiceAccess;
 import jie.android.el.service.ServiceNotification;
@@ -15,7 +15,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -36,7 +35,6 @@ public class ELActivity extends SherlockFragmentActivity {
 	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
 	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
 	
-	private ELDBAccess dbAccess = null;
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
 	
@@ -129,14 +127,8 @@ public class ELActivity extends SherlockFragmentActivity {
 		initService();
 		initSpeaker();
 		initTranslator();
-		initDatabase();
 		initPackageImporter();
 		
-		this.getContentResolver().insert(Uri.parse("content://jie.android.el/el/esl"), null);
-		
-//		handler.sendEmptyMessage(0);
-		
-//		fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
 	}
 
 	@Override
@@ -150,7 +142,6 @@ public class ELActivity extends SherlockFragmentActivity {
 	protected void onDestroy() {
 		Log.d(Tag, "onDestroy");
 		
-		releaseDatabase();
 		releaseSpeasker();
 		releaseService(false);
 		
@@ -192,19 +183,6 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 	
-	private void initDatabase() {
-		dbAccess = new ELDBAccess(this);
-		if(!dbAccess.open()) {
-			Log.e(Tag, "init database failed.");
-		}
-	}
-	
-	private void releaseDatabase() {
-		if (dbAccess != null) {
-			dbAccess.close();
-		}
-	}
-	
 	private void initPackageImporter() {
 		final String[] res = PackageImporter.check();
 		if (res != null && res.length > 0) {
@@ -212,10 +190,6 @@ public class ELActivity extends SherlockFragmentActivity {
 			packageImporter.startImport();
 		}
 	}	
-
-	public ELDBAccess getDBAccess() {
-		return dbAccess;
-	}
 	
 	public ServiceAccess getServiceAccess() {
 		return serviceAccess;

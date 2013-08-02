@@ -4,12 +4,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-import jie.android.el.database.Dictionary;
+import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.LACDBAccess;
 import jie.android.el.database.Word;
 import jie.android.el.utils.AssetsHelper;
 import android.app.Service;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.DeadObjectException;
 import android.os.IBinder;
@@ -40,7 +41,7 @@ public class ELService extends Service {
 		
 		@Override
 		public Word.XmlResult queryWordResult(String word) throws RemoteException {
-			return dictionary.getWordXmlResult(word);
+			return null;//dictionary.getWordXmlResult(word);
 		}
 
 		@Override
@@ -99,7 +100,6 @@ public class ELService extends Service {
 	private static final int STATE_UNZIP	=	1;
 	private static final int STATE_PLAYING	=	2;
 	
-	private LACDBAccess dbAccess = null;
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
 	private Downloader downloader = null;
@@ -117,19 +117,16 @@ public class ELService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		
-		//android.os.Debug.waitForDebugger();
+//		android.os.Debug.waitForDebugger();
 		
-		initDatabase();
 		initDictionary();
 		initPlayer();
 		
-		if (Downloader.check(dbAccess)) {
+		if (Downloader.check(this)) {
 			initDownloader();
 		}
 		
 		isServiceReady = true;
-		
-//		this.getContentResolver().insert(Uri.parse("content://abc"), null);
 	}
 
 	@Override
@@ -138,7 +135,6 @@ public class ELService extends Service {
 		releaseDownloader();
 		releasePlayer();
 		releaseDictionary();
-		releaseDatabase();
 
 		super.onDestroy();
 	}	
@@ -153,25 +149,8 @@ public class ELService extends Service {
 		}
 	}
 
-	private void initDatabase() {
-		if (!checkDataFile()) {
-			Log.e(Tag, "check data failed.");
-		}
-		
-		dbAccess = new LACDBAccess(this);
-		if (!dbAccess.open()) {
-			Log.e(Tag, "init database failed.");
-		}
-	}
-	
-	private void releaseDatabase() {
-		if (dbAccess != null) {
-			dbAccess.close();
-		}
-	}
-	
 	private void initDictionary() {
-		dictionary = new Dictionary(dbAccess, this.getDatabasePath(LACDBAccess.FILE).getParent());
+		dictionary = new Dictionary(this.getDatabasePath(LACDBAccess.FILE).getParent());
 		if (!dictionary.load()) {
 			Log.e(Tag, "load dictionary data failed.");
 		}
@@ -195,38 +174,6 @@ public class ELService extends Service {
 			downloader.release();
 		}
 	}
-	
-	public LACDBAccess getDBAccess() {
-		return dbAccess;
-	}
-	
-	private boolean checkDataFile() {
-		if (!getDatabasePath(LACDBAccess.FILE).exists()) {
-			postServiceState(CommonState.Service.UNZIP);
-			return unzipDataFile();
-		}
-		return true;
-	}
-
-	private boolean unzipDataFile() {
-		
-		File target = getDatabasePath(LACDBAccess.FILE).getParentFile();		
-
-		if (!target.exists()) {
-			target.mkdirs();
-		}
-		
-		InputStream input;
-		try {
-			input = getAssets().open("lac2.zip");
-			AssetsHelper.UnzipTo(input, target.getAbsolutePath(), null);
-		} catch (IOException e) {
-			e.printStackTrace();			
-			return false;
-		}
-		
-		return true;
-	}	
 
 	private void postServiceState(CommonState.Service state) {
 		if (serviceNotification != null) {

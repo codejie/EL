@@ -1,6 +1,8 @@
 package jie.android.el.fragment;
 
+import android.content.ContentUris;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,7 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
-import jie.android.el.database.ELDBAccess;
+import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.utils.Speaker;
@@ -239,8 +241,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	
 	protected void onIndex(Bundle obj) {
 		int index = obj.getInt("index");
-		ELDBAccess db = getELActivity().getDBAccess();
-		Cursor cursor = db.queryESLIssue(index);
+		
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);		
+		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "audio" }, null, null, null);
 		if (cursor != null) {
 			try {
 				if (cursor.moveToFirst()) {

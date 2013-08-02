@@ -10,10 +10,11 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import jie.android.el.database.LACDBAccess;
+import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -49,7 +50,6 @@ public class Downloader {
 	}
 	
 	private ELService service = null;	
-	private LACDBAccess dbAccess = null;
 	private DownloadManager downloadManager = null;
 	private DownloadReceiver receiver = null;
 	
@@ -57,11 +57,18 @@ public class Downloader {
 	
 	public Downloader(ELService service) {
 		this.service = service;
-		dbAccess = this.service.getDBAccess();
 	}
 
-	public static boolean check(LACDBAccess dbAccess) {
-		return dbAccess.checkHasUpdate();
+	public static boolean check(Context context) {
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "count(*)" }, "status != 0", null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				return cursor.getInt(0) > 0;
+			}
+		} finally {
+			cursor.close();
+		}
+		return false;
 	}
 	
 	public boolean init() {
@@ -94,9 +101,7 @@ public class Downloader {
 			return false;
 		}
 		
-		if (!dbAccess.insertUpdateData(request, url, file, TYPE_UPDATE, -1, STATUS_INIT, 0)) {
-			return false;
-		}
+		insertUpdateData(request, TYPE_UPDATE, url, file, -1, STATUS_INIT, 0);
 		
 		return checkUpdateData();
 	}
@@ -129,16 +134,16 @@ public class Downloader {
 //		public int status = -1; //-1: initial; 0: done; 1: start; 2: update 
 //		public int type = -1; //0: update.xml; 1: package.zip
 		
-		Cursor cursor = dbAccess.getNextUpdateData();
+		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "idx", "type", "url", "local", "syncid", "status" }, "status != 0", null, "idx");
 		try {
 			if (cursor.moveToFirst()) {
-				int status = cursor.getInt(6);
+				int status = cursor.getInt(5);
 				if (status == STATUS_INIT || status == STATUS_START) {
-					return startDownload(cursor.getInt(0), cursor.getInt(2), cursor.getString(3), cursor.getString(4));
+					return startDownload(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3));
 				} else if (status == STATUS_DOWNLOADED) {
-					return processDownload(cursor.getInt(0), cursor.getInt(2), cursor.getLong(4), cursor.getString(3));
+					return processDownload(cursor.getInt(0), cursor.getInt(1), cursor.getLong(4), cursor.getString(2));
 				} else {
-					
+					//?
 				}
 				
 			}
@@ -168,7 +173,14 @@ public class Downloader {
 		}
 		
 		long syncid = downloadManager.enqueue(req);
-		return dbAccess.updateUpdateData(idx, syncid, STATUS_START);
+		
+		ContentValues values = new ContentValues();
+		values.put("syncid", syncid);
+		values.put("status", STATUS_START);
+		
+		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);
+		
+		return true;
 	}
 
 	private boolean processDownload(int idx, int type, long syncid, String url) {
@@ -206,11 +218,12 @@ public class Downloader {
 			if (cursor.moveToFirst()) {
 				int status =cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)); 
 				if (status == DownloadManager.STATUS_SUCCESSFUL) {
-					final String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));					
-					int type = dbAccess.updateUpdateData(syncid, file, STATUS_DOWNLOADED);
+					final String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+					updateStatusBySyncId(syncid, file, STATUS_DOWNLOADED);
+					int type = queryTypeBySyncId(syncid);
 					if (type == TYPE_UPDATE) {
 						onUpdateDownloaded(syncid, file);
-					} else {
+					} else if (type == TYPE_PACKAGE) {
 						onPackageDownloaded(syncid, file);
 					}
 				}
@@ -219,6 +232,43 @@ public class Downloader {
 		} finally {
 			cursor.close();
 		}
+	}
+
+	private void insertUpdateData(final String request, int type, final String url, final String local, long syncid, int status, int updatetime) {
+		ContentValues values = new ContentValues();
+		values.put("request", request);
+		values.put("type", type);
+		values.put("url", url);
+		values.put("local", local);
+		values.put("syncid", syncid);
+		values.put("status", status);
+		values.put("updatetime", updatetime);
+		
+		service.getContentResolver().insert(ELContentProvider.URI_LAC_SYS_UPDATE, values);		
+	}
+	
+	private void updateStatusBySyncId(long syncid, final String url, int status) {
+		
+		ContentValues values = new ContentValues();
+		if (url != null) {
+			values.put("url", url);
+		}
+		values.put("status", status);
+		
+		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "syncid=" + syncid, null);
+	}
+	
+	private int queryTypeBySyncId(long syncid) {
+		
+		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "type" }, "syncid=" + syncid, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				return cursor.getInt(0);
+			}
+		} finally {
+			cursor.close();
+		}
+		return -1;
 	}
 
 	private void onUpdateDownloaded(long syncid, String url) {
@@ -231,7 +281,7 @@ public class Downloader {
 					final String file = unzipUpdate(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
 					if (analyseUpdated(file)) {
 						Utils.removeFile(file);
-						dbAccess.updateUpdateData(syncid, STATUS_DONE);
+						updateStatusBySyncId(syncid, null, STATUS_DONE);
 						
 						this.checkUpdateData();
 					}
@@ -276,7 +326,7 @@ public class Downloader {
 				NodeList u =  p.getElementsByTagName("url");
 				Log.d(Tag, "url = " + u.item(0).getFirstChild().getNodeValue());
 				
-				dbAccess.insertUpdateData(checkcode, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), TYPE_PACKAGE, -1, STATUS_INIT, 0);
+				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), -1, STATUS_INIT, 0);
 			}
 
 			return true;
@@ -301,8 +351,10 @@ public class Downloader {
 		
 		final String dbfile = unzipPackage(file);
 		
-		//Utils.removeFile(file);		
-		dbAccess.updateUpdateData(syncid, STATUS_DONE);
+		// TODO: donot forget open the below line.
+		//Utils.removeFile(file); 		
+		
+		updateStatusBySyncId(syncid, null, STATUS_DONE);
 		
 		service.onPackageReady(syncid, dbfile);
 		

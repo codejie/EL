@@ -1,4 +1,4 @@
-package jie.android.el.database;
+package jie.android.el.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,8 +8,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import jie.android.el.database.ELContentProvider;
+import jie.android.el.database.LACDBAccess;
+import jie.android.el.database.Word;
+import jie.android.el.database.Word.XmlResult;
 import jie.android.el.utils.XmlResultLoader;
 
+import android.content.Context;
 import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -79,10 +84,11 @@ public class Dictionary {
 			this.info = info;
 		}
 
-		private void init(final LACDBAccess dbAccess, final String dataPath) {
+		private void init(final String dataPath) {
 			try {
 				fileAccess = new RandomAccessFile(dataPath + File.separator + info.file, "r");
-								loadBlockData(dbAccess);
+				
+				loadBlockData(dbAccess);
 				
 			} catch (FileNotFoundException e) {
 				Log.e(Tag, "init() failed - " + e.getMessage());
@@ -99,8 +105,8 @@ public class Dictionary {
 			}
 		}
 		
-		private boolean loadBlockData(final LACDBAccess dbAccess) {
-			Cursor cursor = dbAccess.queryBlockData(info.index);
+		private boolean loadBlockData() {
+			Cursor cursor = service. dbAccess.queryBlockData(info.index);
 			if(cursor != null) {
 				if (cursor.moveToFirst()) {
 					do {
@@ -134,7 +140,7 @@ public class Dictionary {
 		}
 		
 		private void getWordSelfXmlResult(final LACDBAccess dbAccess, int index, List<String> result) {
-			Cursor cursor = dbAccess.queryWordXmlIndex(info.index, index);
+			Cursor cursor = null;//dbAccess.queryWordXmlIndex(info.index, index);
 			if (cursor != null) {
 				try {
 					if (cursor.moveToFirst()) {
@@ -177,31 +183,30 @@ public class Dictionary {
 	}	
 	
 	//dictionay
-	private LACDBAccess dbAccess = null;
+	private Context context = null;
 	private String dataPath = null;
 	private HashMap<Integer, Entity> mapEntity = new HashMap<Integer, Entity>();
 
-	public Dictionary(LACDBAccess dbAccess, final String dataPath) {
-		this.dbAccess = dbAccess;
-		this.dataPath = dataPath;
+	public Dictionary(Context context) {
+		this.context = context;
+		this.dataPath = this.context.getDatabasePath(LACDBAccess.DBFILE).getParent();
 	}
 	
 	public boolean load() {
-		Cursor cursor = dbAccess.queryDictionaryInfo();
-		if (cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					do {
-						Info info = new Info(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
-						Entity entity = new Entity(info);
-						entity.init(dbAccess, dataPath);
-						mapEntity.put(cursor.getInt(0), entity);
-					} while (cursor.moveToNext());
-				}
-			} finally {
-				cursor.close();
+		
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_DICT_INFO, new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"}, null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				do {
+					Info info = new Info(cursor.getInt(0), cursor.getString(1), cursor.getString(2), cursor.getInt(3), cursor.getInt(4), cursor.getInt(5));
+					Entity entity = new Entity(info);
+					entity.init(dataPath);
+					mapEntity.put(cursor.getInt(0), entity);
+				} while (cursor.moveToNext());
 			}
-		}		
+		} finally {
+			cursor.close();
+		}
 		return true;
 	}
 
@@ -212,7 +217,7 @@ public class Dictionary {
 	}
 	
 	public Word.XmlResult getWordXmlResult(final String word) {
-		int index = dbAccess.getWordIndex(word);
+		int index = -1;//dbAccess.getWordIndex(word);
 		if (index == -1) {
 			return null;
 		}

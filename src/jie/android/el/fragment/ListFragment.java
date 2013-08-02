@@ -23,6 +23,7 @@ import android.widget.TextView;
 import jie.android.el.ELActivity;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
+import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.ELDBAccess;
 import jie.android.el.utils.Utils;
 
@@ -60,7 +61,6 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		}
 	}
 	
-	private ELDBAccess dbAccess = null;
 	private ListView listView = null;
 	private Adapter adapter = null;
 	
@@ -75,9 +75,9 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		dbAccess = getELActivity().getDBAccess();
-
-		adapter = new Adapter(getActivity(), dbAccess.queryESL(new String[] { "idx as _id", "title", "duration" }, null, null));
+		Cursor cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, null);
+		
+		adapter = new Adapter(getActivity(), cursor);
 		
 		listView = (ListView) view.findViewById(R.id.listView1);
 		listView.setOnItemClickListener(this);
