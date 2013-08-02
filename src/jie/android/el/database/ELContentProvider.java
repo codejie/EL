@@ -1,5 +1,10 @@
 package jie.android.el.database;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+
+import jie.android.el.utils.AssetsHelper;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -7,6 +12,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.os.Environment;
 import android.util.Log;
 
 public class ELContentProvider extends ContentProvider {
@@ -31,6 +37,8 @@ public class ELContentProvider extends ContentProvider {
 	private ELDBAccess elDBAccess = null;
 	
 	private SQLiteDatabase db = null;
+	private boolean isDBReady = false;
+
 	
 	@Override
 	public boolean onCreate() {
@@ -108,6 +116,41 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl/#", MATCH_ITEM_EL_ESL);
 		matcher.addURI(AUTHORITY, "lac/word_info", MATCH_LAC_WORD_INFO);
 		matcher.addURI(AUTHORITY, "lac/word_info/#", MATCH_ITEM_LAC_WORD_INFO);
+	}
+	
+	public boolean isDBReady() {
+		return isDBReady;
+	}
+	
+	private void initDatabases() {
 		
+		checkLACDatabase();
+		
+		String db = Environment.getExternalStorageDirectory() + ELDBAccess.DBFILE;
+		elDBAccess = new ELDBAccess(this.getContext(), db);
+
+		db = getContext().getDatabasePath(LACDBAccess.DBFILE).getAbsolutePath();
+		lacDBAccess = new LACDBAccess(this.getContext(), db);
+		
+		isDBReady = true;
+	}
+
+	private void checkLACDatabase() {
+
+		File dbfile = getContext().getDatabasePath(LACDBAccess.DBFILE);
+		if (!dbfile.exists()) {
+			File parent = dbfile.getParentFile();
+			if (!parent.exists()) {
+				parent.mkdirs();
+			}
+			
+			InputStream input;
+			try {
+				input = getContext().getAssets().open("lac2.zip");
+				AssetsHelper.UnzipTo(input, parent.getAbsolutePath(), null);
+			} catch (IOException e) {
+				e.printStackTrace();			
+			}			
+		}
 	}
 }

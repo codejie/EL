@@ -1,38 +1,29 @@
 package jie.android.el.database;
 
-import java.io.File;
-
-import android.content.ContentValues;
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.os.Environment;
 
 public class ELDBAccess extends DBAccess {
+	
+	public static final String DBFILE	=	"/jie/el/el.db";
 
-	private static final int VERSION		=	1;
-	private static final String FILE		=	"/jie/el/el.db";
-	
-	private Context context = null;
-	
-	public ELDBAccess(Context context) {
-		super(VERSION);
-		this.context = context;
+	public ELDBAccess(Context context, String name) {
+		super(context, name);
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public void onCreate(SQLiteDatabase db) {
+		createTables(db);
 	}
 	
 	@Override
-	public boolean open() {
-		
-		String path = Environment.getExternalStorageDirectory() + FILE;
-		
-		if(openDb(path, false)) {
-			return createTables();
-		} else {
-			return false;
-		}
+	public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
+		// TODO Auto-generated method stub
+
 	}
-	
-	private boolean createTables() {
+
+	private boolean createTables(SQLiteDatabase db) {
 		String sql = "CREATE TABLE IF NOT EXISTS [esl] ("
 					+ "[idx] INTEGER PRIMARY KEY,"
 					+ "[title] TEXT,"
@@ -46,18 +37,5 @@ public class ELDBAccess extends DBAccess {
 		db.execSQL(sql);
 		
 		return true;
-	}
-	
-	public boolean insertESL(final ContentValues values) {
-		return (db.insert("esl", null, values) != -1);
-	}
-	
-	public Cursor queryESL(final String[] columns, final String selection, final String[] selectionArgs) {
-		return db.query("esl", columns, selection, selectionArgs, null, null, null);
-	}
-
-	public Cursor queryESLIssue(int index) {
-		return db.query("esl", new String[] { "title", "script", "audio" }, "idx=" + index, null, null, null, null);
-	}
-	
+	}	
 }
