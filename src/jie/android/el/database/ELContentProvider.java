@@ -13,7 +13,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Environment;
-import android.util.Log;
 
 public class ELContentProvider extends ContentProvider {
 
@@ -27,6 +26,8 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_LAC_WORD_INFO = Uri.parse("content://" + AUTHORITY + "/lac/word_info");
 	public static final Uri URI_LAC_SYS_UPDATE = Uri.parse("content://" + AUTHORITY + "/lac/sys_update");
 	public static final Uri URI_LAC_DICT_INFO = Uri.parse("content://" + AUTHORITY + "/lac/dict_info");
+	public static final Uri URI_LAC_WORD_INDEX_JOIN_INFO = Uri.parse("content://" + AUTHORITY + "/lac/word_index_join_info");
+	public static final Uri URI_LAC_BLOCK_INFO = Uri.parse("content://" + AUTHORITY + "/lac/block_info");
 	
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
@@ -34,6 +35,8 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_ITEM_LAC_WORD_INFO = 21;
 	private static final int MATCH_LAC_SYS_UPDATE = 30;
 	private static final int MATCH_LAC_DICT_INFO = 40;
+	private static final int MATCH_LAC_WORD_INDEX_JOIN_INFO = 50;
+	private static final int MATCH_LAC_BLOCK_INFO = 60;
 	
 
 	private UriMatcher matcher = null;
@@ -59,6 +62,8 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_LAC_WORD_INFO:
 		case MATCH_LAC_SYS_UPDATE:
 		case MATCH_LAC_DICT_INFO:
+		case MATCH_LAC_WORD_INDEX_JOIN_INFO:
+		case MATCH_LAC_BLOCK_INFO:
 			return CONTENT_TYPE;
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
@@ -120,6 +125,14 @@ public class ELContentProvider extends ContentProvider {
 			db = lacDBAccess.getReadableDatabase();
 			table = "dict_info";
 			break;
+		case MATCH_LAC_WORD_INDEX_JOIN_INFO:
+			db = lacDBAccess.getReadableDatabase();
+			table = "word_index_100 inner join word_info on (word_index_100.word_idx=word_info.idx)";
+			break;
+		case MATCH_LAC_BLOCK_INFO:
+			db = lacDBAccess.getReadableDatabase();
+			table = "block_info_100";
+			break;
 		default:
 			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
 		}
@@ -129,14 +142,22 @@ public class ELContentProvider extends ContentProvider {
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		int res = matcher.match(uri);
+		String table = null;
+		switch (res) {
+		case MATCH_LAC_SYS_UPDATE:
+			db = lacDBAccess.getWritableDatabase();
+			table = "sys_update";
+			break;
+		default:
+			throw new IllegalArgumentException("update() Unknown uri: " + uri);
+		}
+		return db.update(table, values, selection, selectionArgs);
 	}
 	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		// TODO Auto-generated method stub
-		return 0;
+		throw new IllegalArgumentException("delete() Unknown uri: " + uri);
 	}
 	
 	private void initMatcher() {
@@ -148,6 +169,8 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "lac/word_info/#", MATCH_ITEM_LAC_WORD_INFO);
 		matcher.addURI(AUTHORITY, "lac/sys_update", MATCH_LAC_SYS_UPDATE);
 		matcher.addURI(AUTHORITY, "lac/dict_info", MATCH_LAC_DICT_INFO);
+		matcher.addURI(AUTHORITY, "lac/word_index_join_info", MATCH_LAC_WORD_INDEX_JOIN_INFO);
+		matcher.addURI(AUTHORITY, "lac/block_info", MATCH_LAC_BLOCK_INFO);
 	}
 	
 	private void initDatabases() {

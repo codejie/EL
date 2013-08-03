@@ -88,7 +88,7 @@ public class Dictionary {
 			try {
 				fileAccess = new RandomAccessFile(dataPath + File.separator + info.file, "r");
 				
-				loadBlockData(dbAccess);
+				loadBlockData();
 				
 			} catch (FileNotFoundException e) {
 				Log.e(Tag, "init() failed - " + e.getMessage());
@@ -105,9 +105,10 @@ public class Dictionary {
 			}
 		}
 		
-		private boolean loadBlockData() {
-			Cursor cursor = service. dbAccess.queryBlockData(info.index);
-			if(cursor != null) {
+		private void loadBlockData() {
+			
+			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_BLOCK_INFO, new String[] {"offset", "length", "start", "end"}, null, null, null);
+			try {
 				if (cursor.moveToFirst()) {
 					do {
 						BlockData block = new BlockData();
@@ -119,45 +120,71 @@ public class Dictionary {
 						blockData.add(block);
 					} while (cursor.moveToNext());
 				}
+			} finally {
 				cursor.close();
-			} else {
-				return false;
 			}
-			return true;
 		}
 		
-		public final List<String> getWordXmlResult(final LACDBAccess dbAccess, int index) {
+		public final List<String> getWordXmlResult(final String word) {
 			ArrayList<String> result = new ArrayList<String>();
-			//get self xml
-			getWordSelfXmlResult(dbAccess, index, result);
-			//get ref xml
-			//getWordRefXmlResult(dbAccess, index);
-			if (result.size() > 0) {
-				return result;
-			} else {
-				return null;
+			// get self xml
+			getWordSelfXmlResult(word, result);
+			// get ref xml
+			//?
+			return (result.size() > 0 ? result : null);			
+		}
+		
+		
+		private void getWordSelfXmlResult(String word, ArrayList<String> result) {
+			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INDEX_JOIN_INFO, new String[] { "offset", "length", "block1" }, "word=?", new String[] { word }, null);
+			try {
+				if (cursor.moveToFirst()) {
+					do {
+						XmlIndex xmlIndex = new XmlIndex(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2));
+						String xml = getXmlResult(xmlIndex);
+						if (xml != null) {
+							result.add(xml);
+						}
+						
+					} while (cursor.moveToNext());
+				}
+			} finally {
+				cursor.close();
 			}			
 		}
-		
-		private void getWordSelfXmlResult(final LACDBAccess dbAccess, int index, List<String> result) {
-			Cursor cursor = null;//dbAccess.queryWordXmlIndex(info.index, index);
-			if (cursor != null) {
-				try {
-					if (cursor.moveToFirst()) {
-						do {
-							XmlIndex xmlIndex = new XmlIndex(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2));
-							String xml = getXmlResult(xmlIndex);
-							if (xml != null) {
-								result.add(xml);
-							}
-							
-						} while (cursor.moveToNext());
-					}
-				} finally {
-					cursor.close();
-				}
-			}
-		}
+
+//		public final List<String> getWordXmlResult(final LACDBAccess dbAccess, int index) {
+//			ArrayList<String> result = new ArrayList<String>();
+//			//get self xml
+//			getWordSelfXmlResult(dbAccess, index, result);
+//			//get ref xml
+//			//getWordRefXmlResult(dbAccess, index);
+//			if (result.size() > 0) {
+//				return result;
+//			} else {
+//				return null;
+//			}			
+//		}
+//		
+//		private void getWordSelfXmlResult(final LACDBAccess dbAccess, int index, List<String> result) {
+//			Cursor cursor = null;//dbAccess.queryWordXmlIndex(info.index, index);
+//			if (cursor != null) {
+//				try {
+//					if (cursor.moveToFirst()) {
+//						do {
+//							XmlIndex xmlIndex = new XmlIndex(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2));
+//							String xml = getXmlResult(xmlIndex);
+//							if (xml != null) {
+//								result.add(xml);
+//							}
+//							
+//						} while (cursor.moveToNext());
+//					}
+//				} finally {
+//					cursor.close();
+//				}
+//			}
+//		}
 
 		private String getXmlResult(XmlIndex xmlIndex) {
 			if(xmlIndex.block1 > blockData.size())
@@ -193,7 +220,6 @@ public class Dictionary {
 	}
 	
 	public boolean load() {
-		
 		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_DICT_INFO, new String[] {"idx", "title", "file", "offset", "d_decoder", "x_decoder"}, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
@@ -216,19 +242,22 @@ public class Dictionary {
 		}
 	}
 	
-	public Word.XmlResult getWordXmlResult(final String word) {
-		int index = -1;//dbAccess.getWordIndex(word);
-		if (index == -1) {
-			return null;
-		}
-
-		return getWordXmlResult(index);
-	}
+//	public Word.XmlResult getWordXmlResult(final String word) {
+//		
+//		
+//		
+//		int index = -1;//dbAccess.getWordIndex(word);
+//		if (index == -1) {
+//			return null;
+//		}
+//
+//		return getWordXmlResult(index);
+//	}
 		
-	public Word.XmlResult getWordXmlResult(int index) {
+	public Word.XmlResult getWordXmlResult(final String word) {
 		Word.XmlResult result = new Word.XmlResult();		
 		for (final Entity entity : mapEntity.values()) {
-			List<String> res = entity.getWordXmlResult(dbAccess, index);
+			List<String> res = entity.getWordXmlResult(word);
 			if (res != null) {
 				result.addXmlData(entity.info.index, res);
 			}

@@ -101,7 +101,7 @@ public class Downloader {
 			return false;
 		}
 		
-		insertUpdateData(request, TYPE_UPDATE, url, file, -1, STATUS_INIT, 0);
+		insertUpdateData(request, TYPE_UPDATE, url, file, -1, STATUS_INIT);
 		
 		return checkUpdateData();
 	}
@@ -174,11 +174,12 @@ public class Downloader {
 		
 		long syncid = downloadManager.enqueue(req);
 		
-		ContentValues values = new ContentValues();
-		values.put("syncid", syncid);
-		values.put("status", STATUS_START);
-		
-		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);
+		updateStatusByIdx(idx, syncid, STATUS_START);
+//		ContentValues values = new ContentValues();
+//		values.put("syncid", syncid);
+//		values.put("status", STATUS_START);
+//		
+//		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);
 		
 		return true;
 	}
@@ -234,7 +235,7 @@ public class Downloader {
 		}
 	}
 
-	private void insertUpdateData(final String request, int type, final String url, final String local, long syncid, int status, int updatetime) {
+	private void insertUpdateData(final String request, int type, final String url, final String local, long syncid, int status) {
 		ContentValues values = new ContentValues();
 		values.put("request", request);
 		values.put("type", type);
@@ -242,9 +243,18 @@ public class Downloader {
 		values.put("local", local);
 		values.put("syncid", syncid);
 		values.put("status", status);
-		values.put("updatetime", updatetime);
+		values.put("updatetime", System.currentTimeMillis());
 		
 		service.getContentResolver().insert(ELContentProvider.URI_LAC_SYS_UPDATE, values);		
+	}
+	
+	private void updateStatusByIdx(int idx, long syncid, int status) {
+	
+		ContentValues values = new ContentValues();
+		values.put("syncid", syncid);
+		values.put("status", status);
+		
+		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);		
 	}
 	
 	private void updateStatusBySyncId(long syncid, final String url, int status) {
@@ -254,6 +264,7 @@ public class Downloader {
 			values.put("url", url);
 		}
 		values.put("status", status);
+		values.put("updatetime", System.currentTimeMillis());
 		
 		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "syncid=" + syncid, null);
 	}
@@ -326,7 +337,7 @@ public class Downloader {
 				NodeList u =  p.getElementsByTagName("url");
 				Log.d(Tag, "url = " + u.item(0).getFirstChild().getNodeValue());
 				
-				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), -1, STATUS_INIT, 0);
+				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), -1, STATUS_INIT);
 			}
 
 			return true;

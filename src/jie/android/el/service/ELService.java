@@ -41,7 +41,7 @@ public class ELService extends Service {
 		
 		@Override
 		public Word.XmlResult queryWordResult(String word) throws RemoteException {
-			return null;//dictionary.getWordXmlResult(word);
+			return dictionary.getWordXmlResult(word);// null;//dictionary.getWordXmlResult(word);
 		}
 
 		@Override
@@ -150,7 +150,7 @@ public class ELService extends Service {
 	}
 
 	private void initDictionary() {
-		dictionary = new Dictionary(this.getDatabasePath(LACDBAccess.FILE).getParent());
+		dictionary = new Dictionary(this);
 		if (!dictionary.load()) {
 			Log.e(Tag, "load dictionary data failed.");
 		}
