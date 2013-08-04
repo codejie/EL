@@ -95,4 +95,9 @@
 	</I>
 </xsl:template>
 
+
+<xsl:template match="S">
+	<hr/>
+</xsl:template>
+
 </xsl:stylesheet>

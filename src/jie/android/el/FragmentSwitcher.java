@@ -3,6 +3,7 @@ package jie.android.el;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.fragment.DownloadFragment;
 import jie.android.el.fragment.ListFragment;
+import jie.android.el.fragment.SettingFragment;
 import jie.android.el.fragment.ShowFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -80,6 +81,9 @@ public class FragmentSwitcher {
 			break;
 		case DOWNLOAD:
 			fragment = new DownloadFragment();
+			break;
+		case SETTING:
+			fragment = new SettingFragment();
 			break;
 		default:
 			return null;

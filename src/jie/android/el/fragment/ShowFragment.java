@@ -109,7 +109,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private PopupLayout popupLayout = null;
 	private TextView popTextView = null;
 	private WebView popWebView = null;	
-	private ImageButton popCloseButton = null;
+	private ImageView popCloseButton = null;
 	
 	private TextView playTime = null;
 	private SeekBar playBar = null;
@@ -119,7 +119,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private ImageView playPlay = null;
 	private ImageView playNext = null;
 	
-	private String audio = null;
+//	private String audio = null;
 	private String audioDuration = null;
 	
 	private boolean isServiceNotification = false; 
@@ -190,7 +190,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
 		popTextView.setOnClickListener(this);
 		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
-		popCloseButton = (ImageButton) popupLayout.findViewById(R.id.imageButton1);
+		popCloseButton = (ImageView) popupLayout.findViewById(R.id.imageView1);// .imageButton1);
 		popCloseButton.setOnClickListener(this);
 	
 		playTime = (TextView) view.findViewById(R.id.playTextTime);
@@ -241,20 +241,20 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	
 	protected void onIndex(Bundle obj) {
 		int index = obj.getInt("index");
+		int position = obj.getInt("position");
 		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);		
-		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "audio" }, null, null, null);
+		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script"}, null, null, null);
 		if (cursor != null) {
 			try {
 				if (cursor.moveToFirst()) {
 					String title = cursor.getString(0);
-					String data = cursor.getString(1);
-					String audio = cursor.getString(2);
+					String script = cursor.getString(1);
 
 					setAudioPlayListener();					
-					loadData(index, title, data);
+					loadData(index, title, script);
 					if (!obj.getBoolean("serviceNotification", false)) {
-						setAudio(index, title, audio);
+						setAudio(index, position);
 						playAudio();
 					} else {
 						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt("duration"), -1));						
@@ -278,16 +278,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private void loadData(int index, String title, String data) {
 		textView.setText(String.format("%d : %s", index, title));
 		
-		getELActivity().setTitle(title);		
+//		getELActivity().setTitle(title);		
 		
 		webView.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
 	}
 
-	private void setAudio(int index, String title, String audio) {
-		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
+	private void setAudio(int index, int position) {
+//		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
 		
 		try {
-			getELActivity().getServiceAccess().setAudio(index, title, this.audio);
+			getELActivity().getServiceAccess().setAudio(index, position);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -367,9 +367,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		String ret = "<LAC><LAC-W>" + word + "</LAC-W>";
 		for (final Word.XmlResult.XmlData data : result.getXmlData()) {
-			ret += "<LAC-R><LAC-D>" + "Vicon E-C" + "</LAC-D>";
+			ret += "<LAC-R><LAC-D>" + "Vicon English-Chinese Dictionary" + "</LAC-D>";
+			int i = 0;			
+			
 			for(final String xml : data.getXml()) {
 				ret += xml;
+				if ((++i) < data.getXml().size())
+					ret += "<S/>";
 			}
 			ret += "</LAC-R>";
 		}
@@ -391,7 +395,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		case R.id.textView1:
 			speak(popTextView.getText().toString());
 			break;
-		case R.id.imageButton1:
+		case R.id.imageView1:
 			togglePopupWindow();
 			break;
 		case R.id.playImageView1:
@@ -477,5 +481,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
 //		playAudio();
-	}	
+	}
+	
+	public void getNextAudio() {
+//SELECT * FROM word_info ORDER BY RANDOM() LIMIT 1		
+	}
+	
+	public void getPrevAudio() {
+		
+	}
 }

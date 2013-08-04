@@ -52,18 +52,24 @@
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
-                android:layout_margin="5dp"
-                android:layout_weight="1"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="0.8"
+                android:background="@drawable/el_player_bg"
                 android:gravity="center_vertical"
                 android:text="TextView"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
-            <ImageButton
-                android:id="@+id/imageButton1"
-                android:layout_width="wrap_content"
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="48dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
+                android:layout_gravity="center_vertical|fill_vertical"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/el_player_bg"
+                android:clickable="true"
                 android:src="@drawable/el_close" />
+
         </LinearLayout>
 
         <WebView

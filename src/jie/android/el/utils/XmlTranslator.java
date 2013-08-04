@@ -33,6 +33,12 @@ public class XmlTranslator {
 	
  */
 	
+/*
+word = increased
+self(2879901) xml = <C><F><H /><I><N><U>adj.</U>  增加的; 增强的</N></I></F></C>
+self(2879709) xml = <C><E>increases|increased|increasing</E><F><H><M>in·crease || ?n'kr??s</M></H><I><N><U>n.</U>  增加, 利益, 增进</N></I><I><N><U>v.</U>  增加; 繁殖; 增加; 加大</N></I></F></C>
+ */
+	
 	private static Transformer transformer = null;
 	
 	public static void init(final InputStream xslFile) {

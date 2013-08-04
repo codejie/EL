@@ -2,4 +2,10 @@
 
     <string name="app_name">EL</string>
 
+    <string name="el_setting_play_preference">Audio Play Preference</string>
+
+    <string name="el_setting_play_stop_after_current">Stop After Current</string>
+
+    <string name="el_setting_play_random_play">Random Order Play</string>
+
 </resources>

@@ -45,8 +45,8 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public void setAudio(int index, String title, String audio) throws RemoteException {
-			player.setData(index, title, audio);
+		public void setAudio(int index, int position) throws RemoteException {
+			player.setData(index, position);
 		}
 
 		@Override

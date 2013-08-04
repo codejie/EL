@@ -207,6 +207,9 @@ public class ELActivity extends SherlockFragmentActivity {
 		case R.id.el_menu_download:
 			showFragment(FragmentSwitcher.Type.DOWNLOAD, null);
 			break;
+		case R.id.el_menu_setting:
+			showFragment(FragmentSwitcher.Type.SETTING, null);
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
