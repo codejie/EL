@@ -1,0 +1,4 @@
+1. filename : package_xxx_xxx.zip
+2. what's in package
+	a. package.db (1..1)
+	b. *.mp3 (1..5)

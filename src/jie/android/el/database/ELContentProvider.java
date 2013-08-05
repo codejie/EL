@@ -84,6 +84,10 @@ public class ELContentProvider extends ContentProvider {
 			db = lacDBAccess.getWritableDatabase();
 			table = "sys_update";
 			break;
+		case MATCH_EL_ESL:
+			db = elDBAccess.getWritableDatabase();
+			table = "esl";
+			break;
 		default:
 			throw new IllegalArgumentException("insert() Unknown uri: " + uri);
 		}
@@ -149,6 +153,10 @@ public class ELContentProvider extends ContentProvider {
 			db = lacDBAccess.getWritableDatabase();
 			table = "sys_update";
 			break;
+		case MATCH_EL_ESL:
+			db = elDBAccess.getWritableDatabase();
+			table = "esl";
+			break;			
 		default:
 			throw new IllegalArgumentException("update() Unknown uri: " + uri);
 		}

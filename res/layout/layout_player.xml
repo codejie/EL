@@ -5,9 +5,11 @@
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/seekLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp" >
+        android:layout_margin="5dp"
+        android:clickable="true" >
 
         <SeekBar
             android:id="@+id/playSeekBar"
@@ -22,6 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right|center_vertical|fill_horizontal"
             android:layout_weight="0.28"
+            android:clickable="true"
             android:gravity="center_horizontal"
             android:text="00:00/00:00"
             android:textAlignment="textEnd" />
@@ -29,10 +32,12 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/controlLayout"
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp" >
+        android:layout_marginRight="5dp"
+        android:visibility="gone" >
 
         <ImageView
             android:id="@+id/playImageView1"

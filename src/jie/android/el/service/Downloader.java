@@ -360,14 +360,14 @@ public class Downloader {
 		
 		String file = url.substring("file://".length());
 		
-		final String dbfile = unzipPackage(file);
+//		final String dbfile = unzipPackage(file);
 		
 		// TODO: donot forget open the below line.
 		//Utils.removeFile(file); 		
 		
 		updateStatusBySyncId(syncid, null, STATUS_DONE);
 		
-		service.onPackageReady(syncid, dbfile);
+		service.onPackageReady(syncid, file);
 		
 		this.checkUpdateData();
 		
@@ -388,22 +388,22 @@ public class Downloader {
 //		}	
 	}
 
-	private String unzipPackage(String file) {
-
-		String output = Environment.getExternalStorageDirectory() + "/jie/el";
-		
-		String[] ret = Utils.unzipFile(file, output);
-				
-		if (ret.length > 0) {
-			for (String f : ret) {
-				if (f.endsWith(".db")) {
-					return (output + File.separator + f);
-				}
-			}
-		}
-		
-		return null;
-	}
+//	private String unzipPackage(String file) {
+//
+//		String output = Environment.getExternalStorageDirectory() + "/jie/el";
+//		
+//		String[] ret = Utils.unzipFile(file, output);
+//				
+//		if (ret.length > 0) {
+//			for (String f : ret) {
+//				if (f.endsWith(".db")) {
+//					return (output + File.separator + f);
+//				}
+//			}
+//		}
+//		
+//		return null;
+//	}
 //
 //	public void onPackageImported(int syncid, String dbfile) {
 //		Utils.removeFile(dbfile);		

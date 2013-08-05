@@ -19,6 +19,7 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -111,6 +112,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private WebView popWebView = null;	
 	private ImageView popCloseButton = null;
 	
+	private LinearLayout seekLayout = null;
+	private LinearLayout controlLayout = null;
+	
 	private TextView playTime = null;
 	private SeekBar playBar = null;
 	private ImageView playRepeat = null;
@@ -118,7 +122,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private ImageView playPrev = null;
 	private ImageView playPlay = null;
 	private ImageView playNext = null;
-	
+		
 //	private String audio = null;
 	private String audioDuration = null;
 	
@@ -192,8 +196,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
 		popCloseButton = (ImageView) popupLayout.findViewById(R.id.imageView1);// .imageButton1);
 		popCloseButton.setOnClickListener(this);
-	
+
+		seekLayout = (LinearLayout) view.findViewById(R.id.seekLayout);
+		seekLayout.setOnClickListener(this);
+		controlLayout = (LinearLayout) view.findViewById(R.id.controlLayout);
+		
 		playTime = (TextView) view.findViewById(R.id.playTextTime);
+		playTime.setOnClickListener(this);
 		playBar = (SeekBar) view.findViewById(R.id.playSeekBar);
 		playBar.setOnSeekBarChangeListener(this);
 		playBar.setEnabled(false);
@@ -408,6 +417,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			togglePlay();
 			break;
 		case R.id.playImageView5:
+			break;
+		case R.id.playTextTime:
+		case R.id.seekLayout:
+			controlLayout.setVisibility(controlLayout.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
 			break;
 		default:;
 		}
