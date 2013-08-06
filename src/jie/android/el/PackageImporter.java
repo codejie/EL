@@ -51,8 +51,7 @@ public class PackageImporter {
 		@Override
 		protected void onPostExecute(Boolean result) {
 			if (result == Boolean.FALSE) {
-				Log.e(Tag, "import failed - " + result);
-				return;
+				Log.e(Tag, "import failed - zipfile : " + zipfile);
 			}
 
 			Utils.removeFile(dbfile);
@@ -103,7 +102,7 @@ public class PackageImporter {
 		final String[] res = PackageImporter.check();
 		if (res != null && res.length > 0) {
 			packageList.clear();
-			for (final String str : packageList) {
+			for (final String str : res) {
 				this.packageList.add(str);
 			}
 		}
@@ -144,7 +143,7 @@ public class PackageImporter {
 			SQLiteDatabase src = SQLiteDatabase.openDatabase(dbfile, null, SQLiteDatabase.OPEN_READONLY);
 			//check info table (skip)
 			//check esl table
-			Cursor cursor = src.query("esl", new String[] {"idx", "title", "script", "audio", "duration", "slowdialog", "explanation", "fastdialog", "tag"}, null, null, null, null, null);
+			Cursor cursor = src.query("esl", new String[] {"idx", "title", "script", "audio", "duration", "slowdialog", "explanations", "fastdialog", "flag"}, null, null, null, null, null);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
@@ -155,9 +154,9 @@ public class PackageImporter {
 						values.put("audio", cursor.getString(3));
 						values.put("duration", cursor.getInt(4));
 						values.put("slowdialog", cursor.getInt(5));
-						values.put("explanation", cursor.getInt(6));
+						values.put("explanations", cursor.getInt(6));
 						values.put("fastdialog", cursor.getInt(7));
-						values.put("tag", cursor.getInt(8));
+						values.put("flag", cursor.getInt(8));
 
 						if (!isExist(cursor.getInt(0))) {
 							activity.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);

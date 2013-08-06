@@ -133,7 +133,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			player.reset();
 		
 			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
-			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "title", "audio" }, null, null, null);
+			Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
 			try {
 				if (cursor.moveToFirst()) {
 					audioIndex = index;
@@ -141,7 +141,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 					audioTitle = cursor.getString(0);
 
 					String audio = cursor.getString(1);
-					audio = Environment.getExternalStorageState() + File.separator + "/jie/el/" + audio;
+					audio = Environment.getExternalStorageDirectory() + File.separator + "/jie/el/" + audio;
 					player.setDataSource(audio);
 					player.prepare();
 					if (listener != null) {

@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
@@ -189,6 +190,14 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			
 		});
 		webView.setWebViewClient(client);
+		webView.setOnLongClickListener(new OnLongClickListener() {
+
+			@Override
+			public boolean onLongClick(View arg0) {
+				return true;
+			}
+			
+		});
 
 		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
 		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);

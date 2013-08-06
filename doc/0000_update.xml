@@ -6,8 +6,8 @@
 	</provider_update>
 	<packages>
 	    <package>
-    		<file>test_package.zip</file>
-    		<url>http://rapidshare.com/files/2397786523/test_package.zip?directstart=1</url>    
+    		<file>package_30.zip</file>
+			<url>http://rapidshare.com/files/593590200/package_30.zip?directstart=1</url>
     	</package>
 	</packages>
 </update>

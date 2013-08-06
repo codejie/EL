@@ -19,7 +19,13 @@ public class Utils {
 	}
 	
 	public static final boolean removeFile(final String file) {
+		if (file == null) {
+			return true;
+		}
 		File f = new File(file);
+		if (f == null) {
+			return false;
+		}
 		return f.delete();
 	}
 	

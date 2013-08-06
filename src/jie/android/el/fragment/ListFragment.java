@@ -57,7 +57,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 
 		@Override
 		public View newView(Context context, Cursor cursor, ViewGroup parent) {
-			return inflater.inflate(R.layout.layout_record, parent, false); 
+			return inflater.inflate(R.layout.layout_list_item, parent, false); 
 		}
 	}
 	
