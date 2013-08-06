@@ -35,6 +35,8 @@ public class ELActivity extends SherlockFragmentActivity {
 	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
 	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
 	
+	private static final int MSG_UI_CREATED = 100;
+	
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
 	
@@ -47,6 +49,9 @@ public class ELActivity extends SherlockFragmentActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case MSG_UI_CREATED:
+				showProgressDialog(true, "Connect...");
+				break;
 			case MSG_SERVICE_NOTIFICATION:
 				onServiceNotification(msg.arg1);
 				break;
@@ -128,7 +133,8 @@ public class ELActivity extends SherlockFragmentActivity {
 		initSpeaker();
 		initTranslator();
 		initPackageImporter();
-		
+	
+		handler.sendEmptyMessage(MSG_UI_CREATED);
 	}
 
 	@Override

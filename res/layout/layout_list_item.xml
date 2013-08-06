@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    android:layout_margin="15dp"
     android:orientation="vertical"
     android:paddingBottom="4dp" >
 
@@ -19,7 +19,8 @@
             android:layout_gravity="left"
             android:layout_marginLeft="8dp"
             android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#ff333399" />
 
     </LinearLayout>
 
@@ -32,20 +33,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical|fill_vertical"
-            android:layout_marginLeft="24dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="4dp"
             android:layout_weight="1"
             android:text="Large Text"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#ff404080" />
+            android:textColor="#ff000077" />
 
         <TextView
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
+            android:layout_gravity="right|center_vertical"
             android:layout_marginRight="8dp"
-            android:text="00:00" />
+            android:text="00:00"
+            android:textColor="#ff000000" />
 
     </LinearLayout>
 

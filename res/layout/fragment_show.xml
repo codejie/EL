@@ -6,6 +6,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="#fff0f0f0"
         android:orientation="vertical" >
 
         <TextView
@@ -13,6 +14,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
+            android:padding="4dp"
             android:text="Large Text"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -20,7 +22,8 @@
             android:id="@+id/webView1"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:clickable="true" />
 
         <include
             android:layout_width="fill_parent"
@@ -37,6 +40,7 @@
         android:layout_gravity="bottom"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:background="#ffffffff"
         android:orientation="vertical"
         android:visibility="gone" >
 
@@ -44,21 +48,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="top"
-            android:layout_margin="3dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_marginTop="8dp"
             android:orientation="horizontal" >
 
             <TextView
                 android:id="@+id/textView1"
                 android:layout_width="fill_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
+                android:layout_gravity="center_vertical|fill_vertical"
+                android:layout_marginLeft="4dp"
                 android:layout_weight="0.8"
                 android:background="@drawable/el_player_bg"
                 android:gravity="center_vertical"
                 android:text="TextView"
-                android:textAppearance="?android:attr/textAppearanceLarge" />
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="#ff226622" />
 
             <ImageView
                 android:id="@+id/imageView1"

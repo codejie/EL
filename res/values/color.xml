@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="el_player_bg_pressed">#ff0099ff</color>
-    <color name="el_player_bg_selected">#ff19194b</color>
+    <color name="el_player_bg_pressed">#ff00aaff</color>
+    <color name="el_player_bg_selected">#ff00aaff</color>
     
 </resources>

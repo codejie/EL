@@ -164,13 +164,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		super.onCreate(savedInstanceState);
 		
 		this.setLayoutRes(R.layout.fragment_show);
-		
-//		Bundle b = this.getArguments();
-//		if (b != null) {
-//			handler.sendMessage(Message.obtain(handler, MSG_INDEX, b.getInt("index"), -1));
-//		}
 	}
-
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
@@ -190,13 +184,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			
 		});
 		webView.setWebViewClient(client);
+//		webView.setOnClickListener(this);
 		webView.setOnLongClickListener(new OnLongClickListener() {
 
 			@Override
 			public boolean onLongClick(View arg0) {
 				return true;
 			}
-			
 		});
 
 		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
@@ -296,9 +290,40 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private void loadData(int index, String title, String data) {
 		textView.setText(String.format("%d : %s", index, title));
 		
-//		getELActivity().setTitle(title);		
+//		getELActivity().setTitle(title);
 		
-		webView.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
+		String html = assembleHtmlScript(data);
+		
+		
+		webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+	}
+
+	private String assembleHtmlScript(String data) {
+		
+//		<HTML>
+//		<HEAD>
+//		<STYLE>
+//		.header { font-size:150% }
+//		.body { font-size:100% }
+//		.lac { color:#65881a; text-decoration:none; }
+//		.src { color:#65881a }
+//		</STYLE>
+//		</HEAD>
+//		<BODY>
+//		<DIV>
+//		<P class="header">ESL Podcast 31</P>
+//		<P class="header">Reading the Newspaper</P>
+//		<P class="body">I <A href="lac://fell" class="lac">fell</A> <A href="lac://into" class="lac">into</A> the <A href="lac://habit" class="lac">habit</A> of reading the newspaper every morning when I was a kid. <A href="lac://Back" class="lac">Back</A> then, there used to be two daily <NOBR>newspapers¡ªa</NOBR> morning <A href="lac://edition" class="lac">edition</A> and an afternoon edition. Nowadays, of course, many cities in the U.S. have just a morning paper. <A href="lac://I¡¯m" class="lac">I¡¯m</A> not too <A href="lac://picky" class="lac">picky</A> about which newspaper I read, although <A href="lac://when it comes to" class="src">when it comes to</A> national newspapers, I <A href="lac://" class="lac">prefer</A> reading the New York Times or the Wall Street lournal over USA Today. <A href="lac://" class="src">Don¡¯t get me wrong: </A>I¡¯m not a news <A href="lac://junkie" class="lac">junkie</A>. I just like <A href="lac://browsing" class="lac">browsing</A> the different sections, reading the headlines, and checking out the <A href="lac://classifieds" class="lac">classifieds</A>. I usually <A href="lac://skip" class="lac">skip</A> the sports section and the <A href="lac://funnies" class="lac">funnies</A>, and only <A href="lac://flip through" class="lac">flip through</A> the food and health sections, but I always read the front page and the <A href="lac://editorial" class="lac">editorial</A> page. On the weekends, I¡¯ll <A href="lac://skim" class="lac">skim</A> the entertainment section for the movie listings and reviews.</P>
+//		<P class="body">I¡¯m sort of <NOBR>old-fashioned</NOBR> in that I still like reading a real, paper newspaper. Sure, I also read some of my news online, but nothing <A href="lac://beats" class="lac">beats</A> <A href="lac://lounging" class="lac">lounging <A href="lac://around" class="lac">around</A> on Sunday morning reading the big, thick paper. Don¡¯t worry, though: I always <A href="lac://recycle" class="lac">recycle</A> my <A href="lac://stack" class="lac">stack</A> of newspapers.</P>
+//		</DIV>
+//		</BODY>
+//		</HTML>		
+		
+		String html = "<HTML><HEAD><STYLE>\n.header { font-size:150% }\n.body { font-size:100% }\n.lac { color:#65881a; text-decoration:none; }\n.src { color:#65881a }\n</STYLE></HEAD><BODY>";
+		html += data;
+		html += "</BODY></HTML>";
+		
+		return html;
 	}
 
 	private void setAudio(int index, int position) {
@@ -410,12 +435,17 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
+//		case R.id.webView1:
+//			if (isPopupWindowOpen()) {
+//				togglePopupWindow();
+//			}
+//			break;
 		case R.id.textView1:
 			speak(popTextView.getText().toString());
 			break;
 		case R.id.imageView1:
 			togglePopupWindow();
-			break;
+			break;			
 		case R.id.playImageView1:
 			break;
 		case R.id.playImageView2:

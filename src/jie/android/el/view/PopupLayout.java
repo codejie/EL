@@ -13,26 +13,23 @@ public class PopupLayout extends LinearLayout {
 	private Paint innerPaint = null;
 	private Paint borderPaint = null;
 	
-	
 	public PopupLayout(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		
 		init();
 	}
 
-
 	private void init() {
 		innerPaint = new Paint();
-		innerPaint.setARGB(100, 25, 25, 75); 
+		innerPaint.setARGB(238, 102, 102, 102); 
 		innerPaint.setAntiAlias(true);
 
 		borderPaint = new Paint();
 		borderPaint.setARGB(255, 255, 255, 255);
 		borderPaint.setAntiAlias(true);
 		borderPaint.setStyle(Style.STROKE);
-		borderPaint.setStrokeWidth(5);		
+		borderPaint.setStrokeWidth(4);		
 	}
-
 
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
@@ -44,8 +41,5 @@ public class PopupLayout extends LinearLayout {
 		
 		super.dispatchDraw(canvas);
 	}
-	
-	
-	
 
 }

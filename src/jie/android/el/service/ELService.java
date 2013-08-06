@@ -27,10 +27,10 @@ public class ELService extends Service {
 		public void regServiceNotification(int token, ServiceNotification notification) throws RemoteException {
 			serviceNotification = notification;
 			
+			postServiceState(CommonState.Service.READY);
+			
 			if (player.isPlaying()) {
 				postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
-			} else if (isServiceReady) {
-				postServiceState(CommonState.Service.READY);
 			}
 		}
 
@@ -95,10 +95,6 @@ public class ELService extends Service {
 			onUIStateChanged(state);
 		}
 	}
-	
-	private static final int STATE_READY	=	0;
-	private static final int STATE_UNZIP	=	1;
-	private static final int STATE_PLAYING	=	2;
 	
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;

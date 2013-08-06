@@ -44,7 +44,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		public void bindView(View view, Context context, Cursor cursor) {
 			
 			TextView idx = (TextView) view.findViewById(R.id.textView2);
-			idx.setText(cursor.getString(0));
+			idx.setText("ESLPodcast " + cursor.getString(0));
 			
 			TextView title = (TextView) view.findViewById(R.id.textView3);
 			title.setText(cursor.getString(1));
