@@ -9,6 +9,7 @@ import jie.android.el.service.ServiceNotification;
 import jie.android.el.service.CommonState;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.XmlTranslator;
+import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.R;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -35,7 +36,8 @@ public class ELActivity extends SherlockFragmentActivity {
 	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
 	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
 	
-	private static final int MSG_UI_CREATED = 100;
+	private static final int MSG_UI_CREATED = 100;	
+	private static final int MSG_UI_PACKAGE_CHANGED = 101;
 	
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
@@ -50,7 +52,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_UI_CREATED:
-				showProgressDialog(true, "Connect...");
+				showProgressDialog(true, "Connectint to service...");
 				break;
 			case MSG_SERVICE_NOTIFICATION:
 				onServiceNotification(msg.arg1);
@@ -59,7 +61,10 @@ public class ELActivity extends SherlockFragmentActivity {
 				onServiceAudioPlaying((Bundle)msg.obj);
 				break;
 			case MSG_SERVICE_PACKAGE_READY:
-				OnServicePackageReady();
+				onServicePackageReady();
+				break;
+			case MSG_UI_PACKAGE_CHANGED:
+				onPackageChanged();
 				break;
 			default:;
 			}
@@ -243,7 +248,7 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	protected void onServiceAudioPlaying(Bundle data) {
-		data.putBoolean("serviceNotification", true);
+		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
 		fragmentSwitcher.show(FragmentSwitcher.Type.SHOW, data);
 	}
 
@@ -273,11 +278,17 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	protected void OnServicePackageReady() {
+	protected void onServicePackageReady() {
 		if (packageImporter == null) {
 			initPackageImporter();			
 		} else {
 			packageImporter.refresh();
 		}
+	}
+	
+	protected void onPackageChanged() {
+		Bundle data = new Bundle();
+		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
+		fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);		
 	}	
 }

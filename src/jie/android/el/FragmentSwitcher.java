@@ -48,6 +48,7 @@ public class FragmentSwitcher {
 	public boolean show(Type type, Bundle args) {
 		if (curType != null) {
 			if (curType == type) {
+				((BaseFragment) fragmentManager.findFragmentByTag(type.getTitle())).onArguments(args);				
 				return true;
 			} else {
 				hide(curType);

@@ -129,7 +129,7 @@ public class PackageImporter {
 				
 		if (ret.length > 0) {
 			for (String f : ret) {
-				if (f.equals("package.db")) {
+				if (f.startsWith("package") && f.endsWith(".db")) {
 					return (f);
 				}
 			}

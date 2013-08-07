@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.ELActivity;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
@@ -44,7 +45,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		public void bindView(View view, Context context, Cursor cursor) {
 			
 			TextView idx = (TextView) view.findViewById(R.id.textView2);
-			idx.setText("ESLPodcast " + cursor.getString(0));
+			idx.setText("ESL Podcast " + cursor.getString(0));
 			
 			TextView title = (TextView) view.findViewById(R.id.textView3);
 			title.setText(cursor.getString(1));
@@ -92,6 +93,18 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		args.putInt("position", position);
 		args.putInt("total", adapter.getCount());
 		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
+	}
+
+	@Override
+	public void onArguments(Bundle args) {
+		if (args == null)
+			return;
+		
+		if (args.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()) == FragmentArgument.Action.PACKAGE_CHANGED.getId()) {
+			if (adapter != null) {
+				adapter.notifyDataSetChanged();
+			}
+		}
 	}	
 	
 }

@@ -82,7 +82,12 @@ public class Downloader {
 
 		regiestReceiver();
 		
-		return (downloadManager != null);
+		if (downloadManager != null) {
+			checkUpdateData();
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	public void release() {

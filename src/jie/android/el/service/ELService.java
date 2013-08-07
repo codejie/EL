@@ -113,7 +113,7 @@ public class ELService extends Service {
 	public void onCreate() {
 		super.onCreate();
 		
-//		android.os.Debug.waitForDebugger();
+		//android.os.Debug.waitForDebugger();
 		
 		initDictionary();
 		initPlayer();

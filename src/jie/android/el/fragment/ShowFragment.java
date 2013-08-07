@@ -25,6 +25,7 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
+import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
@@ -265,7 +266,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 					setAudioPlayListener();					
 					loadData(index, title, script);
-					if (!obj.getBoolean("serviceNotification", false)) {
+					if (obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()) != FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {
 						setAudio(index, position);
 						playAudio();
 					} else {
