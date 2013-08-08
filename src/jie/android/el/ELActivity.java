@@ -13,6 +13,7 @@ import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.R;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -42,9 +43,11 @@ public class ELActivity extends SherlockFragmentActivity {
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
 	
+	private Menu actionMenu = null;
+
 	private FragmentSwitcher fragmentSwitcher = null;
 	
-	private ProgressDialog progressDialog = null;	
+	private ProgressDialog progressDialog = null;
 	
 	private Handler handler = new Handler() {
 
@@ -210,11 +213,22 @@ public class ELActivity extends SherlockFragmentActivity {
 		return handler;
 	}
 	
+//	@Override
+//	public boolean onPrepareOptionsMenu(Menu menu) {
+//		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
+//		return super.onPrepareOptionsMenu(menu);
+//	}
+	
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		
 		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
-		return super.onPrepareOptionsMenu(menu);
-	}	
+		
+		actionMenu  = menu;
+		
+		return true;
+	}		
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -224,6 +238,14 @@ public class ELActivity extends SherlockFragmentActivity {
 			break;
 		case R.id.el_menu_setting:
 			showFragment(FragmentSwitcher.Type.SETTING, null);
+			break;
+		case R.id.el_menu_about:
+			ContentValues values = new ContentValues();
+			values.put("idx", 103);
+			values.put("title", "test changed");
+			values.put("script", "null");
+			values.put("audio", "null.mp3");
+			this.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -246,9 +268,18 @@ public class ELActivity extends SherlockFragmentActivity {
 			releaseService(true);
 			finish();
 		}
-
+		
 		return super.onKeyDown(keyCode, event);
 	}
+	
+	@Override
+	public boolean onKeyUp(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_MENU) {
+			actionMenu.performIdentifierAction(R.id.item1, 0);
+			return true;
+		}		
+		return super.onKeyUp(keyCode, event);
+	}	
 
 	protected void onServiceAudioPlaying(Bundle data) {
 		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
@@ -295,5 +326,6 @@ public class ELActivity extends SherlockFragmentActivity {
 			data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
 			fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);
 		}
-	}	
+	}
+
 }

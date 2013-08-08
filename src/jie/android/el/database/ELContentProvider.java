@@ -93,7 +93,12 @@ public class ELContentProvider extends ContentProvider {
 		}
 		
 		long rowid = db.insert(table, null, values);
-		return ContentUris.withAppendedId(uri, rowid);
+		if (rowid != -1) {			
+			getContext().getContentResolver().notifyChange(uri, null);			
+			return ContentUris.withAppendedId(uri, rowid);
+		} else {
+			return null;
+		}
 	}
 	
 	@Override
@@ -160,7 +165,11 @@ public class ELContentProvider extends ContentProvider {
 		default:
 			throw new IllegalArgumentException("update() Unknown uri: " + uri);
 		}
-		return db.update(table, values, selection, selectionArgs);
+		int ret = db.update(table, values, selection, selectionArgs);
+		if (ret > 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return ret;
 	}
 	
 	@Override

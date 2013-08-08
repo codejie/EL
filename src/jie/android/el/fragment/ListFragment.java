@@ -4,9 +4,11 @@ import java.util.HashMap;
 
 import android.app.Activity;
 import android.content.Context;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
@@ -61,9 +63,24 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 			return inflater.inflate(R.layout.layout_list_item, parent, false); 
 		}
 	}
+
+	private class ContextChangedObserver extends ContentObserver {
+
+		public ContextChangedObserver() {
+			super(new Handler());
+		}
+
+		@Override
+		public void onChange(boolean selfChange) {
+			if (!selfChange) {
+				adapter.changeCursor(getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, null));
+			}
+		}		
+	}
 	
 	private ListView listView = null;
 	private Adapter adapter = null;
+	private ContextChangedObserver changedObserver = new ContextChangedObserver();
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -76,9 +93,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		Cursor cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, null);
-		
-		adapter = new Adapter(getActivity(), cursor);
+		adapter = new Adapter(getActivity(), getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, null));
 		
 		listView = (ListView) view.findViewById(R.id.listView1);
 		listView.setOnItemClickListener(this);
@@ -105,6 +120,18 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 				adapter.notifyDataSetChanged();
 			}
 		}
+	}
+
+	@Override
+	public void onPause() {
+		getELActivity().getContentResolver().unregisterContentObserver(changedObserver);
+		super.onPause();		
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();		
+		getELActivity().getContentResolver().registerContentObserver(ELContentProvider.URI_EL_ESL, true, changedObserver);
 	}	
 	
 }

@@ -289,7 +289,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void loadData(int index, String title, String data) {
-		textView.setText(String.format("%d : %s", index, title));
+		textView.setText(String.format("%d . %s", index, title));
 		
 //		getELActivity().setTitle(title);
 		
