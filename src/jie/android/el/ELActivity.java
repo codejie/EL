@@ -206,6 +206,10 @@ public class ELActivity extends SherlockFragmentActivity {
 		return serviceAccess;
 	}
 
+	public Handler getHandler() {
+		return handler;
+	}
+	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
@@ -242,8 +246,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			releaseService(true);
 			finish();
 		}
-		
-		// TODO Auto-generated method stub
+
 		return super.onKeyDown(keyCode, event);
 	}
 
@@ -286,9 +289,11 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 	
-	protected void onPackageChanged() {
-		Bundle data = new Bundle();
-		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
-		fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);		
+	public void onPackageChanged() {
+		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.LIST) {
+			Bundle data = new Bundle();
+			data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
+			fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);
+		}
 	}	
 }

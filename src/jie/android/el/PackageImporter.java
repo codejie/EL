@@ -14,6 +14,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Message;
 import android.util.Log;
 
 public class PackageImporter {
@@ -60,6 +61,8 @@ public class PackageImporter {
 			packageList.remove(local);			
 			
 			taskRunning = false;
+			
+			activity.onPackageChanged();
 			
 			startImport();
 		}

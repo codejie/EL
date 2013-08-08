@@ -113,4 +113,8 @@ public class FragmentSwitcher {
 		}
 		return (BaseFragment) fragmentManager.findFragmentByTag(curType.getTitle());
 	}
+	
+	public Type getCurrentType() {
+		return curType;
+	}
 }
