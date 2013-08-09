@@ -7,8 +7,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import android.os.Environment;
 
 public class Utils {
 	public static final String formatMSec(int msec) {
@@ -81,5 +85,20 @@ public class Utils {
 		}
 		
 		return ret.toArray(new String[] {});
+	}
+	
+	public static final String checkExternalStorageDirectory(final String path) {
+		Pattern pattern = Pattern.compile("/storage/emulated/\\d{1,2}");
+		Matcher matcher = pattern.matcher(path);
+		if (!matcher.find()) {
+			return path;
+		} else {
+			return path.replace("/storage/emulated/", "/storage/sdcard");
+		}
+	}
+	
+	public static final String getExtenalSDCardDirectory() {
+		//return checkExternalStorageDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
+		return Environment.getExternalStorageDirectory().getAbsolutePath();
 	}
 }

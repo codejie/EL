@@ -3,7 +3,9 @@ package jie.android.el.service;
 import java.io.File;
 import java.io.IOException;
 
+import jie.android.el.CommonConsts;
 import jie.android.el.database.ELContentProvider;
+import jie.android.el.utils.Utils;
 
 import android.content.ContentUris;
 import android.content.Context;
@@ -141,7 +143,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 					audioTitle = cursor.getString(0);
 
 					String audio = cursor.getString(1);
-					audio = Environment.getExternalStorageDirectory() + File.separator + "/jie/el/" + audio;
+					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
 					player.setDataSource(audio);
 					player.prepare();
 					if (listener != null) {

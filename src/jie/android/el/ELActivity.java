@@ -1,5 +1,6 @@
 package jie.android.el;
 
+import java.io.File;
 import java.io.IOException;
 
 import jie.android.el.database.ELContentProvider;
@@ -8,6 +9,7 @@ import jie.android.el.service.ServiceAccess;
 import jie.android.el.service.ServiceNotification;
 import jie.android.el.service.CommonState;
 import jie.android.el.utils.Speaker;
+import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.R;
@@ -17,6 +19,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -43,19 +46,20 @@ public class ELActivity extends SherlockFragmentActivity {
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
 	
-	private Menu actionMenu = null;
-
 	private FragmentSwitcher fragmentSwitcher = null;
 	
 	private ProgressDialog progressDialog = null;
 	
+	private Menu actionMenu = null;
+	private SharedPreferences sharedPreferences = null;	
+ 
 	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_UI_CREATED:
-				showProgressDialog(true, "Connectint to service...");
+				showProgressDialog(true, "Connecting to service...");
 				break;
 			case MSG_SERVICE_NOTIFICATION:
 				onServiceNotification(msg.arg1);
@@ -133,6 +137,10 @@ public class ELActivity extends SherlockFragmentActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		checkPath();
+		
+		sharedPreferences = getSharedPreferences("el", 0);
+		
 		fragmentSwitcher = new FragmentSwitcher(this);
 		
 		this.setContentView(R.layout.activity_el);
@@ -144,13 +152,36 @@ public class ELActivity extends SherlockFragmentActivity {
 	
 		handler.sendEmptyMessage(MSG_UI_CREATED);
 	}
+	
+	private boolean checkPath() {
+		String sdcard = Utils.getExtenalSDCardDirectory();
+		File f = new File(sdcard + CommonConsts.AppArgument.PATH_ROOT);
+		if (!f.exists()) {
+			if (!f.mkdirs()) {
+				Log.e(Tag, "make directory '"+ f.getAbsolutePath() + "' failed.");
+				return false;
+			}
+		}
 
-	@Override
-	protected void onStop() {
-		Log.d(Tag, "onStop()");
+		f = new File(sdcard + CommonConsts.AppArgument.PATH_EL);
+		if (!f.exists()) {
+			if (!f.mkdirs()) {
+				Log.e(Tag, "make directory '"+ f.getAbsolutePath() + "' failed.");
+				return false;
+			}
+		}
 		
-		super.onStop();
+		f = new File(sdcard + CommonConsts.AppArgument.PATH_CACHE);
+		if (!f.exists()) {
+			if (!f.mkdirs()) {
+				Log.e(Tag, "make directory '"+ f.getAbsolutePath() + "' failed.");
+				return false;
+			}
+		}
+		
+		return true;
 	}
+
 	
 	@Override
 	protected void onDestroy() {
@@ -211,6 +242,10 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	public Handler getHandler() {
 		return handler;
+	}
+	
+	public SharedPreferences getSharedPreferences() {
+		return sharedPreferences;
 	}
 	
 //	@Override

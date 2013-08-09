@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class ELDBAccess extends DBAccess {
 	
-	public static final String DBFILE	=	"/jie/el/el.db";
+	public static final String DBFILE	=	"el.db";
 
 	public ELDBAccess(Context context, String name) {
 		super(context, name);

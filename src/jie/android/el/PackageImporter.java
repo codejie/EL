@@ -31,8 +31,8 @@ public class PackageImporter {
 		@Override
 		protected Boolean doInBackground(String... arg0) {
 			local = arg0[0];
-			zipfile = Environment.getExternalStorageDirectory() + "/jie/cache" + File.separator + arg0[0];
-			output = Environment.getExternalStorageDirectory() + "/jie/el";
+			zipfile = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + arg0[0];
+			output = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL;
 			
 			//unzip
 			dbfile = unzipPackage(zipfile, output);
@@ -88,7 +88,7 @@ public class PackageImporter {
 	}
 	
 	public static String[] check() {
-		String path = Environment.getExternalStorageDirectory() + "/jie/cache";
+		String path = Utils.getExtenalSDCardDirectory() + "/jie/cache";
 		File p = new File(path);
 		if (!p.exists()) {
 			return null;

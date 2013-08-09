@@ -10,6 +10,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import jie.android.el.CommonConsts;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 import android.app.DownloadManager;
@@ -72,11 +73,7 @@ public class Downloader {
 	}
 	
 	public boolean init() {
-		outputCachePath = Environment.getExternalStorageDirectory() + "/jie/cache";
-		File f = new File(outputCachePath);
-		if (!f.exists()) {
-			f.mkdirs();
-		}
+		outputCachePath = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE;// Environment.getExternalStorageDirectory() + "/jie/cache";
 		
 		downloadManager = (DownloadManager) service.getSystemService(Context.DOWNLOAD_SERVICE);
 
@@ -172,7 +169,7 @@ public class Downloader {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
 			req.setDescription("downloading package..");
-			Uri dest = Uri.parse("file://" + outputCachePath + File.separator + local);
+			Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
 			req.setDestinationUri(dest);
 			req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
 		}
@@ -287,6 +284,18 @@ public class Downloader {
 		return -1;
 	}
 
+	private String queryLocalBySyncId(long syncid) {
+		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "local" }, "syncid=" + syncid, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				return cursor.getString(0);
+			}
+		} finally {
+			cursor.close();
+		}		
+		return null;
+	}	
+
 	private void onUpdateDownloaded(long syncid, String url) {
 		Log.d(Tag, "onUpdateDownloaded() syncid:" + syncid + " url:" + url);
 		Uri uri = Uri.parse(url);
@@ -365,56 +374,20 @@ public class Downloader {
 		
 		String file = url.substring("file://".length());
 		
-//		final String dbfile = unzipPackage(file);
+		String local = queryLocalBySyncId(syncid);
+		if (local != null) {
+			local = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + local;
+			File f = new File(file);
+			if (f.exists()) {
+				f.renameTo(new File(local));
+			}
+	
+			updateStatusBySyncId(syncid, null, STATUS_DONE);
 		
-		// TODO: donot forget open the below line.
-		//Utils.removeFile(file); 		
-		
-		updateStatusBySyncId(syncid, null, STATUS_DONE);
-		
-		service.onPackageReady(syncid, file);
+			service.onPackageReady(syncid, file);
+		}
 		
 		this.checkUpdateData();
-		
-		
-//		Uri uri = Uri.parse(url);
-//		Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
-//		if (cursor != null) {
-//			try {
-//				if (cursor.moveToFirst()) {
-//					final String dbfile = unzipPackage(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
-//					service.onPackageReady(syncid, dbfile);
-//					
-//					this.checkUpdateData();
-//				}
-//			} finally {
-//				cursor.close();
-//			}			
-//		}	
 	}
-
-//	private String unzipPackage(String file) {
-//
-//		String output = Environment.getExternalStorageDirectory() + "/jie/el";
-//		
-//		String[] ret = Utils.unzipFile(file, output);
-//				
-//		if (ret.length > 0) {
-//			for (String f : ret) {
-//				if (f.endsWith(".db")) {
-//					return (output + File.separator + f);
-//				}
-//			}
-//		}
-//		
-//		return null;
-//	}
-//
-//	public void onPackageImported(int syncid, String dbfile) {
-//		Utils.removeFile(dbfile);		
-//		dbAccess.updateUpdateData(syncid, STATUS_DONE);
-//		
-//		this.checkUpdateData();
-//	}
 	
 }

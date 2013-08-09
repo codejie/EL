@@ -73,7 +73,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		@Override
 		public void onChange(boolean selfChange) {
 			if (!selfChange) {
-				adapter.changeCursor(getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, null));
+				adapter.changeCursor(getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, "idx"));
 			}
 		}		
 	}
@@ -93,7 +93,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		adapter = new Adapter(getActivity(), getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, null));
+		adapter = new Adapter(getActivity(), getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, "idx"));
 		
 		listView = (ListView) view.findViewById(R.id.listView1);
 		listView.setOnItemClickListener(this);

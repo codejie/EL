@@ -204,11 +204,13 @@ public class ELService extends Service {
 	}
 	
 	public void onPackageReady(long syncid, final String file) {
-		try {
-			serviceNotification.onPackageReady(syncid, file);
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		if (serviceNotification != null) {
+			try {
+				serviceNotification.onPackageReady(syncid, file);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 	}
 

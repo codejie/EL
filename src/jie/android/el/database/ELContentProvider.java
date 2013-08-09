@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import jie.android.el.CommonConsts;
 import jie.android.el.utils.AssetsHelper;
+import jie.android.el.utils.Utils;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -194,7 +196,7 @@ public class ELContentProvider extends ContentProvider {
 		
 		checkLACDatabase();
 		
-		String db = Environment.getExternalStorageDirectory() + ELDBAccess.DBFILE;
+		String db = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + ELDBAccess.DBFILE;
 		elDBAccess = new ELDBAccess(this.getContext(), db);
 
 		db = getContext().getDatabasePath(LACDBAccess.DBFILE).getAbsolutePath();

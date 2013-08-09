@@ -8,4 +8,10 @@
 
     <string name="el_setting_play_random_play">Random Order Play</string>
 
+    <string name="el_setting_content_display">Content Display</string>
+
+    <string name="el_setting_content_font_medium">Medium Font Size</string>
+
+    <string name="el_setting_content_font_large">Large Font Size</string>
+
 </resources>
