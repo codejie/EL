@@ -22,11 +22,11 @@ import android.os.RemoteException;
 
 public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
 
-	private class TickCounter extends AsyncTask<Void, Void, Void> {
+	private class TickCounterTask extends AsyncTask<Void, Void, Void> {
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			 while (player.isPlaying()) {
+			 while (isAudioPlaying) {
 				if (listener != null) {
 					try {
 						listener.onPlaying(player.getCurrentPosition());
@@ -59,6 +59,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private int audioPosition = -1;
 	private String audioTitle = null;
 
+	private TickCounterTask tickTask = null;
+	private boolean isAudioPlaying = false; 
 	
 	public AudioPlayer(Context context) {
 		this.context = context;
@@ -127,7 +129,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	
 	public void setData(int index, int position) {
 
-		if (player.isPlaying()) {
+		if (isPlaying()) {
 			player.stop();
 		}
 		
@@ -173,21 +175,27 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	}
 	
 	public void play() {
-		if (player.isPlaying())
+		if (isPlaying())
 			return;
 						
 		player.start();
-		new TickCounter().execute();
+		
+		isAudioPlaying = true;
+		
+		tickTask = new TickCounterTask();
+		tickTask.execute();
 	}
 	
 	public void pause() {
-		if (player.isPlaying()) {
+		if (isPlaying()) {
 			player.pause();
 		}
 	}
 	
 	public void stop() {
-		if (player.isPlaying()) {
+		if (isPlaying()) {
+			isAudioPlaying = false;
+//			tickTask.cancel(true);
 			player.stop();
 		}
 	}
@@ -200,8 +208,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		player.release();
 	}
 	
-	public boolean isPlaying() {
-		return player.isPlaying();
+	public boolean isPlaying() {		
+		return isAudioPlaying && player.isPlaying();
 	}
 	
 	public int getAudioIndex() {

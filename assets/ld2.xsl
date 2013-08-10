@@ -95,8 +95,13 @@
 	</I>
 </xsl:template>
 
+<xsl:template match="w">
+	<B>
+		<xsl:value-of select="."/>
+	</B>
+</xsl:template>
 
-<xsl:template match="S">
+<xsl:template match="s">
 	<hr/>
 </xsl:template>
 

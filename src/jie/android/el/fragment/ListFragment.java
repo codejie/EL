@@ -14,6 +14,7 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -22,6 +23,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.ELActivity;
 import jie.android.el.FragmentSwitcher;
@@ -99,6 +101,14 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		listView.setOnItemClickListener(this);
 		
 		listView.setAdapter(adapter);
+		
+		if (adapter.getCount() == 0) {
+			loadBundleData();
+		}
+	}
+
+	private void loadBundleData() {
+		getELActivity().getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_LOAD_BUNDLEDPACKAGE);
 	}
 
 	@Override
@@ -132,6 +142,16 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	public void onResume() {
 		super.onResume();		
 		getELActivity().getContentResolver().registerContentObserver(ELContentProvider.URI_EL_ESL, true, changedObserver);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			getELActivity().finish();
+			return true;
+		}
+		// TODO Auto-generated method stub
+		return super.onKeyDown(keyCode, event);
 	}	
 	
 }

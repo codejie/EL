@@ -2,7 +2,11 @@ package jie.android.el;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import jie.android.el.database.ELContentProvider;
@@ -29,9 +33,9 @@ public class PackageImporter {
 		private String output = null;
 		
 		@Override
-		protected Boolean doInBackground(String... arg0) {
-			local = arg0[0];
-			zipfile = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + arg0[0];
+		protected Boolean doInBackground(String... args) {
+			local = args[0];
+			zipfile = args[1] + args[0];
 			output = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL;
 			
 			//unzip
@@ -62,7 +66,7 @@ public class PackageImporter {
 			
 			taskRunning = false;
 			
-			activity.onPackageChanged();
+			activity.getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_PACKAGE_CHANGED);// .onPackageChanged();
 			
 			startImport();
 		}
@@ -116,10 +120,8 @@ public class PackageImporter {
 	public void startImport() {
 		if (packageList.size() > 0) {
 			if (!taskRunning) {
-				
-				taskRunning = true;
-				
-				new ImportTask().execute(packageList.get(0));
+				taskRunning = true;				
+				new ImportTask().execute(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
 			}
 		}
 	}
@@ -191,6 +193,33 @@ public class PackageImporter {
 		}
 		
 		return false;
+	}
+
+	public void loadBundledPackage() {
+
+		InputStream is = null;
+		try {
+			is = activity.getAssets().open("package_1.zip");
+			File f = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + "package_1.zip");
+			FileOutputStream out = new FileOutputStream(f);
+			if (out != null) {
+				byte[] buf = new byte[64 * 1024];
+				try {
+					int size = -1;
+					while((size = is.read(buf)) > 0) {
+						out.write(buf, 0, size);
+					}
+				} finally {
+					out.close();
+				}
+			}
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		taskRunning = true;				
+		new ImportTask().execute("package_1.zip", Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
 	}
 	
 }

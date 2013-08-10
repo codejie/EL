@@ -11,7 +11,10 @@ import jie.android.el.service.CommonState;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
+import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.FragmentArgument;
+import jie.android.el.CommonConsts.UIMsg;
 import jie.android.el.R;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -36,12 +39,13 @@ public class ELActivity extends SherlockFragmentActivity {
 
 	private static final String Tag = ELActivity.class.getSimpleName();
 	
-	private static final int MSG_SERVICE_NOTIFICATION	=	1;
-	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
-	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
-	
-	private static final int MSG_UI_CREATED = 100;	
-	private static final int MSG_UI_PACKAGE_CHANGED = 101;
+//	private static final int MSG_SERVICE_NOTIFICATION	=	1;
+//	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
+//	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
+//	
+//	private static final int MSG_UI_CREATED = 100;
+//	private static final int MSG_UI_PACKAGE_CHANGED = 101;
+//	private static final int MSG_UI_LOAD_BUNDLEDPACKAGE = 102;
 	
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
@@ -58,20 +62,23 @@ public class ELActivity extends SherlockFragmentActivity {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case MSG_UI_CREATED:
+			case UIMsg.UI_CREATED:
 				showProgressDialog(true, "Connecting to service...");
 				break;
-			case MSG_SERVICE_NOTIFICATION:
+			case UIMsg.SERVICE_NOTIFICATION:
 				onServiceNotification(msg.arg1);
 				break;
-			case MSG_SERVICE_AUDIOPLAYING:
+			case UIMsg.SERVICE_AUDIOPLAYING:
 				onServiceAudioPlaying((Bundle)msg.obj);
 				break;
-			case MSG_SERVICE_PACKAGE_READY:
+			case UIMsg.SERVICE_PACKAGE_READY:
 				onServicePackageReady();
 				break;
-			case MSG_UI_PACKAGE_CHANGED:
+			case UIMsg.UI_PACKAGE_CHANGED:
 				onPackageChanged();
+				break;
+			case UIMsg.UI_LOAD_BUNDLEDPACKAGE:
+				onLoadBundledPackage();
 				break;
 			default:;
 			}
@@ -82,7 +89,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		
 		@Override
 		public void onServiceState(int state) throws RemoteException {
-			Message msg = Message.obtain(handler, MSG_SERVICE_NOTIFICATION, state, -1);
+			Message msg = Message.obtain(handler, UIMsg.SERVICE_NOTIFICATION, state, -1);
 			msg.sendToTarget();
 		}
 		
@@ -93,14 +100,14 @@ public class ELActivity extends SherlockFragmentActivity {
 			data.putInt("duration", duration);
 			data.putInt("position", position);
 			
-			Message msg = Message.obtain(handler, MSG_SERVICE_AUDIOPLAYING, data);
+			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIOPLAYING, data);
 			msg.sendToTarget();
 		}
 
 		@Override
 		public void onPackageReady(long syncid, String file) throws RemoteException {
 			Log.d(Tag, "onPackageReady : syncid = " + syncid + " file = " + file);
-			Message msg = Message.obtain(handler, MSG_SERVICE_PACKAGE_READY);
+			Message msg = Message.obtain(handler, UIMsg.SERVICE_PACKAGE_READY);
 			msg.sendToTarget();
 		}
 
@@ -150,12 +157,12 @@ public class ELActivity extends SherlockFragmentActivity {
 		initTranslator();
 		initPackageImporter();
 	
-		handler.sendEmptyMessage(MSG_UI_CREATED);
+		handler.sendEmptyMessage(UIMsg.UI_CREATED);
 	}
 	
 	private boolean checkPath() {
 		String sdcard = Utils.getExtenalSDCardDirectory();
-		File f = new File(sdcard + CommonConsts.AppArgument.PATH_ROOT);
+		File f = new File(sdcard + AppArgument.PATH_ROOT);
 		if (!f.exists()) {
 			if (!f.mkdirs()) {
 				Log.e(Tag, "make directory '"+ f.getAbsolutePath() + "' failed.");
@@ -163,7 +170,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			}
 		}
 
-		f = new File(sdcard + CommonConsts.AppArgument.PATH_EL);
+		f = new File(sdcard + AppArgument.PATH_EL);
 		if (!f.exists()) {
 			if (!f.mkdirs()) {
 				Log.e(Tag, "make directory '"+ f.getAbsolutePath() + "' failed.");
@@ -171,7 +178,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			}
 		}
 		
-		f = new File(sdcard + CommonConsts.AppArgument.PATH_CACHE);
+		f = new File(sdcard + AppArgument.PATH_CACHE);
 		if (!f.exists()) {
 			if (!f.mkdirs()) {
 				Log.e(Tag, "make directory '"+ f.getAbsolutePath() + "' failed.");
@@ -234,8 +241,8 @@ public class ELActivity extends SherlockFragmentActivity {
 			packageImporter = new PackageImporter(this, res);
 			packageImporter.startImport();
 		}
-	}	
-	
+	}
+		
 	public ServiceAccess getServiceAccess() {
 		return serviceAccess;
 	}
@@ -272,15 +279,17 @@ public class ELActivity extends SherlockFragmentActivity {
 			showFragment(FragmentSwitcher.Type.DOWNLOAD, null);
 			break;
 		case R.id.el_menu_setting:
-			showFragment(FragmentSwitcher.Type.SETTING, null);
+			showFragment(FragmentSwitcher.Type.SETTING, null);			
 			break;
 		case R.id.el_menu_about:
-			ContentValues values = new ContentValues();
-			values.put("idx", 103);
-			values.put("title", "test changed");
-			values.put("script", "null");
-			values.put("audio", "null.mp3");
-			this.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
+			//fragmentSwitcher.pop();
+//			fragmentSwitcher.addToStack();
+//			ContentValues values = new ContentValues();
+//			values.put("idx", 103);
+//			values.put("title", "test changed");
+//			values.put("script", "null");
+//			values.put("audio", "null.mp3");
+//			this.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -300,8 +309,12 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			releaseService(true);
-			finish();
+			if (!fragmentSwitcher.showPrevFragment()) {
+				releaseService(true);
+				finish();
+				return true;
+			}
+			return true;
 		}
 		
 		return super.onKeyDown(keyCode, event);
@@ -324,9 +337,9 @@ public class ELActivity extends SherlockFragmentActivity {
 	protected void onServiceNotification(int state) {
 		if (state == CommonState.Service.READY.getId()) {
 			showProgressDialog(false, null);
-			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);			
-		} else if (state == CommonState.Service.UNZIP.getId()) {
-			showProgressDialog(true, "Unzip...");
+			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+		} else {
+			
 		}
 	}
 
@@ -361,6 +374,18 @@ public class ELActivity extends SherlockFragmentActivity {
 			data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
 			fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);
 		}
+		
+		this.showProgressDialog(false, null);
 	}
 
+	public void onLoadBundledPackage() {
+		
+		this.showProgressDialog(true, "load bundled package..");
+		
+		if (packageImporter == null) {
+			packageImporter = new PackageImporter(this, null);
+		}
+		packageImporter.loadBundledPackage();		
+	}
+	
 }

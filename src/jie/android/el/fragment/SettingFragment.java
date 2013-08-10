@@ -27,11 +27,10 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
-			return true;
-		}
-		// TODO Auto-generated method stub
+//		if (keyCode == KeyEvent.KEYCODE_BACK) {
+//			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
+//			return true;
+//		}
 		return super.onKeyDown(keyCode, event);
 	}
 

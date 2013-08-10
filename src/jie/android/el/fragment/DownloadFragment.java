@@ -50,16 +50,5 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 			e.printStackTrace();
 		}
 	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
-			return true;
-		}
-		// TODO Auto-generated method stub
-		return super.onKeyDown(keyCode, event);
-	}
-	
 	
 }

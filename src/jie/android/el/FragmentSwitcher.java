@@ -7,12 +7,13 @@ import jie.android.el.fragment.SettingFragment;
 import jie.android.el.fragment.ShowFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 public class FragmentSwitcher {
 	
 	public enum Type {
 		
-		LIST("list", false), SHOW("show", true), ABOUT("about", true), SETTING("setting", true),
+		LIST("list", false), SHOW("show", false), ABOUT("about", true), SETTING("setting", true),
 		DOWNLOAD("download", true);
 		
 		private final String title;
@@ -29,7 +30,18 @@ public class FragmentSwitcher {
 
 		public boolean hasRemoved() {
 			return removed;
-		}		
+		}
+		
+		public static Type getType(final String title) {
+			if (title.equals(LIST.getTitle())) {
+				return LIST;
+			} else if (title.equals(SHOW.getTitle())) {
+				return SHOW;
+			} else {
+				return null;
+			}
+		}
+		
 	}
 	
 	private final ELActivity activity;
@@ -64,9 +76,17 @@ public class FragmentSwitcher {
 		}
 		
 		fragment.onArguments(args);
-		
 		fragmentManager.beginTransaction().show(fragment).commit();
 		curType = type;
+
+//		
+//		FragmentTransaction ft = fragmentManager.beginTransaction();
+//		if (curType != null) {
+//			ft.addToBackStack(curType.getTitle());
+//		}
+//		ft.show(fragment);
+//		ft.commit();
+//		curType = type;		
 		
 		return true;
 	}
@@ -101,8 +121,13 @@ public class FragmentSwitcher {
 			if (type.hasRemoved()) {
 				fragmentManager.beginTransaction().remove(fragment).commit();
 			} else {
-				fragmentManager.beginTransaction().hide(fragment).commit();
+				FragmentTransaction ft = fragmentManager.beginTransaction();
+				ft.addToBackStack(type.getTitle());
+				ft.hide(fragment);
+				ft.commit();
+//				fragmentManager.beginTransaction().hide(fragment).commit();
 			}
+			
 			curType = null;			
 		}
 	}
@@ -117,4 +142,20 @@ public class FragmentSwitcher {
 	public Type getCurrentType() {
 		return curType;
 	}
+	
+	public boolean showPrevFragment() {
+		int count = fragmentManager.getBackStackEntryCount();
+		if (count > 0) {
+			String name = fragmentManager.getBackStackEntryAt(count - 1).getName();
+			fragmentManager.popBackStack();// .popBackStackImmediate();
+			Type type = Type.getType(name);
+			if (type != null) {
+				show(type);
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 }

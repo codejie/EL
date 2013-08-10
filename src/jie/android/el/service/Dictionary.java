@@ -66,6 +66,41 @@ public class Dictionary {
 		}
 	}
 	
+	public static class XmlResult implements Parcelable {
+		
+		public static final Parcelable.Creator<XmlResult> CREATOR = new Parcelable.Creator<XmlResult>() {
+
+			@Override
+			public XmlResult createFromParcel(Parcel source) {
+				return new XmlResult(source.readString(), source.readString());
+			}
+
+			@Override
+			public XmlResult[] newArray(int size) {
+				return new XmlResult[size];
+			}
+		};
+		
+		public String word;
+		public String result;
+		
+		public XmlResult(final String word, final String result) {
+			this.word = word;
+			this.result = result;
+		}
+
+		@Override
+		public int describeContents() {
+			return 0;
+		}
+
+		@Override
+		public void writeToParcel(Parcel dest, int flags) {
+			dest.writeString(word);
+			dest.writeString(result);
+		}
+	}
+	
 	//entity
 	public final class Entity { 
 		public final class BlockData {
@@ -125,8 +160,8 @@ public class Dictionary {
 			}
 		}
 		
-		public final List<String> getWordXmlResult(final String word) {
-			ArrayList<String> result = new ArrayList<String>();
+		public final List<XmlResult> getWordXmlResult(final String word) {
+			ArrayList<XmlResult> result = new ArrayList<XmlResult>();
 			// get self xml
 			getWordSelfXmlResult(word, result);
 			// get ref xml
@@ -135,15 +170,16 @@ public class Dictionary {
 		}
 		
 		
-		private void getWordSelfXmlResult(String word, ArrayList<String> result) {
-			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INDEX_JOIN_INFO, new String[] { "offset", "length", "block1" }, "word=?", new String[] { word }, null);
+		private void getWordSelfXmlResult(String word, ArrayList<XmlResult> result) {
+			//TODO: the word result is not what I want, for example, as the word is 'coding', I wish I could get 'coding' and 'code'
+			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INDEX_JOIN_INFO, new String[] { "offset", "length", "block1", "word" }, "word=?", new String[] { word }, null);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
 						XmlIndex xmlIndex = new XmlIndex(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2));
 						String xml = getXmlResult(xmlIndex);
 						if (xml != null) {
-							result.add(xml);
+							result.add(new XmlResult(cursor.getString(3), xml));
 						}
 						
 					} while (cursor.moveToNext());
@@ -257,7 +293,7 @@ public class Dictionary {
 	public Word.XmlResult getWordXmlResult(final String word) {
 		Word.XmlResult result = new Word.XmlResult();		
 		for (final Entity entity : mapEntity.values()) {
-			List<String> res = entity.getWordXmlResult(word);
+			List<XmlResult> res = entity.getWordXmlResult(word);
 			if (res != null) {
 				result.addXmlData(entity.info.index, res);
 			}

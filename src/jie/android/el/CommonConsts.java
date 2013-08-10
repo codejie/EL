@@ -26,4 +26,14 @@ public interface CommonConsts {
 		public static final String CONTENTY_MEDIUM_FONT_SIZE	= "content_medium_font_size";
 		public static final String CONTENTY_LARGE_FONT_SIZE	= "content_large_font_size";
 	}
+	
+	public interface UIMsg {
+		public static final int SERVICE_NOTIFICATION	=	1;
+		public static final int SERVICE_AUDIOPLAYING	=	2;
+		public static final int SERVICE_PACKAGE_READY	=	3;
+		
+		public static final int UI_CREATED = 100;
+		public static final int UI_PACKAGE_CHANGED = 101;
+		public static final int UI_LOAD_BUNDLEDPACKAGE = 102;		
+	}
 }

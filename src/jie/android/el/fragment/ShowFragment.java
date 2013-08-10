@@ -30,6 +30,7 @@ import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
+import jie.android.el.service.Dictionary;
 import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
@@ -264,7 +265,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					String title = cursor.getString(0);
 					String script = cursor.getString(1);
 
-					setAudioPlayListener();					
+					setAudioPlayListener(true);					
 					loadData(index, title, script);
 					if (obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()) != FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {
 						setAudio(index, position);
@@ -279,9 +280,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}		
 	}
 
-	private void setAudioPlayListener() {
+	private void setAudioPlayListener(boolean attach) {
 		try {
-			getELActivity().getServiceAccess().setAudioListener(new OnPlayListener());
+			if (attach) {
+				getELActivity().getServiceAccess().setAudioListener(new OnPlayListener());
+			} else {
+				getELActivity().getServiceAccess().setAudioListener(null);
+			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -362,6 +367,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	
 	private void stopAudio() {
 		try {
+			setAudioPlayListener(false);
 			getELActivity().getServiceAccess().stopAudio();
 			playPlay.setSelected(false);
 			
@@ -387,7 +393,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				togglePopupWindow();
 			} else {
 				stopAudio();
-				getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
+				return false;
+//				getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
 			}
 			return true;			
 		}
@@ -414,10 +421,12 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			ret += "<LAC-R><LAC-D>" + "Vicon English-Chinese Dictionary" + "</LAC-D>";
 			int i = 0;			
 			
-			for(final String xml : data.getXml()) {
-				ret += xml;
-				if ((++i) < data.getXml().size())
-					ret += "<S/>";
+			for(final Dictionary.XmlResult r : data.getResult()) {
+				//TODO : cannot get the correct word, so do not display it now.
+				//ret += "<w>" + r.word + "</w>";				
+				ret += r.result;
+				if ((++i) < data.getResult().size())
+					ret += "<s/>";
 			}
 			ret += "</LAC-R>";
 		}

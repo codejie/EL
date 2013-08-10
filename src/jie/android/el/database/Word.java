@@ -3,6 +3,8 @@ package jie.android.el.database;
 import java.util.ArrayList;
 import java.util.List;
 
+import jie.android.el.service.Dictionary;
+
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -83,9 +85,14 @@ public class Word {
 				
 				while (source.dataAvail() > 0) {
 					int id = source.readInt();
-					List<String> xml = new ArrayList<String>();
-					source.readStringList(xml);
-					result.addXmlData(id, xml);
+					List<Dictionary.XmlResult> resList = new ArrayList<Dictionary.XmlResult>();
+					int size = source.readInt();
+					for (int i = 0; i < size; ++ i) {
+						Dictionary.XmlResult res = Dictionary.XmlResult.CREATOR.createFromParcel(source);
+						resList.add(res);
+					}
+
+					result.addXmlData(id, resList);
 				}
 				
 				return result;
@@ -100,19 +107,19 @@ public class Word {
 		
 		public static final class XmlData {
 			private int dict = -1;
-			private List<String> xml = null;
+			private List<Dictionary.XmlResult> result = null;
 			
-			public XmlData(int dict, final List<String> xml) {
+			public XmlData(int dict, final List<Dictionary.XmlResult> xml) {
 				this.dict = dict;
-				this.xml = xml;
+				this.result = xml;
 			}
 
 			public int getDictIndex() {
 				return dict;
 			}
 
-			public final List<String> getXml() {
-				return xml;
+			public final List<Dictionary.XmlResult> getResult() {
+				return result;
 			}
 		}
 		
@@ -127,13 +134,17 @@ public class Word {
 			//dest.writeInt(xmlData.size());
 			for (XmlData data : xmlData) {
 				dest.writeInt(data.getDictIndex());
-				dest.writeStringList(data.getXml());
+				dest.writeInt(data.getResult().size());
+				for (Dictionary.XmlResult r : data.getResult()) {
+					r.writeToParcel(dest, flag);
+				}
+//				dest.w .writeStringList(data.getXml());
 			}
 		}
 		
 		private List<XmlData> xmlData = new ArrayList<XmlData>();
 		
-		public void addXmlData(int dictid, final List<String> res) {
+		public void addXmlData(int dictid, final List<Dictionary.XmlResult> res) {
 			xmlData.add(new XmlData(dictid, res));
 		}
 		
