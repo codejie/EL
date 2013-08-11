@@ -12,7 +12,8 @@ import android.widget.TextView;
 
 public class DownloadFragment extends BaseFragment implements OnClickListener {
 
-	private TextView textView = null;
+	private TextView textRequestCode = null;
+	private TextView textCheckCode = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -25,8 +26,10 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		textView = (TextView) view.findViewById(R.id.editText1);
-		textView.setText("0000-3-00-00");
+		textRequestCode = (TextView) view.findViewById(R.id.editText1);
+		//textRequestCode.setText("0000-3-00-00");
+		textCheckCode = (TextView) view.findViewById(R.id.editText2);
+		textCheckCode.setText("0-00-00");		
 		
 		view.findViewById(R.id.button1).setOnClickListener(this);
 	}
@@ -41,7 +44,7 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 	}
 
 	private void onButtonClick() {
-		final String request = textView.getText().toString();
+		final String request = textRequestCode.getText().toString();
 		
 		try {
 			getELActivity().getServiceAccess().addDownloadRequest(request);

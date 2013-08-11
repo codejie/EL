@@ -14,4 +14,10 @@
 
     <string name="el_setting_content_font_large">Large Font Size</string>
 
+    <string name="app_version">version 1.0 (alpha)</string>
+
+    <string name="app_author">codejie</string>
+
+    <string name="app_email">codejie@gmail.com</string>
+
 </resources>

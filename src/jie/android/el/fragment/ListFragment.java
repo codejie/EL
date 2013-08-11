@@ -48,13 +48,13 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		@Override
 		public void bindView(View view, Context context, Cursor cursor) {
 			
-			TextView idx = (TextView) view.findViewById(R.id.textView2);
+			TextView idx = (TextView) view.findViewById(R.id.textIndex);
 			idx.setText("ESL Podcast " + cursor.getString(0));
 			
-			TextView title = (TextView) view.findViewById(R.id.textView3);
+			TextView title = (TextView) view.findViewById(R.id.textTitle);
 			title.setText(cursor.getString(1));
 			
-			TextView duration = (TextView) view.findViewById(R.id.textView4);
+			TextView duration = (TextView) view.findViewById(R.id.textDuration);
 			duration.setText(Utils.formatMSec(cursor.getInt(2) * 1000));
 			
 			view.setId(cursor.getInt(0));

@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import android.content.Context;
+import android.database.Cursor;
 import android.os.Environment;
 
 public class Utils {
@@ -101,4 +103,13 @@ public class Utils {
 		//return checkExternalStorageDirectory(Environment.getExternalStorageDirectory().getAbsolutePath());
 		return Environment.getExternalStorageDirectory().getAbsolutePath();
 	}
+	
+	public static Cursor getNextAudio(Context context, final String[] projects, boolean random, boolean next) {
+		
+	//	if ()
+		
+		
+		return null;
+	}
+	
 }

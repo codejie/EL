@@ -38,15 +38,7 @@ import com.actionbarsherlock.view.MenuItem;
 public class ELActivity extends SherlockFragmentActivity {
 
 	private static final String Tag = ELActivity.class.getSimpleName();
-	
-//	private static final int MSG_SERVICE_NOTIFICATION	=	1;
-//	private static final int MSG_SERVICE_AUDIOPLAYING	=	2;
-//	private static final int MSG_SERVICE_PACKAGE_READY	=	3;
-//	
-//	private static final int MSG_UI_CREATED = 100;
-//	private static final int MSG_UI_PACKAGE_CHANGED = 101;
-//	private static final int MSG_UI_LOAD_BUNDLEDPACKAGE = 102;
-	
+
 	private ServiceAccess serviceAccess = null;
 	private PackageImporter packageImporter = null;
 	
@@ -105,8 +97,8 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 
 		@Override
-		public void onPackageReady(long syncid, String file) throws RemoteException {
-			Log.d(Tag, "onPackageReady : syncid = " + syncid + " file = " + file);
+		public void onPackageReady() throws RemoteException {
+			Log.d(Tag, "onPackageReady()");
 			Message msg = Message.obtain(handler, UIMsg.SERVICE_PACKAGE_READY);
 			msg.sendToTarget();
 		}
@@ -282,14 +274,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			showFragment(FragmentSwitcher.Type.SETTING, null);			
 			break;
 		case R.id.el_menu_about:
-			//fragmentSwitcher.pop();
-//			fragmentSwitcher.addToStack();
-//			ContentValues values = new ContentValues();
-//			values.put("idx", 103);
-//			values.put("title", "test changed");
-//			values.put("script", "null");
-//			values.put("audio", "null.mp3");
-//			this.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
+			showFragment(FragmentSwitcher.Type.ABOUT, null);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

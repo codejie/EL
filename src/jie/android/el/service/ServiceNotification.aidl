@@ -5,5 +5,5 @@ interface ServiceNotification {
 	
 	void onAudioPlaying(in int index, in int duration, in int position);
 	
-	void onPackageReady(in long syncid, in String file);
+	void onPackageReady();
 }

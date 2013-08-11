@@ -10,7 +10,7 @@ interface ServiceAccess {
 	
 	boolean canExit(); 
 	
-	void setAudio(in int index, in int position);
+	void setAudio(in int index, in int position, int total);
 	void setAudioListener(in OnPlayAudioListener listener);
 	void playAudio();
 	void stopAudio();

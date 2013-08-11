@@ -92,11 +92,9 @@ public class PackageImporter {
 	}
 	
 	public static String[] check() {
-		String path = Utils.getExtenalSDCardDirectory() + "/jie/cache";
+		String path = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE;
 		File p = new File(path);
-		if (!p.exists()) {
-			return null;
-		}
+		
 		return p.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String file) {

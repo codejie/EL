@@ -1,5 +1,6 @@
 package jie.android.el;
 
+import jie.android.el.fragment.AboutFragment;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.fragment.DownloadFragment;
 import jie.android.el.fragment.ListFragment;
@@ -78,15 +79,6 @@ public class FragmentSwitcher {
 		fragment.onArguments(args);
 		fragmentManager.beginTransaction().show(fragment).commit();
 		curType = type;
-
-//		
-//		FragmentTransaction ft = fragmentManager.beginTransaction();
-//		if (curType != null) {
-//			ft.addToBackStack(curType.getTitle());
-//		}
-//		ft.show(fragment);
-//		ft.commit();
-//		curType = type;		
 		
 		return true;
 	}
@@ -105,6 +97,9 @@ public class FragmentSwitcher {
 			break;
 		case SETTING:
 			fragment = new SettingFragment();
+			break;
+		case ABOUT:
+			fragment = new AboutFragment();
 			break;
 		default:
 			return null;

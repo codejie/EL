@@ -1,6 +1,7 @@
 package jie.android.el.service;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -60,7 +61,48 @@ public class Downloader {
 		this.service = service;
 	}
 
-	public static boolean check(Context context) {
+	public static boolean checkDownloaded(Context context) {
+		//check tmp files
+		String path = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE;
+		File p = new File(path);
+
+		String[] files = p.list(new FilenameFilter() {
+			@Override
+			public boolean accept(File dir, String file) {
+				return file.startsWith("package") && file.endsWith(".zip.tmp");
+			}
+		});
+		
+		boolean find = false;
+		for (final String file : files) {
+			p = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + file);
+			if (p != null) {
+				String local = file.substring(0, file.indexOf(".tmp"));
+				Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "length" }, "status=0 and local=?", new String[] { local }, null);
+				if (cursor != null) {
+					try {
+						if (cursor.moveToFirst()) {
+							if (p.length() == cursor.getLong(0)) {
+								File dest = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + local);
+								if (p.renameTo(dest)) {
+									find = true;
+								} else {
+									Log.e(Tag, "rename failed - from '" + file + "' to '" + local + "'.");
+								}
+							}
+						}
+					} finally {
+						cursor.close();
+					}
+				}
+			}
+		}
+		return find;
+	}
+	
+	public static boolean checkIncomplete(Context context) {
+		
+		//check incomplete download 
 		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "count(*)" }, "status != 0", null, null);
 		try {
 			if (cursor.moveToFirst()) {
@@ -103,7 +145,7 @@ public class Downloader {
 			return false;
 		}
 		
-		insertUpdateData(request, TYPE_UPDATE, url, file, -1, STATUS_INIT);
+		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
 		
 		return checkUpdateData();
 	}
@@ -237,12 +279,13 @@ public class Downloader {
 		}
 	}
 
-	private void insertUpdateData(final String request, int type, final String url, final String local, long syncid, int status) {
+	private void insertUpdateData(final String request, int type, final String url, final String local, int size, long syncid, int status) {
 		ContentValues values = new ContentValues();
 		values.put("request", request);
 		values.put("type", type);
 		values.put("url", url);
 		values.put("local", local);
+		values.put("length", size);
 		values.put("syncid", syncid);
 		values.put("status", status);
 		values.put("updatetime", System.currentTimeMillis());
@@ -348,10 +391,12 @@ public class Downloader {
 				
 				NodeList f = p.getElementsByTagName("file");
 				Log.d(Tag, "file = " + f.item(0).getFirstChild().getNodeValue());
+				NodeList s = p.getElementsByTagName("size");
+				Log.d(Tag, "size = " + f.item(0).getFirstChild().getNodeValue());				
 				NodeList u =  p.getElementsByTagName("url");
 				Log.d(Tag, "url = " + u.item(0).getFirstChild().getNodeValue());
 				
-				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), -1, STATUS_INIT);
+				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), Integer.valueOf(s.item(0).getFirstChild().getNodeValue()), -1, STATUS_INIT);
 			}
 
 			return true;
@@ -379,12 +424,14 @@ public class Downloader {
 			local = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + local;
 			File f = new File(file);
 			if (f.exists()) {
-				f.renameTo(new File(local));
+				if (!f.renameTo(new File(local))) {
+					Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
+				}
 			}
 	
 			updateStatusBySyncId(syncid, null, STATUS_DONE);
 		
-			service.onPackageReady(syncid, file);
+			service.onPackageReady();
 		}
 		
 		this.checkUpdateData();

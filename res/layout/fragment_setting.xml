@@ -30,7 +30,7 @@
         android:text="@string/el_setting_play_random_play" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/textIndex"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"

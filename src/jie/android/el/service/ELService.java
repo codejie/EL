@@ -27,11 +27,7 @@ public class ELService extends Service {
 		public void regServiceNotification(int token, ServiceNotification notification) throws RemoteException {
 			serviceNotification = notification;
 			
-			postServiceState(CommonState.Service.READY);
-			
-			if (player.isPlaying()) {
-				postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
-			}
+			onUIConnected();
 		}
 
 		@Override
@@ -45,7 +41,7 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public void setAudio(int index, int position) throws RemoteException {
+		public void setAudio(int index, int position, int total) throws RemoteException {
 			player.setData(index, position);
 		}
 
@@ -100,13 +96,23 @@ public class ELService extends Service {
 	private AudioPlayer player = null;
 	private Downloader downloader = null;
 	
-	private boolean isServiceReady = false;
-	
 	private ServiceNotification serviceNotification = null;
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		return new AccessStub();
+	}
+
+	public void onUIConnected() {
+		postServiceState(CommonState.Service.READY);
+		
+		if (player.isPlaying()) {
+			postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
+		}
+		
+		if (Downloader.checkDownloaded(this)) {
+			onPackageReady();			
+		}
 	}
 
 	@Override
@@ -118,11 +124,9 @@ public class ELService extends Service {
 		initDictionary();
 		initPlayer();
 		
-		if (Downloader.check(this)) {
+		if (Downloader.checkIncomplete(this)) {
 			initDownloader();
 		}
-		
-		isServiceReady = true;
 	}
 
 	@Override
@@ -203,10 +207,10 @@ public class ELService extends Service {
 		downloader.addDownloadRequest(request);
 	}
 	
-	public void onPackageReady(long syncid, final String file) {
+	public void onPackageReady() {
 		if (serviceNotification != null) {
 			try {
-				serviceNotification.onPackageReady(syncid, file);
+				serviceNotification.onPackageReady();
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

@@ -30,9 +30,15 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_LAC_DICT_INFO = Uri.parse("content://" + AUTHORITY + "/lac/dict_info");
 	public static final Uri URI_LAC_WORD_INDEX_JOIN_INFO = Uri.parse("content://" + AUTHORITY + "/lac/word_index_join_info");
 	public static final Uri URI_LAC_BLOCK_INFO = Uri.parse("content://" + AUTHORITY + "/lac/block_info");
+	public static final Uri URI_EL_ESL_RANDOM = Uri.parse("content://" + AUTHORITY + "/el/esl_random");
+	public static final Uri URI_EL_ESL_NEXT = Uri.parse("content://" + AUTHORITY + "/el/esl_next");
+	public static final Uri URI_EL_ESL_PREV = Uri.parse("content://" + AUTHORITY + "/el/esl_prev");
 	
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
+	private static final int MATCH_ITEM_EL_ESL_RANDOM = 12;
+	private static final int MATCH_ITEM_EL_ESL_NEXT = 13;
+	private static final int MATCH_ITEM_EL_ESL_PREV = 14;
 	private static final int MATCH_LAC_WORD_INFO = 20;
 	private static final int MATCH_ITEM_LAC_WORD_INFO = 21;
 	private static final int MATCH_LAC_SYS_UPDATE = 30;
@@ -66,9 +72,12 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_LAC_DICT_INFO:
 		case MATCH_LAC_WORD_INDEX_JOIN_INFO:
 		case MATCH_LAC_BLOCK_INFO:
+		case MATCH_ITEM_EL_ESL_RANDOM:
 			return CONTENT_TYPE;
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
+		case MATCH_ITEM_EL_ESL_NEXT:
+		case MATCH_ITEM_EL_ESL_PREV:			
 			return CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown uri: " + uri); 
@@ -118,6 +127,24 @@ public class ELContentProvider extends ContentProvider {
 	            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};  				
 			}
 			break;
+		case MATCH_ITEM_EL_ESL_RANDOM:
+			db = elDBAccess.getReadableDatabase();
+			table = "esl";
+			sortOrder = "random() limit 1";
+			break;
+		case MATCH_ITEM_EL_ESL_NEXT:
+		case MATCH_ITEM_EL_ESL_PREV:
+			long position = ContentUris.parseId(uri);
+			String sql = "select ";
+			int p = 0;
+			for (final String col : projection) {
+				sql += col;
+				if (( ++ p) < projection.length) {
+					sql += ",";
+				}
+			}
+			sql += " from esl limit 1 offset " + position;
+			return db.rawQuery(sql, null);
 		case MATCH_LAC_WORD_INFO:
 		case MATCH_ITEM_LAC_WORD_INFO:
 			db = lacDBAccess.getReadableDatabase();
@@ -190,6 +217,9 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "lac/dict_info", MATCH_LAC_DICT_INFO);
 		matcher.addURI(AUTHORITY, "lac/word_index_join_info", MATCH_LAC_WORD_INDEX_JOIN_INFO);
 		matcher.addURI(AUTHORITY, "lac/block_info", MATCH_LAC_BLOCK_INFO);
+		matcher.addURI(AUTHORITY, "el/esl_random", MATCH_ITEM_EL_ESL_RANDOM);
+		matcher.addURI(AUTHORITY, "el/esl_next/#", MATCH_ITEM_EL_ESL_NEXT);
+		matcher.addURI(AUTHORITY, "el/esl_prev/#", MATCH_ITEM_EL_ESL_PREV);
 	}
 	
 	private void initDatabases() {

@@ -129,6 +129,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 //	private String audio = null;
 	private String audioDuration = null;
 	
+	private int audioIndex = -1;
+	private int audioPosition = -1;
+	private int audioTotal = 0;
+	
 	private boolean isServiceNotification = false; 
 	
 	private Handler handler = new Handler() {
@@ -174,7 +178,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		initAnimation();
 		
-		textView = (TextView) view.findViewById(R.id.textView2);
+		textView = (TextView) view.findViewById(R.id.textIndex);
 		webView = (WebView) view.findViewById(R.id.webView1);
 		LACWebViewClient client = new LACWebViewClient();
 		client.setOnUrlLoadingListener(new OnUrlLoadingListener() {
@@ -254,10 +258,12 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	protected void onIndex(Bundle obj) {
-		int index = obj.getInt("index");
-		int position = obj.getInt("position");
 		
-		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);		
+		audioIndex = obj.getInt("index");
+		audioPosition = obj.getInt("position");
+		audioTotal = obj.getInt("total");
+		
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, audioIndex);		
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script"}, null, null, null);
 		if (cursor != null) {
 			try {
@@ -266,9 +272,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					String script = cursor.getString(1);
 
 					setAudioPlayListener(true);					
-					loadData(index, title, script);
+					loadData(audioIndex, title, script);
 					if (obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()) != FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {
-						setAudio(index, position);
+						setAudio(audioIndex, audioPosition, audioTotal);
 						playAudio();
 					} else {
 						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt("duration"), -1));						
@@ -332,11 +338,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		return html;
 	}
 
-	private void setAudio(int index, int position) {
+	private void setAudio(int index, int position, int total) {
 //		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
 		
 		try {
-			getELActivity().getServiceAccess().setAudio(index, position);
+			getELActivity().getServiceAccess().setAudio(index, position, total);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -466,6 +472,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			togglePlay();
 			break;
 		case R.id.playImageView5:
+			getNextAudio();
 			break;
 		case R.id.playTextTime:
 		case R.id.seekLayout:
@@ -546,7 +553,34 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	public void getNextAudio() {
-//SELECT * FROM word_info ORDER BY RANDOM() LIMIT 1		
+		String[] proj = new String[] { "rowid", "idx" };
+
+		Cursor cursor = null;
+//		if (true) {
+//			cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL_RANDOM, proj, null, null, null);
+//		} else {
+			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL_NEXT, audioPosition);
+			cursor = getELActivity().getContentResolver().query(uri, proj, null, null, null);
+
+//		}
+		
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					Bundle args = new Bundle();
+					args.putInt("index", cursor.getInt(1));
+					args.putInt("position", cursor.getPosition());
+					args.putInt("total", -1);
+					
+					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					
+				}
+			} finally {
+				cursor.close();
+			}
+		}
+		
+////SELECT * FROM word_info ORDER BY RANDOM() LIMIT 1
+//		getELActivity().getContentResolver().query(uri, projection, selection, selectionArgs, sortOrder)
 	}
 	
 	public void getPrevAudio() {
