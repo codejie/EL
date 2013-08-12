@@ -14,15 +14,6 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
-        android:id="@+id/textIndex"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="28dp"
-        android:text="@string/app_version" />
-
-    <TextView
         android:id="@+id/textTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,12 +36,29 @@
         android:text="The Vicon English-Chinese Dictionary bundled in app is from Lingoes (www.lingoes.net)." />
 
     <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView5"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:gravity="center_horizontal"
+        android:text="For more information, please visit http://www.cppblog.com/codejie" />
+
+    <TextView
         android:id="@+id/textDuration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textIndex"
         android:layout_below="@+id/textTitle"
-        android:layout_marginTop="18dp"
+        android:layout_centerHorizontal="true"
         android:text="@string/app_email" />
+
+    <TextView
+        android:id="@+id/textIndex"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/textDuration"
+        android:layout_below="@+id/textView1"
+        android:text="@string/app_version" />
 
 </RelativeLayout>

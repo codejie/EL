@@ -102,6 +102,8 @@ public class Downloader {
 	
 	public static boolean checkIncomplete(Context context) {
 		
+		checkDownloaded(context);
+		
 		//check incomplete download 
 		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "count(*)" }, "status != 0", null, null);
 		try {

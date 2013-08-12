@@ -10,7 +10,7 @@ interface ServiceAccess {
 	
 	boolean canExit(); 
 	
-	void setAudio(in int index, in int position, int total);
+	void setAudio(in int index                                   );
 	void setAudioListener(in OnPlayAudioListener listener);
 	void playAudio();
 	void stopAudio();
@@ -24,4 +24,6 @@ interface ServiceAccess {
 	
 	void setUIState(in int state);
 
+	int setNotification(in int level, in String title, in String text);
+	void cancelNotification(in int id);  
 }

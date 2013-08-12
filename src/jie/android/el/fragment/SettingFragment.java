@@ -26,33 +26,33 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 	}
 
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-//		if (keyCode == KeyEvent.KEYCODE_BACK) {
-//			getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
-//			return true;
-//		}
-		return super.onKeyDown(keyCode, event);
-	}
-
-	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
 		checkPlayStopAfterCurrent = (CheckBox) view.findViewById(R.id.checkBox1);
-		checkPlayStopAfterCurrent.setOnCheckedChangeListener(this);		
 		checkPlayRandomOrder = (CheckBox) view.findViewById(R.id.checkBox2);
-		checkPlayRandomOrder.setOnCheckedChangeListener(this);
 		
 		checkContentFontMedium = (CheckBox) view.findViewById(R.id.checkBox3);
-		checkContentFontMedium.setOnCheckedChangeListener(this);		
 		checkContentFontLarge = (CheckBox) view.findViewById(R.id.checkBox4);
-		checkContentFontLarge.setOnCheckedChangeListener(this);
 
 		updateSetting();
+		
+		checkPlayStopAfterCurrent.setOnCheckedChangeListener(this);		
+		checkPlayRandomOrder.setOnCheckedChangeListener(this);
+		checkContentFontMedium.setOnCheckedChangeListener(this);		
+		checkContentFontLarge.setOnCheckedChangeListener(this);
 	}
 
 	@Override
-	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
+	public void onCheckedChanged(CompoundButton view, boolean checked) {
+		
+		if (checked) {
+			if (view.getId() == R.id.checkBox3) {
+				checkContentFontLarge.setChecked(false);			
+			} else if (view.getId() == R.id.checkBox4) {
+				checkContentFontMedium.setChecked(false);				
+			}
+		}		
 		saveSetting();
 	}
 
@@ -60,7 +60,9 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		SharedPreferences prefs = getELActivity().getSharedPreferences();
 		
 		checkPlayStopAfterCurrent.setChecked(prefs.getBoolean(Setting.PLAY_STOP_AFTER_CURRENT, false));
-		// TODO Auto-generated method stub
+		checkPlayRandomOrder.setChecked(prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false));
+		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENTY_MEDIUM_FONT_SIZE, false));
+		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENTY_LARGE_FONT_SIZE, false));
 		
 	}
 	
@@ -69,6 +71,10 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		SharedPreferences.Editor editor = getELActivity().getSharedPreferences().edit();
 
 		editor.putBoolean(Setting.PLAY_STOP_AFTER_CURRENT, checkPlayStopAfterCurrent.isChecked());
+		editor.putBoolean(Setting.PLAY_RANDOM_ORDER, checkPlayRandomOrder.isChecked());
+		
+		editor.putBoolean(Setting.CONTENTY_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
+		editor.putBoolean(Setting.CONTENTY_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());
 		
 		editor.commit();
 	}	

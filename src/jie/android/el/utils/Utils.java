@@ -12,8 +12,12 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import jie.android.el.database.ELContentProvider;
+
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Environment;
 
 public class Utils {
@@ -104,12 +108,27 @@ public class Utils {
 		return Environment.getExternalStorageDirectory().getAbsolutePath();
 	}
 	
-	public static Cursor getNextAudio(Context context, final String[] projects, boolean random, boolean next) {
+	public static Cursor getNextAudio(Context context, int index, final String[] projection, boolean random, boolean next) {
+		Cursor cursor = null;
+		if (random) {
+			cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL_RANDOM, projection, null, null, null);
+		} else if (next) {
+			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL_NEXT, index);
+			cursor = context.getContentResolver().query(uri, projection, null, null, null);
+			if (cursor != null && cursor.getCount() == 0) {
+				cursor.close();
+				cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL_FIRST, projection, null, null, null);
+			}
+		} else {
+			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL_PREV, index);
+			cursor = context.getContentResolver().query(uri, projection, null, null, null);
+			if (cursor != null && cursor.getCount() == 0) {
+				cursor.close();
+				cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL_LAST, projection, null, null, null);
+			}			
+		}
 		
-	//	if ()
-		
-		
-		return null;
+		return cursor;
 	}
 	
 }

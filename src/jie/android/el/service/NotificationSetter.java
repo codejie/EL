@@ -23,6 +23,10 @@ public class NotificationSetter {
 		manager = (NotificationManager) this.service.getSystemService(Context.NOTIFICATION_SERVICE);
 	}
 	
+	public void release() {
+		
+	}
+	
 	public void post(int index, final String title) {
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(service);
 		builder.setSmallIcon(R.drawable.ic_launcher);

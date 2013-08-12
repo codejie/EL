@@ -16,8 +16,10 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.Environment;
+import android.os.Message;
 import android.os.RemoteException;
 
 public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
@@ -56,7 +58,6 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private OnPlayAudioListener listener = null;
 	
 	private int audioIndex = -1;
-	private int audioPosition = -1;
 	private String audioTitle = null;
 
 	private TickCounterTask tickTask = null;
@@ -113,7 +114,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	public void onCompletion(MediaPlayer arg0) {
 		if (listener != null) {
 			try {
-				listener.onCompleted();
+				listener.onCompleted();				
 			} catch (DeadObjectException e) {
 				listener = null;								
 			} catch (RemoteException e) {
@@ -121,13 +122,18 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 				e.printStackTrace();
 			}
 		}
+
+		if (!context.getSharedPreferences("el", 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
+			getNextAudio();
+		}
+		
 	}
 	
 	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
 		this.listener = listener;
 	}
 	
-	public void setData(int index, int position) {
+	public void setData(int index) {
 
 		if (isPlaying()) {
 			player.stop();
@@ -141,7 +147,6 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			try {
 				if (cursor.moveToFirst()) {
 					audioIndex = index;
-					audioPosition = position;
 					audioTitle = cursor.getString(0);
 
 					String audio = cursor.getString(1);
@@ -228,4 +233,51 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		return player.getCurrentPosition();
 	}
 
+	private void getNextAudio() {	
+		boolean random = context.getSharedPreferences("el", 0).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
+
+		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx", "title", "audio" }, random, true);		
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					player.reset();
+				
+					audioIndex = cursor.getInt(0);
+					audioTitle = cursor.getString(1);
+					String audio = cursor.getString(2);
+					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
+					player.setDataSource(audio);
+					try {
+						if (listener != null) {
+							listener.onAudioChanged(audioIndex);
+						}
+						
+						player.prepare();
+
+						if (listener != null) {
+							listener.onPrepared(player.getDuration());
+						}					
+					} catch (DeadObjectException e) {
+						listener = null;				
+					} catch (RemoteException e) {
+						e.printStackTrace();
+					}
+					
+					play();
+				}			
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (SecurityException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalStateException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}		
+		}
+	}
 }

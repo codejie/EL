@@ -1,6 +1,5 @@
 package jie.android.el.database;
 
-import jie.android.el.service.CommonState;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 

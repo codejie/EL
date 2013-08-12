@@ -102,14 +102,14 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		
 		listView.setAdapter(adapter);
 		
-		if (adapter.getCount() == 0) {
-			loadBundleData();
-		}
+//		if (adapter.getCount() == 0) {
+//			loadBundleData();
+//		}
 	}
 
-	private void loadBundleData() {
-		getELActivity().getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_LOAD_BUNDLEDPACKAGE);
-	}
+//	private void loadBundleData() {
+//		getELActivity().getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_LOAD_BUNDLEDPACKAGE);
+//	}
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

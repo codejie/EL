@@ -1,4 +1,4 @@
-package jie.android.el;
+package jie.android.el.service;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -9,10 +9,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
+import jie.android.el.CommonConsts;
+import jie.android.el.ELActivity;
+import jie.android.el.CommonConsts.AppArgument;
+import jie.android.el.CommonConsts.UIMsg;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
@@ -66,20 +71,19 @@ public class PackageImporter {
 			
 			taskRunning = false;
 			
-			activity.getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_PACKAGE_CHANGED);// .onPackageChanged();
+//			context.getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_PACKAGE_CHANGED);// .onPackageChanged();
 			
 			startImport();
 		}
 	}
 	
-	
-	private ELActivity activity = null;
+	private Context context = null;
 	private ArrayList<String> packageList = new ArrayList<String>();
 	
 	private boolean taskRunning = false;
 
-	public PackageImporter(ELActivity activity, String[] packageList) {
-		this.activity = activity;
+	public PackageImporter(Context context, String[] packageList) {
+		this.context = context;
 		if (packageList != null) {
 			for (final String str : packageList) {
 				this.packageList.add(str);
@@ -162,9 +166,9 @@ public class PackageImporter {
 						values.put("flag", cursor.getInt(8));
 
 						if (!isExist(cursor.getInt(0))) {
-							activity.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
+							context.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
 						} else {
-							activity.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + cursor.getInt(0), null);
+							context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + cursor.getInt(0), null);
 						}
 								
 					} while (cursor.moveToNext());
@@ -181,7 +185,7 @@ public class PackageImporter {
 	}
 
 	private boolean isExist(int idx) {
-		Cursor cursor = activity.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "count(*)" }, "idx=" + idx, null, null);
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "count(*)" }, "idx=" + idx, null, null);
 		try {
 			if (cursor.moveToFirst()) {
 				return (cursor.getInt(0) > 0);
@@ -197,7 +201,7 @@ public class PackageImporter {
 
 		InputStream is = null;
 		try {
-			is = activity.getAssets().open("package_1.zip");
+			is = context.getAssets().open("package_1.zip");
 			File f = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + "package_1.zip");
 			FileOutputStream out = new FileOutputStream(f);
 			if (out != null) {

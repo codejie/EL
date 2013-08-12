@@ -3,22 +3,20 @@ package jie.android.el;
 import java.io.File;
 import java.io.IOException;
 
-import jie.android.el.database.ELContentProvider;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.service.ServiceAccess;
 import jie.android.el.service.ServiceNotification;
-import jie.android.el.service.CommonState;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
-import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.FragmentArgument;
+import jie.android.el.CommonConsts.NotificationLevel;
+import jie.android.el.CommonConsts.ServiceState;
 import jie.android.el.CommonConsts.UIMsg;
 import jie.android.el.R;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -40,7 +38,7 @@ public class ELActivity extends SherlockFragmentActivity {
 	private static final String Tag = ELActivity.class.getSimpleName();
 
 	private ServiceAccess serviceAccess = null;
-	private PackageImporter packageImporter = null;
+//	private PackageImporter packageImporter = null;
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
@@ -63,15 +61,15 @@ public class ELActivity extends SherlockFragmentActivity {
 			case UIMsg.SERVICE_AUDIOPLAYING:
 				onServiceAudioPlaying((Bundle)msg.obj);
 				break;
-			case UIMsg.SERVICE_PACKAGE_READY:
-				onServicePackageReady();
-				break;
-			case UIMsg.UI_PACKAGE_CHANGED:
-				onPackageChanged();
-				break;
-			case UIMsg.UI_LOAD_BUNDLEDPACKAGE:
-				onLoadBundledPackage();
-				break;
+//			case UIMsg.SERVICE_PACKAGE_READY:
+//				onServicePackageReady();
+//				break;
+//			case UIMsg.UI_PACKAGE_CHANGED:
+//				onPackageChanged();
+//				break;
+//			case UIMsg.UI_LOAD_BUNDLEDPACKAGE:
+//				onLoadBundledPackage();
+//				break;
 			default:;
 			}
 		}		
@@ -96,12 +94,12 @@ public class ELActivity extends SherlockFragmentActivity {
 			msg.sendToTarget();
 		}
 
-		@Override
-		public void onPackageReady() throws RemoteException {
-			Log.d(Tag, "onPackageReady()");
-			Message msg = Message.obtain(handler, UIMsg.SERVICE_PACKAGE_READY);
-			msg.sendToTarget();
-		}
+//		@Override
+//		public void onPackageReady() throws RemoteException {
+//			Log.d(Tag, "onPackageReady()");
+//			Message msg = Message.obtain(handler, UIMsg.SERVICE_PACKAGE_READY);
+//			msg.sendToTarget();
+//		}
 
 	};
 	
@@ -147,7 +145,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		initService();
 		initSpeaker();
 		initTranslator();
-		initPackageImporter();
+//		initPackageImporter();
 	
 		handler.sendEmptyMessage(UIMsg.UI_CREATED);
 	}
@@ -227,13 +225,13 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 	
-	private void initPackageImporter() {
-		final String[] res = PackageImporter.check();
-		if (res != null && res.length > 0) {
-			packageImporter = new PackageImporter(this, res);
-			packageImporter.startImport();
-		}
-	}
+//	private void initPackageImporter() {
+//		final String[] res = PackageImporter.check();
+//		if (res != null && res.length > 0) {
+//			packageImporter = new PackageImporter(this, res);
+//			packageImporter.startImport();
+//		}
+//	}
 		
 	public ServiceAccess getServiceAccess() {
 		return serviceAccess;
@@ -275,6 +273,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			break;
 		case R.id.el_menu_about:
 			showFragment(FragmentSwitcher.Type.ABOUT, null);
+			showNotification(NotificationLevel.INFO, "title", "hahaha");
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -320,7 +319,7 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 
 	protected void onServiceNotification(int state) {
-		if (state == CommonState.Service.READY.getId()) {
+		if (state == ServiceState.READY.getId()) {
 			showProgressDialog(false, null);
 			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
 		} else {
@@ -345,32 +344,54 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	protected void onServicePackageReady() {
-		if (packageImporter == null) {
-			initPackageImporter();			
-		} else {
-			packageImporter.refresh();
+	public int showNotification(NotificationLevel level, final String title, final String text) {
+		if (serviceAccess != null) {
+			try {
+				return serviceAccess.setNotification(level.getId(), title, text);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
+		return -1;
 	}
 	
-	public void onPackageChanged() {
-		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.LIST) {
-			Bundle data = new Bundle();
-			data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
-			fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);
+	public void removeNotification(int id) {
+		if (serviceAccess != null) {
+			try {
+				serviceAccess.cancelNotification(id);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
-		
-		this.showProgressDialog(false, null);
 	}
+//	protected void onServicePackageReady() {
+//		if (packageImporter == null) {
+//			initPackageImporter();			
+//		} else {
+//			packageImporter.refresh();
+//		}
+//	}
+	
+//	public void onPackageChanged() {
+//		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.LIST) {
+//			Bundle data = new Bundle();
+//			data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
+//			fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);
+//		}
+		
+//		this.showProgressDialog(false, null);
+//	}
 
-	public void onLoadBundledPackage() {
-		
-		this.showProgressDialog(true, "load bundled package..");
-		
-		if (packageImporter == null) {
-			packageImporter = new PackageImporter(this, null);
-		}
-		packageImporter.loadBundledPackage();		
-	}
+//	public void onLoadBundledPackage() {
+//		
+//		this.showProgressDialog(true, "load bundled package..");
+//		
+//		if (packageImporter == null) {
+//			packageImporter = new PackageImporter(this, null);
+//		}
+//		packageImporter.loadBundledPackage();		
+//	}
 	
 }

@@ -36,4 +36,41 @@ public interface CommonConsts {
 		public static final int UI_PACKAGE_CHANGED = 101;
 		public static final int UI_LOAD_BUNDLEDPACKAGE = 102;		
 	}
+	
+	public enum ServiceState {
+		READY, UNZIP, ERROR;
+	
+		public int getId() {
+			return this.ordinal();
+		}
+	}
+	
+	public enum UIState {
+		START, STOP;
+		
+		public int getId() {
+			return this.ordinal();
+		}
+	}
+	
+	public enum NotificationLevel {
+		INFO, WARNING, ERROR;
+		
+		public int getId() {
+			return this.ordinal();
+		}
+		
+		public static NotificationLevel getLevel(int id) {
+
+			if (id == INFO.getId()) {
+				return INFO;
+			} else if (id == WARNING.getId()) {
+				return WARNING;
+			} else if (id == ERROR.getId()) {
+				return ERROR;
+			} else {
+				return null;
+			}
+		}
+	}
 }
