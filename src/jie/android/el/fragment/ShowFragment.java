@@ -28,6 +28,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.Setting;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
@@ -224,6 +225,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playRepeat.setOnClickListener(this);
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
 		playShuffle.setOnClickListener(this);
+		
 		playPrev = (ImageView) view.findViewById(R.id.playImageView3);
 		playPrev.setOnClickListener(this);
 		playPlay = (ImageView) view.findViewById(R.id.playImageView4);
@@ -231,9 +233,17 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playNext = (ImageView) view.findViewById(R.id.playImageView5);
 		playNext.setOnClickListener(this);
 		
-		playRepeat.setSelected(true);
+//		playRepeat.setSelected(true);
 	}
-
+	
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		super.onHiddenChanged(hidden);
+		if (playShuffle != null) {
+			playShuffle.setSelected(getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_RANDOM_ORDER, false));
+		}
+	}
+	
 	@Override
 	public void onArguments(Bundle args) {
 		if (args != null) {
@@ -479,6 +489,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		case R.id.playImageView1:
 			break;
 		case R.id.playImageView2:
+			toggleRandom();
 			break;
 		case R.id.playImageView3:
 			getPrevAudio();
@@ -495,6 +506,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			break;
 		default:;
 		}
+	}
+
+	private void toggleRandom() {
+		boolean selected = !playShuffle.isSelected();		
+		getELActivity().getSharedPreferences().edit().putBoolean(Setting.PLAY_RANDOM_ORDER, selected).commit();
+
+		playShuffle.setSelected(selected);
 	}
 
 	private void togglePlay() {
@@ -526,10 +544,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		stopAudio();
 		playBar.setEnabled(false);
 		playTime.setText(audioDuration);
-		
-//		if (!getELActivity().getSharedPreferences().getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
-//			getNextAudio();
-//		}
 	}
 
 	protected void OnPlayPlaying(int msec) {
@@ -606,4 +620,5 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			}
 		}		
 	}
+
 }

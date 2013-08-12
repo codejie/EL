@@ -77,7 +77,7 @@ public class FragmentSwitcher {
 		}
 		
 		fragment.onArguments(args);
-		fragmentManager.beginTransaction().show(fragment).commit();
+		fragmentManager.beginTransaction().show(fragment).commitAllowingStateLoss();//.commit();
 		curType = type;
 		
 		return true;

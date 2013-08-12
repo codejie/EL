@@ -1,5 +1,6 @@
 package jie.android.el.service;
 
+import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.ServiceState;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
@@ -265,14 +266,17 @@ public class ELService extends Service {
 
 	public int showNotification(int level, String title, String text) {
 		if (notificationSetter != null) {
-			notificationSetter.post(1, text);
+			NotificationType type = NotificationType.getLevel(level);
+			if (type != null) {
+				notificationSetter.show(type, title, text);
+			}
 		}
 		return 0;
 	}
 
 	public void removeNotification(int id) {
 		if (notificationSetter != null) {
-			notificationSetter.remove();
+			notificationSetter.remove(id);
 		}
 	}	
 }

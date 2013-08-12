@@ -53,21 +53,21 @@ public interface CommonConsts {
 		}
 	}
 	
-	public enum NotificationLevel {
-		INFO, WARNING, ERROR;
+	public enum NotificationType {
+		PLAY, WARNING, IMPORT;
 		
 		public int getId() {
 			return this.ordinal();
 		}
 		
-		public static NotificationLevel getLevel(int id) {
+		public static NotificationType getLevel(int id) {
 
-			if (id == INFO.getId()) {
-				return INFO;
+			if (id == PLAY.getId()) {
+				return PLAY;
 			} else if (id == WARNING.getId()) {
 				return WARNING;
-			} else if (id == ERROR.getId()) {
-				return ERROR;
+			} else if (id == IMPORT.getId()) {
+				return IMPORT;
 			} else {
 				return null;
 			}

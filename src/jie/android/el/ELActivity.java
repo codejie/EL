@@ -11,7 +11,7 @@ import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.FragmentArgument;
-import jie.android.el.CommonConsts.NotificationLevel;
+import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.ServiceState;
 import jie.android.el.CommonConsts.UIMsg;
 import jie.android.el.R;
@@ -273,7 +273,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			break;
 		case R.id.el_menu_about:
 			showFragment(FragmentSwitcher.Type.ABOUT, null);
-			showNotification(NotificationLevel.INFO, "title", "hahaha");
+			showNotification(NotificationType.PLAY, "title", "hahaha");
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -344,7 +344,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	public int showNotification(NotificationLevel level, final String title, final String text) {
+	public int showNotification(NotificationType level, final String title, final String text) {
 		if (serviceAccess != null) {
 			try {
 				return serviceAccess.setNotification(level.getId(), title, text);
