@@ -1,8 +1,6 @@
 package jie.android.el.service;
 
 import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -10,20 +8,18 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 import jie.android.el.CommonConsts;
-import jie.android.el.ELActivity;
-import jie.android.el.CommonConsts.AppArgument;
-import jie.android.el.CommonConsts.UIMsg;
+import jie.android.el.CommonConsts.NotificationAction;
+import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.AsyncTask;
-import android.os.Environment;
-import android.os.Message;
 import android.util.Log;
 
 public class PackageImporter {
@@ -60,8 +56,12 @@ public class PackageImporter {
 
 		@Override
 		protected void onPostExecute(Boolean result) {
-			if (result == Boolean.FALSE) {
-				Log.e(Tag, "import failed - zipfile : " + zipfile);
+					
+			if (result != Boolean.FALSE) {
+				showNotification(true, local, "EL imports package successfully");				
+			} else {
+				Log.e(Tag, "import failed - zipfile : " + zipfile);				
+				showNotification(false, local, "EL imports package failed.");
 			}
 
 			Utils.removeFile(dbfile);
@@ -70,8 +70,6 @@ public class PackageImporter {
 			packageList.remove(local);			
 			
 			taskRunning = false;
-			
-//			context.getHandler().sendEmptyMessage(CommonConsts.UIMsg.UI_PACKAGE_CHANGED);// .onPackageChanged();
 			
 			startImport();
 		}
@@ -223,5 +221,18 @@ public class PackageImporter {
 		taskRunning = true;				
 		new ImportTask().execute("package_1.zip", Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
 	}
-	
+
+	private void showNotification(boolean succ, final String title, final String text) {
+		
+		Intent intent = new Intent(NotificationAction.ACTION_SHOW);
+		if (succ) {
+			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.IMPORT.getId());
+		} else {
+			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.WARNING.getId());
+		}
+		intent.putExtra(NotificationAction.DATA_TITLE, title);
+		intent.putExtra(NotificationAction.DATA_TEXT, text);
+		
+		context.sendBroadcast(intent);		
+	}
 }

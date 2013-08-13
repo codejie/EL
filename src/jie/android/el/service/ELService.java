@@ -1,11 +1,15 @@
 package jie.android.el.service;
 
+import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.ServiceState;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.DeadObjectException;
 import android.os.IBinder;
@@ -77,8 +81,8 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public void addDownloadRequest(String request) throws RemoteException {
-			onDownloadRequest(request);
+		public boolean addDownloadRequest(String request) throws RemoteException {
+			return onDownloadRequest(request);
 		}
 
 		@Override
@@ -87,16 +91,36 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public int setNotification(int level, String title, String text) throws RemoteException {
-			return showNotification(level, title, text);
+		public int setNotification(int type, String title, String text) throws RemoteException {
+			return onShowNotification(type, title, text);
 		}
 
 		@Override
-		public void cancelNotification(int id) throws RemoteException {
-			removeNotification(id);
+		public void removeNotification(int type, int id) throws RemoteException {
+			onRemoveNotification(type, id);
 		}
 	}
 	
+	private class NotificationReceiver extends BroadcastReceiver {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			final String action = intent.getAction();
+			
+			if (action.equals(NotificationAction.ACTION_SHOW)) {
+				final int type = intent.getExtras().getInt(NotificationAction.DATA_TYPE);
+				final String title = intent.getExtras().getString(NotificationAction.DATA_TITLE);
+				final String text = intent.getExtras().getString(NotificationAction.DATA_TEXT);
+				if (title != null && text != null) {
+					onShowNotification(type, title, text);
+				}
+			} else if (action.equals(NotificationAction.ACTION_REMOVE)) {
+				onRemoveNotification(intent.getExtras().getInt(NotificationAction.DATA_TYPE), intent.getExtras().getInt(NotificationAction.DATA_ID));
+			}			
+		}
+	}
+
+	private NotificationReceiver notificationReceiver = null;
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
 	private Downloader downloader = null;
@@ -128,7 +152,7 @@ public class ELService extends Service {
 		
 		//android.os.Debug.waitForDebugger();
 		
-		initNotificationSetter();		
+		initNotification();		
 		initDictionary();		
 		initPlayer();
 		
@@ -151,6 +175,7 @@ public class ELService extends Service {
 		releaseDownloader();
 		releasePlayer();
 		releaseDictionary();
+		releaseNotification();
 
 		super.onDestroy();
 	}	
@@ -191,11 +216,23 @@ public class ELService extends Service {
 		}
 	}
 	
-	private void initNotificationSetter() {
-		notificationSetter = new NotificationSetter(this);		
+	private void initNotification() {
+		notificationSetter = new NotificationSetter(this);
+		
+		notificationReceiver = new NotificationReceiver();
+		
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(NotificationAction.ACTION_SHOW);
+		filter.addAction(NotificationAction.ACTION_REMOVE);
+		
+		registerReceiver(notificationReceiver, filter);
 	}
 	
-	private void releaseNotificationSetter() {
+	private void releaseNotification() {
+		if (notificationReceiver != null) {
+			unregisterReceiver(notificationReceiver);
+		}
+		
 		if (notificationSetter != null) {
 			notificationSetter.release();
 		}
@@ -225,12 +262,12 @@ public class ELService extends Service {
 		}		
 	}
 	
-	public void onDownloadRequest(String request) {
+	public boolean onDownloadRequest(String request) {
 		if (downloader == null) {
 			initDownloader();
 		}
 		
-		downloader.addDownloadRequest(request);
+		return downloader.addDownloadRequest(request);
 	}
 	
 	public void onPackageReady() {
@@ -264,7 +301,7 @@ public class ELService extends Service {
 		}
 	}
 
-	public int showNotification(int level, String title, String text) {
+	public int onShowNotification(int level, String title, String text) {
 		if (notificationSetter != null) {
 			NotificationType type = NotificationType.getLevel(level);
 			if (type != null) {
@@ -274,9 +311,12 @@ public class ELService extends Service {
 		return 0;
 	}
 
-	public void removeNotification(int id) {
+	public void onRemoveNotification(int level, int id) {
 		if (notificationSetter != null) {
-			notificationSetter.remove(id);
+			NotificationType type = NotificationType.getLevel(level);
+			if (type != null) {
+				notificationSetter.remove(type, id);
+			}
 		}
 	}	
 }

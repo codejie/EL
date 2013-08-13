@@ -6,11 +6,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,8 +16,6 @@ import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -29,7 +25,6 @@ import android.widget.Toast;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.Setting;
-import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
@@ -64,9 +59,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 		@Override
 		protected void onPostExecute(String result) {
-			if (result != null) {
-				showPopWindow(word, result);				
-			}
+			showPopWindow(word, result);				
 		}
 	};
 	
@@ -101,7 +94,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		@Override
 		public void onAudioChanged(int index) throws RemoteException {
 			Bundle args = new Bundle();
-			args.putInt("index", index);			
+			args.putInt(FragmentArgument.INDEX, index);
+			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+			
 			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
 		}
 	}
@@ -223,6 +218,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playBar.setEnabled(false);
 		playRepeat = (ImageView) view.findViewById(R.id.playImageView1);
 		playRepeat.setOnClickListener(this);
+		playRepeat.setEnabled(false);
+		
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
 		playShuffle.setOnClickListener(this);
 		
@@ -274,7 +271,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	
 	protected void onIndex(Bundle obj) {
 		
-		audioIndex = obj.getInt("index");
+		audioIndex = obj.getInt(FragmentArgument.INDEX);
 		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, audioIndex);		
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script"}, null, null, null);
@@ -354,7 +351,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		} else {
 			html += "100%";
 		}
-		html += "}\n.lac { color:#65aa1a; text-decoration:none; }\n.src { color:#65881a }\n</STYLE></HEAD><BODY>";
+		html += "}\n.lac { color:#65aa1a; text-decoration:none; }\n.src { color:#65881a }\n.jie { color:#65aa88 }\n</STYLE></HEAD><BODY>";
 		html += data;
 		html += "</BODY></HTML>";
 		
@@ -376,7 +373,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		try {
 			getELActivity().getServiceAccess().playAudio();
+			
 			playPlay.setSelected(true);
+			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -424,7 +423,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				setAudioPlayListener(false);
 				stopAudio();
 				return false;
-//				getELActivity().showFragment(FragmentSwitcher.Type.LIST, null);
 			}
 			return true;			
 		}
@@ -467,7 +465,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	private void showPopWindow(final String word, final String html) {
 		popTextView.setText(word);
-		popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+		if (html != null) {
+			popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+		} else {
+			popWebView.loadDataWithBaseURL(null, "<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>", "text/html", "utf-8", null);
+		}
 		
 		togglePopupWindow();
 	}
@@ -593,7 +595,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			try {
 				if (cursor.moveToFirst()) {
 					Bundle args = new Bundle();
-					args.putInt("index", cursor.getInt(0));
+					args.putInt(FragmentArgument.INDEX, cursor.getInt(0));
 					
 					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					
 				}
@@ -611,7 +613,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			try {
 				if (cursor.moveToFirst()) {
 					Bundle args = new Bundle();
-					args.putInt("index", cursor.getInt(0));
+					args.putInt(FragmentArgument.INDEX, cursor.getInt(0));
 					
 					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					
 				}

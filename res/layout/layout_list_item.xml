@@ -20,7 +20,7 @@
             android:layout_marginLeft="8dp"
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:textColor="#ff000077" />
+            android:textColor="#ff1111aa" />
 
     </LinearLayout>
 
@@ -47,7 +47,7 @@
             android:layout_gravity="right|center_vertical"
             android:layout_marginRight="8dp"
             android:text="00:00"
-            android:textColor="#ff000000" />
+            android:textColor="#ff111177" />
 
     </LinearLayout>
 

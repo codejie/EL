@@ -1,11 +1,9 @@
 package jie.android.el.fragment;
 
 import jie.android.el.CommonConsts.Setting;
-import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;

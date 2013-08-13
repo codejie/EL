@@ -3,6 +3,7 @@ package jie.android.el;
 public interface CommonConsts {
 	
 	public interface AppArgument {
+		public static final String NAME = "el";
 		public static final String PATH_ROOT = "/jie/";
 		public static final String PATH_EL = "/jie/el/";
 		public static final String PATH_CACHE = "/jie/cache/";
@@ -18,6 +19,7 @@ public interface CommonConsts {
 		}
 		
 		public static final String	ACTION	=	"action";
+		public static final String INDEX	=	"index";
 	}
 	
 	public interface Setting {
@@ -72,5 +74,15 @@ public interface CommonConsts {
 				return null;
 			}
 		}
+	}
+
+	public interface NotificationAction {
+		public static final String ACTION_SHOW		= "jie.android.el.action.show";
+		public static final String ACTION_REMOVE	= "jie.android.el.action.remove";
+		
+		public static final String DATA_TYPE		= "jie.android.el.data.type";
+		public static final String DATA_TITLE		= "jie.android.el.data.title";
+		public static final String DATA_TEXT		= "jie.android.el.data.text";
+		public static final String DATA_ID			= "jie.android.el.data.id";
 	}
 }

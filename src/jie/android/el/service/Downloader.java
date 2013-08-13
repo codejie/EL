@@ -12,6 +12,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.NotificationAction;
+import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 import android.app.DownloadManager;
@@ -22,7 +24,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 
@@ -221,11 +222,6 @@ public class Downloader {
 		long syncid = downloadManager.enqueue(req);
 		
 		updateStatusByIdx(idx, syncid, STATUS_START);
-//		ContentValues values = new ContentValues();
-//		values.put("syncid", syncid);
-//		values.put("status", STATUS_START);
-//		
-//		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);
 		
 		return true;
 	}
@@ -273,6 +269,8 @@ public class Downloader {
 					} else if (type == TYPE_PACKAGE) {
 						onPackageDownloaded(syncid, file);
 					}
+				} else {
+					showNotification("download failed", "EL");
 				}
 			}
 			
@@ -438,5 +436,14 @@ public class Downloader {
 		
 		this.checkUpdateData();
 	}
-	
+
+
+	private void showNotification(String title, String text) {
+		Intent intent = new Intent(NotificationAction.ACTION_SHOW);
+		intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.WARNING.getId());
+		intent.putExtra(NotificationAction.DATA_TITLE, title);
+		intent.putExtra(NotificationAction.DATA_TEXT, text);
+		
+		service.sendBroadcast(intent);	
+	}	
 }

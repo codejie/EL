@@ -32,10 +32,9 @@ public class Utils {
 		if (file == null) {
 			return true;
 		}
+		
 		File f = new File(file);
-		if (f == null) {
-			return false;
-		}
+
 		return f.delete();
 	}
 	

@@ -61,15 +61,7 @@ public class ELActivity extends SherlockFragmentActivity {
 			case UIMsg.SERVICE_AUDIOPLAYING:
 				onServiceAudioPlaying((Bundle)msg.obj);
 				break;
-//			case UIMsg.SERVICE_PACKAGE_READY:
-//				onServicePackageReady();
-//				break;
-//			case UIMsg.UI_PACKAGE_CHANGED:
-//				onPackageChanged();
-//				break;
-//			case UIMsg.UI_LOAD_BUNDLEDPACKAGE:
-//				onLoadBundledPackage();
-//				break;
+
 			default:;
 			}
 		}		
@@ -86,20 +78,13 @@ public class ELActivity extends SherlockFragmentActivity {
 		@Override
 		public void onAudioPlaying(int index, int duration, int position) throws RemoteException {
 			Bundle data = new Bundle();
-			data.putInt("index", index);
+			data.putInt(FragmentArgument.INDEX, index);
 			data.putInt("duration", duration);
 			data.putInt("position", position);
 			
 			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIOPLAYING, data);
 			msg.sendToTarget();
 		}
-
-//		@Override
-//		public void onPackageReady() throws RemoteException {
-//			Log.d(Tag, "onPackageReady()");
-//			Message msg = Message.obtain(handler, UIMsg.SERVICE_PACKAGE_READY);
-//			msg.sendToTarget();
-//		}
 
 	};
 	
@@ -136,7 +121,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		
 		checkPath();
 		
-		sharedPreferences = getSharedPreferences("el", 0);
+		sharedPreferences = getSharedPreferences(AppArgument.NAME, 0);
 		
 		fragmentSwitcher = new FragmentSwitcher(this);
 		
@@ -245,11 +230,6 @@ public class ELActivity extends SherlockFragmentActivity {
 		return sharedPreferences;
 	}
 	
-//	@Override
-//	public boolean onPrepareOptionsMenu(Menu menu) {
-//		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
-//		return super.onPrepareOptionsMenu(menu);
-//	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -273,7 +253,6 @@ public class ELActivity extends SherlockFragmentActivity {
 			break;
 		case R.id.el_menu_about:
 			showFragment(FragmentSwitcher.Type.ABOUT, null);
-			showNotification(NotificationType.PLAY, "title", "hahaha");
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -344,10 +323,10 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 
-	public int showNotification(NotificationType level, final String title, final String text) {
+	public int showNotification(NotificationType type, final String title, final String text) {
 		if (serviceAccess != null) {
 			try {
-				return serviceAccess.setNotification(level.getId(), title, text);
+				return serviceAccess.setNotification(type.getId(), title, text);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -356,42 +335,15 @@ public class ELActivity extends SherlockFragmentActivity {
 		return -1;
 	}
 	
-	public void removeNotification(int id) {
+	public void removeNotification(NotificationType type, int id) {
 		if (serviceAccess != null) {
 			try {
-				serviceAccess.cancelNotification(id);
+				serviceAccess.removeNotification(type.getId(), id);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 	}
-//	protected void onServicePackageReady() {
-//		if (packageImporter == null) {
-//			initPackageImporter();			
-//		} else {
-//			packageImporter.refresh();
-//		}
-//	}
-	
-//	public void onPackageChanged() {
-//		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.LIST) {
-//			Bundle data = new Bundle();
-//			data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PACKAGE_CHANGED.getId());
-//			fragmentSwitcher.show(FragmentSwitcher.Type.LIST, data);
-//		}
-		
-//		this.showProgressDialog(false, null);
-//	}
-
-//	public void onLoadBundledPackage() {
-//		
-//		this.showProgressDialog(true, "load bundled package..");
-//		
-//		if (packageImporter == null) {
-//			packageImporter = new PackageImporter(this, null);
-//		}
-//		packageImporter.loadBundledPackage();		
-//	}
 	
 }

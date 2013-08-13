@@ -1,14 +1,12 @@
 package jie.android.el.fragment;
 
-import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import android.os.Bundle;
 import android.os.RemoteException;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class DownloadFragment extends BaseFragment implements OnClickListener {
 
@@ -29,7 +27,7 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 		textRequestCode = (TextView) view.findViewById(R.id.editText1);
 		//textRequestCode.setText("0000-3-00-00");
 		textCheckCode = (TextView) view.findViewById(R.id.editText2);
-		textCheckCode.setText("0-00-00");		
+		//textCheckCode.setText("0-00-00");		
 		
 		view.findViewById(R.id.button1).setOnClickListener(this);
 	}
@@ -47,11 +45,17 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 		final String request = textRequestCode.getText().toString();
 		
 		try {
-			getELActivity().getServiceAccess().addDownloadRequest(request);
+			if (!getELActivity().getServiceAccess().addDownloadRequest(request)) {
+				showNotification("wrong code, please try again.");
+			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void showNotification(String text) {
+		Toast.makeText(getELActivity(), text, Toast.LENGTH_SHORT).show();
 	}
 	
 }

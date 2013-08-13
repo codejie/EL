@@ -1,7 +1,6 @@
 package jie.android.el.fragment;
 
 import jie.android.el.ELActivity;
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -10,7 +9,6 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
 
 public class BaseFragment extends SherlockFragment {
 

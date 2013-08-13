@@ -1,14 +1,17 @@
 package jie.android.el.service;
 
-import java.io.File;
 import java.io.IOException;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.AppArgument;
+import jie.android.el.CommonConsts.NotificationAction;
+import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -16,10 +19,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Bundle;
 import android.os.DeadObjectException;
-import android.os.Environment;
-import android.os.Message;
 import android.os.RemoteException;
 
 public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
@@ -114,7 +114,10 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	public void onCompletion(MediaPlayer arg0) {
 		if (listener != null) {
 			try {
-				listener.onCompleted();				
+				listener.onCompleted();
+				
+				showNotification(false);
+
 			} catch (DeadObjectException e) {
 				listener = null;								
 			} catch (RemoteException e) {
@@ -123,7 +126,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			}
 		}
 
-		if (!context.getSharedPreferences("el", 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
+		if (!context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
 			getNextAudio();
 		}
 		
@@ -189,6 +192,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		
 		tickTask = new TickCounterTask();
 		tickTask.execute();
+		
+		showNotification(true);		
 	}
 	
 	public void pause() {
@@ -202,6 +207,9 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			isAudioPlaying = false;
 //			tickTask.cancel(true);
 			player.stop();
+			
+			showNotification(false);
+			
 		}
 	}
 	
@@ -234,7 +242,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	}
 
 	private void getNextAudio() {	
-		boolean random = context.getSharedPreferences("el", 0).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
+		boolean random = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
 		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx", "title", "audio" }, random, true);		
 		if (cursor != null) {
@@ -280,4 +288,24 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			}		
 		}
 	}
+	
+	private void showNotification(boolean show) {
+		
+		Intent intent = null;
+		
+		if (show) {
+			intent = new Intent(NotificationAction.ACTION_SHOW);
+			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
+			intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
+			intent.putExtra(NotificationAction.DATA_TEXT, "EL is playing..");
+		} else {
+			intent = new Intent(NotificationAction.ACTION_REMOVE);
+			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
+			intent.putExtra(NotificationAction.DATA_ID, 0);
+		}
+		
+		context.sendBroadcast(intent);
+		
+	}
+	
 }

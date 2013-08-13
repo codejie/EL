@@ -11,7 +11,6 @@ import java.util.List;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.LACDBAccess;
 import jie.android.el.database.Word;
-import jie.android.el.database.Word.XmlResult;
 import jie.android.el.utils.XmlResultLoader;
 
 import android.content.Context;

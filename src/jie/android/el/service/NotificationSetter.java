@@ -1,8 +1,5 @@
 package jie.android.el.service;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.ELActivity;
 import jie.android.el.R;
@@ -11,21 +8,16 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
-import android.support.v4.app.TaskStackBuilder;
 
 public class NotificationSetter {
-	
-//	private final int NID	=	1;
 	
 	private Context context = null;
 	private NotificationManager manager = null;
 	
-	private int nid = 0;
-	
-	private HashSet<Integer> idSet = new HashSet<Integer>();
+	private final int playId = 0;
+	private int otherId = 1;
 	
 	public NotificationSetter(Context context) {
 		this.context = context;
@@ -38,6 +30,7 @@ public class NotificationSetter {
 	}
 	
 	public int show(NotificationType type, final String title, final String text) {
+		
 		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 		
 		Intent result = new Intent(context, ELActivity.class);
@@ -46,20 +39,27 @@ public class NotificationSetter {
 		builder.setContentIntent(intent);
 		
 		Notification nt = null;
+		int id = -1;
 		
 		if (type == NotificationType.PLAY) {
+			
+			manager.cancel(playId);
+			
 			nt = buildPlayNotification(builder, title, text);
+			id = playId;
 		} else if (type == NotificationType.IMPORT) {
 			nt = buildImportNotification(builder, title, text);
+			id = ++ otherId;
 		} else if (type == NotificationType.WARNING) {
 			nt = buildWarningNotification(builder, title, text);
+			id = ++ otherId;
 		} else {
 			return -1;
 		}
 		
-		manager.notify(++ nid, nt);
+		manager.notify(id, nt);
 		
-		return nid;
+		return id;
 	}
 	
 	private Notification buildPlayNotification(Builder builder, String title, String text) {
@@ -104,8 +104,12 @@ public class NotificationSetter {
 		return nt;
 	}
 	
-	public void remove(int id) {
-		manager.cancel(id);
+	public void remove(NotificationType type, int id) {
+		if (type == NotificationType.PLAY) {
+			manager.cancel(playId);
+		} else {
+			manager.cancel(id);
+		}
 	}
 	
 }

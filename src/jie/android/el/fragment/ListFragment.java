@@ -1,35 +1,23 @@
 package jie.android.el.fragment;
 
-import java.util.HashMap;
-
-import android.app.Activity;
 import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
-import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.FragmentArgument;
-import jie.android.el.ELActivity;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
-import jie.android.el.database.ELDBAccess;
 import jie.android.el.utils.Utils;
 
 public class ListFragment extends BaseFragment implements OnItemClickListener {
@@ -114,9 +102,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Bundle args = new Bundle();
-		args.putInt("index", (int) id);
-		args.putInt("position", position);
-		args.putInt("total", adapter.getCount());
+		args.putInt(FragmentArgument.INDEX, (int) id);
 		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
 	}
 
