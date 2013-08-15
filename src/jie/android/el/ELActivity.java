@@ -273,7 +273,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (!fragmentSwitcher.showPrevFragment()) {
-				releaseService(true);
+//				releaseService(true);
 				finish();
 				return true;
 			}
@@ -345,5 +345,5 @@ public class ELActivity extends SherlockFragmentActivity {
 			}
 		}
 	}
-	
+
 }

@@ -153,7 +153,6 @@ public class PackageImporter {
 				if (cursor.moveToFirst()) {
 					do {
 						ContentValues values = new ContentValues();
-						values.put("idx", cursor.getInt(0));
 						values.put("title", cursor.getString(1));
 						values.put("script", cursor.getString(2));
 						values.put("audio", cursor.getString(3));
@@ -164,6 +163,7 @@ public class PackageImporter {
 						values.put("flag", cursor.getInt(8));
 
 						if (!isExist(cursor.getInt(0))) {
+							values.put("idx", cursor.getInt(0));
 							context.getContentResolver().insert(ELContentProvider.URI_EL_ESL, values);
 						} else {
 							context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + cursor.getInt(0), null);

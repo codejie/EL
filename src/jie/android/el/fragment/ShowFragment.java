@@ -54,7 +54,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				e.printStackTrace();
 				return null;
 			}
-			return XmlTranslator.trans(assembleXmlResult(word, result));
+			if (result.getXmlData().size() > 0) {
+				return XmlTranslator.trans(assembleXmlResult(word, result));
+			} else {
+				return null;
+			}
 		}
 
 		@Override
@@ -351,7 +355,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		} else {
 			html += "100%";
 		}
-		html += "}\n.lac { color:#65aa1a; text-decoration:none; }\n.src { color:#65881a }\n.jie { color:#65aa88 }\n</STYLE></HEAD><BODY>";
+		html += "}\n.lac { color:#65aa1a; text-decoration:none; }\n.src { color:#65881a }\n.jie { color:#65aa88; text-decoration:none; }\n</STYLE></HEAD><BODY>";
 		html += data;
 		html += "</BODY></HTML>";
 		

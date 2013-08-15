@@ -218,7 +218,22 @@ public class ELContentProvider extends ContentProvider {
 	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		throw new IllegalArgumentException("delete() Unknown uri: " + uri);
+		int res = matcher.match(uri);
+		String table = null;
+		switch (res) {
+		case MATCH_LAC_SYS_UPDATE:
+			db = lacDBAccess.getWritableDatabase();
+			table = "sys_update";
+			break;
+		default:
+			throw new IllegalArgumentException("delete() Unknown uri: " + uri);
+		}
+		
+		int ret = db.delete(table, selection, selectionArgs);
+		if (ret > 0) {
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+		return ret;
 	}
 	
 	private void initMatcher() {

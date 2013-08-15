@@ -83,14 +83,14 @@ public class Downloader {
 				if (cursor != null) {
 					try {
 						if (cursor.moveToFirst()) {
-							if (p.length() == cursor.getLong(0)) {
+							//if (p.length() == cursor.getLong(0)) {
 								File dest = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + local);
 								if (p.renameTo(dest)) {
 									find = true;
 								} else {
 									Log.e(Tag, "rename failed - from '" + file + "' to '" + local + "'.");
 								}
-							}
+//							}
 						}
 					} finally {
 						cursor.close();
@@ -259,18 +259,23 @@ public class Downloader {
 		
 		try {
 			if (cursor.moveToFirst()) {
+				int type = queryTypeBySyncId(syncid);				
 				int status =cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS)); 
 				if (status == DownloadManager.STATUS_SUCCESSFUL) {
 					final String file = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
 					updateStatusBySyncId(syncid, file, STATUS_DOWNLOADED);
-					int type = queryTypeBySyncId(syncid);
 					if (type == TYPE_UPDATE) {
 						onUpdateDownloaded(syncid, file);
 					} else if (type == TYPE_PACKAGE) {
 						onPackageDownloaded(syncid, file);
 					}
 				} else {
-					showNotification("download failed", "EL");
+					if (type == TYPE_UPDATE) {
+						showNotification("download failed", "EL - please check request code");
+						removeUpdateDataBySyncId(syncid);
+					} else if (type == TYPE_PACKAGE) {
+						showNotification("download failed", "EL - will try again");
+					}
 				}
 			}
 			
@@ -280,6 +285,20 @@ public class Downloader {
 	}
 
 	private void insertUpdateData(final String request, int type, final String url, final String local, int size, long syncid, int status) {
+		
+		//check
+		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "count(*)" }, "local=? and status!=?", new String[] { local, String.valueOf(STATUS_DONE) }, null);
+		try {
+			if (cursor.moveToFirst()) {
+				if (cursor.getInt(0) > 0) {
+					Log.w(Tag, local + " has been in download queue.");					
+					return;
+				}
+			}
+		} finally {
+			cursor.close();
+		}
+		
 		ContentValues values = new ContentValues();
 		values.put("request", request);
 		values.put("type", type);
@@ -292,6 +311,11 @@ public class Downloader {
 		
 		service.getContentResolver().insert(ELContentProvider.URI_LAC_SYS_UPDATE, values);		
 	}
+	
+
+	private void removeUpdateDataBySyncId(long syncid) {
+		service.getContentResolver().delete(ELContentProvider.URI_LAC_SYS_UPDATE, "syncid=" + syncid, null);
+	}	
 	
 	private void updateStatusByIdx(int idx, long syncid, int status) {
 	
@@ -395,6 +419,11 @@ public class Downloader {
 				Log.d(Tag, "size = " + f.item(0).getFirstChild().getNodeValue());				
 				NodeList u =  p.getElementsByTagName("url");
 				Log.d(Tag, "url = " + u.item(0).getFirstChild().getNodeValue());
+				
+				if (f == null || s == null || u == null) {
+					Log.w(Tag, "update script is incomplete.");
+					continue;
+				}
 				
 				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), Integer.valueOf(s.item(0).getFirstChild().getNodeValue()), -1, STATUS_INIT);
 			}

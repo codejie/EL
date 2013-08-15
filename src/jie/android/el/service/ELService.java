@@ -141,9 +141,16 @@ public class ELService extends Service {
 			postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
 		}
 		
-		if (Downloader.checkDownloaded(this)) {
+		if (Downloader.checkIncomplete(this)) {
+			initDownloader();
+		}
+		
+		final String[] res = PackageImporter.check();
+		if (res != null && res.length > 0) {
 			onPackageReady();			
 		}
+		
+		loadBundledPackage();
 	}
 
 	@Override
@@ -166,7 +173,7 @@ public class ELService extends Service {
 			packageImporter.startImport();
 		}
 		
-		loadBundledPackage();
+//		loadBundledPackage();
 	}
 
 	@Override
