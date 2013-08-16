@@ -270,12 +270,16 @@ public class Downloader {
 						onPackageDownloaded(syncid, file);
 					}
 				} else {
+					Log.w(Tag, "download failed (" + status + ") -" + syncid);
+					removeUpdateDataBySyncId(syncid);
+
 					if (type == TYPE_UPDATE) {
 						showNotification("download failed", "EL - please check request code");
-						removeUpdateDataBySyncId(syncid);
 					} else if (type == TYPE_PACKAGE) {
-						showNotification("download failed", "EL - will try again");
+						showNotification("download failed", "EL - please input request code again");
 					}
+					
+					checkUpdateData();
 				}
 			}
 			

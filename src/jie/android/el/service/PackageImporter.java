@@ -42,14 +42,16 @@ public class PackageImporter {
 			//unzip
 			dbfile = unzipPackage(zipfile, output);
 			if (dbfile == null) {
+				Log.w(Tag, "cannot find db file in package - " + local);
 				return Boolean.FALSE;
 			}
 			dbfile = output + File.separator + dbfile;
 			
 			//import db			
-			if (importPackage(dbfile)) {			
+			if (importPackage(dbfile)) {
 				return Boolean.TRUE;
 			} else {
+				Log.w(Tag, "import package failed - " + dbfile);				
 				return Boolean.FALSE;
 			}
 		}
@@ -138,6 +140,8 @@ public class PackageImporter {
 					return (f);
 				}
 			}
+		} else {
+			Log.w(Tag, "No file is found in zip package.");
 		}
 		
 		return null;

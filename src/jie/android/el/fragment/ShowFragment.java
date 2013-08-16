@@ -18,6 +18,7 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -220,13 +221,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playBar = (SeekBar) view.findViewById(R.id.playSeekBar);
 		playBar.setOnSeekBarChangeListener(this);
 		playBar.setEnabled(false);
+		
 		playRepeat = (ImageView) view.findViewById(R.id.playImageView1);
 		playRepeat.setOnClickListener(this);
-		playRepeat.setEnabled(false);
+//		playRepeat.setEnabled(false);
 		
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
-		playShuffle.setOnClickListener(this);
-		
+		playShuffle.setOnClickListener(this);		
 		playPrev = (ImageView) view.findViewById(R.id.playImageView3);
 		playPrev.setOnClickListener(this);
 		playPlay = (ImageView) view.findViewById(R.id.playImageView4);
@@ -493,6 +494,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			togglePopupWindow();
 			break;			
 		case R.id.playImageView1:
+			showPopupMenu(v);
 			break;
 		case R.id.playImageView2:
 			toggleRandom();
@@ -512,6 +514,12 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			break;
 		default:;
 		}
+	}
+
+	private void showPopupMenu(View v) {
+		PopupMenu pm = new PopupMenu(getELActivity(), v);
+		pm.getMenuInflater().inflate(R.menu.fragment_show_pop, pm.getMenu());
+		pm.show();
 	}
 
 	private void toggleRandom() {
