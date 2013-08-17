@@ -184,15 +184,22 @@ public class Downloader {
 		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "idx", "type", "url", "local", "syncid", "status" }, "status != 0", null, "idx");
 		try {
 			if (cursor.moveToFirst()) {
-				int status = cursor.getInt(5);
-				if (status == STATUS_INIT || status == STATUS_START) {
-					return startDownload(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3));
-				} else if (status == STATUS_DOWNLOADED) {
-					return processDownload(cursor.getInt(0), cursor.getInt(1), cursor.getLong(4), cursor.getString(2));
-				} else {
-					//?
-				}
-				
+				do {
+					int status = cursor.getInt(5);
+					if (status == STATUS_INIT) {
+						return startDownload(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3));
+					} else if (status == STATUS_START) {
+						if (cursor.getLong(4) != -1) {
+							if (!isDownloading(cursor.getLong(4))) {
+								return startDownload(cursor.getInt(0), cursor.getInt(1), cursor.getString(2), cursor.getString(3));
+							}
+						}
+					} else if (status == STATUS_DOWNLOADED) {
+						return processDownload(cursor.getInt(0), cursor.getInt(1), cursor.getLong(4), cursor.getString(2));
+					} else {
+						//?
+					}
+				} while (cursor.moveToNext());				
 			}
 		} finally {
 			cursor.close();
@@ -202,6 +209,26 @@ public class Downloader {
 		
 		return false;
 	}	
+
+	private boolean isDownloading(long syncid) {
+		DownloadManager.Query query = new DownloadManager.Query();
+		query.setFilterById(syncid);
+		Cursor cursor = downloadManager.query(query);
+		
+		try {
+			if (cursor.moveToFirst()) {
+				int status =cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+				if (status == DownloadManager.STATUS_FAILED) {
+					downloadManager.remove(syncid);
+					return false;
+				}
+			}
+			
+		} finally {
+			cursor.close();
+		}
+		return true;
+	}
 
 	private boolean startDownload(int idx, int type, final String url, String local) {
 		DownloadManager.Request req = null;

@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import jie.android.el.R;
+import jie.android.el.database.ELContentProvider;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.view.View;
@@ -30,18 +31,28 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 		//textCheckCode.setText("0-00-00");		
 		
 		view.findViewById(R.id.button1).setOnClickListener(this);
+		
+		view.findViewById(R.id.button2).setOnClickListener(this);
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.button1:
-			onButtonClick();
+			onSubmitButtonClick();
 			break;
+		case R.id.button2:
+			onRemoveAllButtonClick();
+			break;
+		default:;
 		}
 	}
 
-	private void onButtonClick() {
+	private void onRemoveAllButtonClick() {
+		getELActivity().getContentResolver().delete(ELContentProvider.URI_LAC_SYS_UPDATE, null, null);
+	}
+
+	private void onSubmitButtonClick() {
 		final String request = textRequestCode.getText().toString();
 		
 		try {

@@ -163,9 +163,9 @@ public class ELService extends Service {
 		initDictionary();		
 		initPlayer();
 		
-		if (Downloader.checkIncomplete(this)) {
-			initDownloader();
-		}
+//		if (Downloader.checkIncomplete(this)) {
+//			initDownloader();
+//		}
 		
 		final String[] res = PackageImporter.check();
 		if (res != null && res.length > 0) {
