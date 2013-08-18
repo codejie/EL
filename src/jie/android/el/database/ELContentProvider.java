@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.utils.AssetsHelper;
 import jie.android.el.utils.Utils;
 import android.content.ContentProvider;
@@ -35,6 +36,7 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_EL_ESL_PREV = Uri.parse("content://" + AUTHORITY + "/el/esl_prev");
 	public static final Uri URI_EL_ESL_FIRST = Uri.parse("content://" + AUTHORITY + "/el/esl_first");
 	public static final Uri URI_EL_ESL_LAST = Uri.parse("content://" + AUTHORITY + "/el/esl_last");
+	public static final Uri URI_EL_ESL_PLAYFLAG = Uri.parse("content://" + AUTHORITY + "/el/esl_playflag");
 	
 	
 	private static final int MATCH_EL_ESL = 10;
@@ -44,6 +46,7 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_ITEM_EL_ESL_PREV = 14;
 	private static final int MATCH_ITEM_EL_ESL_FIRST = 15;
 	private static final int MATCH_ITEM_EL_ESL_LAST = 16;
+	private static final int MATCH_ITEM_EL_ESL_PLAYFLAG = 17;
 	private static final int MATCH_LAC_WORD_INFO = 20;
 	private static final int MATCH_ITEM_LAC_WORD_INFO = 21;
 	private static final int MATCH_LAC_SYS_UPDATE = 30;
@@ -84,7 +87,8 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
 		case MATCH_ITEM_EL_ESL_NEXT:
-		case MATCH_ITEM_EL_ESL_PREV:			
+		case MATCH_ITEM_EL_ESL_PREV:
+		case MATCH_ITEM_EL_ESL_PLAYFLAG:
 			return CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown uri: " + uri); 
@@ -205,7 +209,15 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_EL_ESL:
 			db = elDBAccess.getWritableDatabase();
 			table = "esl";
-			break;			
+			break;
+		case MATCH_ITEM_EL_ESL_PLAYFLAG:
+			db = elDBAccess.getWritableDatabase();
+			db.execSQL("UPDATE esl SET flag = flag & ~" + ListItemFlag.LAST_PLAY + " where idx!=" + ContentUris.parseId(uri));
+			db.execSQL("UPDATE esl SET flag = flag | " + ListItemFlag.LAST_PLAY + " where idx=" + ContentUris.parseId(uri));
+			
+			getContext().getContentResolver().notifyChange(URI_EL_ESL, null);
+			
+			return 1;
 		default:
 			throw new IllegalArgumentException("update() Unknown uri: " + uri);
 		}
@@ -252,6 +264,7 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl_prev/#", MATCH_ITEM_EL_ESL_PREV);
 		matcher.addURI(AUTHORITY, "el/esl_first", MATCH_ITEM_EL_ESL_FIRST);
 		matcher.addURI(AUTHORITY, "el/esl_last", MATCH_ITEM_EL_ESL_LAST);
+		matcher.addURI(AUTHORITY, "el/esl_playflag/#", MATCH_ITEM_EL_ESL_PLAYFLAG);
 		
 	}
 	

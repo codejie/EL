@@ -5,7 +5,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public abstract class DBAccess extends SQLiteOpenHelper {
 
-	private static final int VERSION	=	1;
+	private static final int VERSION	=	2;
 	
 	public DBAccess(Context context, String name) {
 		super(context, name, null, VERSION);

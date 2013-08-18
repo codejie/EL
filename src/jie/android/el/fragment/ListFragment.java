@@ -15,12 +15,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 import jie.android.el.CommonConsts.FragmentArgument;
+import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 
 public class ListFragment extends BaseFragment implements OnItemClickListener {
+	
+	private static String[] ItemProjects = new String[] { "idx as _id", "title", "duration", "flag" }; 
 
 	class Adapter extends CursorAdapter {
 
@@ -45,6 +48,13 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 			TextView duration = (TextView) view.findViewById(R.id.textDuration);
 			duration.setText(Utils.formatMSec(cursor.getInt(2) * 1000));
 			
+			View icon = view.findViewById(R.id.imageView1);
+			if ((cursor.getInt(3) & ListItemFlag.LAST_PLAY) == ListItemFlag.LAST_PLAY) {
+				icon.setVisibility(View.VISIBLE);
+			} else {
+				icon.setVisibility(View.INVISIBLE);
+			}
+			
 			view.setId(cursor.getInt(0));
 		}
 
@@ -63,7 +73,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		@Override
 		public void onChange(boolean selfChange) {
 			if (!selfChange) {
-				adapter.changeCursor(getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, "idx"));
+				adapter.changeCursor(getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, ItemProjects, null,  null, "idx"));
 			}
 		}		
 	}
@@ -83,7 +93,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		adapter = new Adapter(getActivity(), getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] {"idx as _id", "title", "duration"}, null,  null, "idx"));
+		adapter = new Adapter(getActivity(), getELActivity().getContentResolver().query(ELContentProvider.URI_EL_ESL, ItemProjects, null,  null, "idx"));
 		
 		listView = (ListView) view.findViewById(R.id.listView1);
 		listView.setOnItemClickListener(this);

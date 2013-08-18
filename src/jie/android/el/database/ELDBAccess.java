@@ -18,9 +18,12 @@ public class ELDBAccess extends DBAccess {
 	}
 	
 	@Override
-	public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
-		// TODO Auto-generated method stub
-
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		switch (oldVersion) {
+		case 1:
+			db.rawQuery("update esl set flag=0", null);
+			break;
+		}
 	}
 
 	private boolean createTables(SQLiteDatabase db) {
@@ -33,7 +36,7 @@ public class ELDBAccess extends DBAccess {
 					+ "[slowdialog] INTEGER DEFAULT (-1)," 
 					+ "[explanations] INTEGER DEFAULT (-1)," 
 					+ "[fastdialog] INTEGER DEFAULT (-1)," 
-					+ "[flag] INTEGER DEFAULT (-1))";
+					+ "[flag] INTEGER DEFAULT (0))";
 		db.execSQL(sql);
 		
 		return true;

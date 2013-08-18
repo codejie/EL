@@ -85,4 +85,8 @@ public interface CommonConsts {
 		public static final String DATA_TEXT		= "jie.android.el.data.text";
 		public static final String DATA_ID			= "jie.android.el.data.id";
 	}
+	
+	public interface ListItemFlag {
+		public static final int LAST_PLAY	= 1;
+	}
 }

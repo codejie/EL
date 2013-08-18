@@ -4,12 +4,14 @@ import java.io.IOException;
 
 import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.AppArgument;
+import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -188,6 +190,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 						
 		player.start();
 		
+		setAudioPlayFlag(audioIndex, true);
+		
 		isAudioPlaying = true;
 		
 		tickTask = new TickCounterTask();
@@ -306,6 +310,33 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		
 		context.sendBroadcast(intent);
 		
+	}
+
+	private void setAudioPlayFlag(int index, boolean play) {
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL_PLAYFLAG, index);
+		context.getContentResolver().update(uri, null, null, null);
+//		
+//		
+//		ContentValues values = new ContentValues();
+//		values.put("flag", "play &~ 1");
+//		context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx!=" + index, null);
+//
+//		values.clear();
+//		values.put("flag", "play | 1");
+//		context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + index, null);
+//		
+//		
+//		
+//		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "flag" }, "idx=" + index, null, null);
+//		try {
+//			if (cursor.moveToFirst()) {
+//				ContentValues values = new ContentValues();
+//				values.put("flag", (play ? (cursor.getInt(0) | ListItemFlag.LAST_PLAY) : (cursor.getInt(0) & ~ListItemFlag.LAST_PLAY)));
+//				context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + index, null);
+//			}
+//		} finally {
+//			cursor.close();
+//		}
 	}
 	
 }
