@@ -28,10 +28,12 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
 
 public class ELActivity extends SherlockFragmentActivity {
 
@@ -43,7 +45,8 @@ public class ELActivity extends SherlockFragmentActivity {
 	private FragmentSwitcher fragmentSwitcher = null;
 	
 	private ProgressDialog progressDialog = null;
-	
+
+	private SearchView searchView = null;
 	private Menu actionMenu = null;
 	private SharedPreferences sharedPreferences = null;	
  
@@ -231,16 +234,38 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 	
 	
+//	@Override
+//	public boolean onCreateOptionsMenu(Menu menu) {
+//		super.onCreateOptionsMenu(menu);
+//		
+//		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
+//		actionMenu  = menu;
+//		MenuItem item = menu.findItem(R.id.el_menu_search);
+//		
+//		//searchView = new SearchView(this);
+//		//item.setActionView(R.id.searchView1);
+//		
+//		View v = item.getActionView();
+//		v.setVisibility(View.GONE);
+//		//searchView = (SearchView) menu.findItem(R.id.el_menu_search).getActionView();
+//		return true;
+//	}
+	
+
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-		
+	public boolean onPrepareOptionsMenu(Menu menu) {
 		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
-		
 		actionMenu  = menu;
+		MenuItem item = menu.findItem(R.id.el_menu_search);
 		
-		return true;
-	}		
+		//searchView = new SearchView(this);
+		//item.setActionView(R.id.searchView1);
+		
+		View v = item.getActionView();
+		v.setVisibility(View.GONE);
+		
+		return true;//super.onPrepareOptionsMenu(menu);
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -286,7 +311,7 @@ public class ELActivity extends SherlockFragmentActivity {
 	@Override
 	public boolean onKeyUp(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_MENU) {
-			actionMenu.performIdentifierAction(R.id.item1, 0);
+			actionMenu.performIdentifierAction(R.id.el_menu_overflow, 0);
 			return true;
 		}		
 		return super.onKeyUp(keyCode, event);
@@ -358,6 +383,5 @@ public class ELActivity extends SherlockFragmentActivity {
 		super.onRestoreInstanceState(savedInstanceState);
 		fragmentSwitcher.restoreInstanceState(savedInstanceState);
 	}
-
 
 }
