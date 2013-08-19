@@ -81,8 +81,8 @@ public class ELService extends Service {
 		}
 
 		@Override
-		public boolean addDownloadRequest(String request) throws RemoteException {
-			return onDownloadRequest(request);
+		public boolean addDownloadRequest(String request, String check) throws RemoteException {
+			return onDownloadRequest(request, check);
 		}
 
 		@Override
@@ -269,12 +269,12 @@ public class ELService extends Service {
 		}		
 	}
 	
-	public boolean onDownloadRequest(String request) {
+	public boolean onDownloadRequest(String request, String check) {
 		if (downloader == null) {
 			initDownloader();
 		}
 		
-		return downloader.addDownloadRequest(request);
+		return downloader.addDownloadRequest(request,check);
 	}
 	
 	public void onPackageReady() {

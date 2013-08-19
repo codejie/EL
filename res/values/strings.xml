@@ -28,4 +28,6 @@
 
     <string name="el_fragment_downloader_removeall">Remove all download records</string>
 
+    <string name="el_setting_play_auto">Don\'t Automatically Play</string>
+
 </resources>

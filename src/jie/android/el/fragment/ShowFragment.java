@@ -202,13 +202,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		});
 		webView.setWebViewClient(client);
 //		webView.setOnClickListener(this);
-		webView.setOnLongClickListener(new OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View arg0) {
-				return true;
-			}
-		});
+//		webView.setOnLongClickListener(new OnLongClickListener() {
+//
+//			@Override
+//			public boolean onLongClick(View arg0) {
+//				return true;
+//			}
+//		});
 
 		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
 		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
@@ -229,7 +229,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		playNavigate = (ImageView) view.findViewById(R.id.playImageView1);
 		playNavigate.setOnClickListener(this);
-//		playRepeat.setEnabled(false);
 		
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
 		playShuffle.setOnClickListener(this);		
@@ -239,8 +238,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playPlay.setOnClickListener(this);
 		playNext = (ImageView) view.findViewById(R.id.playImageView5);
 		playNext.setOnClickListener(this);
-		
-//		playRepeat.setSelected(true);
 	}
 	
 	@Override
@@ -299,7 +296,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					loadData(audioIndex, title, script);
 					if (obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()) != FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {
 						setAudio(audioIndex);
-						playAudio();
+						if (!getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
+							playAudio();
+						}
 					} else {
 						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt("duration"), -1));						
 					}

@@ -54,9 +54,10 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 
 	private void onSubmitButtonClick() {
 		final String request = textRequestCode.getText().toString();
+		final String check = textCheckCode.getText().toString();
 		
 		try {
-			if (!getELActivity().getServiceAccess().addDownloadRequest(request)) {
+			if (!getELActivity().getServiceAccess().addDownloadRequest(request, check)) {
 				showNotification("wrong code, please try again.");
 			}
 		} catch (RemoteException e) {

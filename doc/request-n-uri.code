@@ -19,3 +19,28 @@ XX :
 	1 = A
 	2 = B
 	3 = C			 	
+	
+// New mode
+request code : NNNNNNXMRRCC
+
+NNNNNN : sequence number
+
+X : update file location
+	1: skydrive.live.com
+	2: www.rapidshare.com
+	3: www.cppblog.com
+	
+M:	file mode
+	0-4: update.zip
+	5-9: script.zip
+
+RR : request time;
+
+CC : Check code
+
+check code : RRCC
+
+RR : Reserved
+CC : Check code
+
+	

@@ -346,4 +346,18 @@ public class ELActivity extends SherlockFragmentActivity {
 		}
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		fragmentSwitcher.saveInstanceState(outState);
+		
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+		fragmentSwitcher.restoreInstanceState(savedInstanceState);
+	}
+
+
 }

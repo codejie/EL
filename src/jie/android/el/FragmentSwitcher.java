@@ -152,5 +152,17 @@ public class FragmentSwitcher {
 		
 		return false;
 	}
-	
+
+	public void saveInstanceState(Bundle outState) {
+//		hide(curType);
+//		FragmentTransaction ft = fragmentManager.beginTransaction();
+//		while (!ft.isEmpty()) {
+//			fragmentManager.popBackStackImmediate();
+//		}
+//		ft.commit();
+	}
+
+	public void restoreInstanceState(Bundle savedInstanceState) {
+//		show(curType);
+	}
 }

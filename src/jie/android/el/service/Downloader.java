@@ -140,41 +140,102 @@ public class Downloader {
 		return false;
 	}
 	
-	public boolean addDownloadRequest(final String request) {
-		final String file = "update.zip";
-		final String url = request2Url(request, file);
+	public boolean addDownloadRequest(final String request, final String check) {
 		
-		if (url == null) {
-			return false;
+		if (request.indexOf("-") != -1) {
+			if (!request2Url_OldMode(request, check))
+				return false;
+		} else if (request.length() == 12) {
+			if (!request2Url_NewMode(request, check))
+				return false;			
+		} else if (request.indexOf("3BAF6CAC74F7919") != -1) {
+			if (!request2Url_SkyDrive(request, check)) {
+				return false;
+			}
 		}
 		
-		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
-		
 		return checkUpdateData();
+//		
+//		final String file = "update.zip";
+//		final String url = request2Url(request, file);
+//		
+//		if (url == null) {
+//			return false;
+//		}
+//		
+//		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
+//		
+//		return checkUpdateData();
 	}
 	
-	private String request2Url(String request, String file) {
+	private boolean request2Url_OldMode(String request, String check) {
 		//XXXX-X-XX-XX
 		int s = 0;
 		int e = request.indexOf("-", s);
 		if (e == -1) {
-			return null;
+			return false;
 		}
 		String uc = request.substring(s, e);
 		s = e + 1;
 		e = request.indexOf("-", s);
 		if (e == -1) {
-			return null;
+			return false;
 		}
 		
-		String p = request.substring(s, e);
-		//
+		int p = Integer.valueOf(request.substring(s, e)).intValue();
+		if (p != 3)
+			return false;
 		
-		if (p.equals("3")) {
-			return "http://www.cppblog.com/Files/codejie/" + uc + "_" + file;
+		final String file = "update.zip";
+		final String url = "http://www.cppblog.com/Files/codejie/" + uc + "_" + file; 
+		
+		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
+		
+		return true;
+	}
+	
+	private boolean request2Url_NewMode(String request, String check) {
+		//NNNNNNXMRRCC
+		String seq = request.substring(0, 6);
+		if (seq == null)
+			return false;
+		
+		int m1 = Integer.valueOf(request.substring(5, 6)).intValue();
+		
+		int x = Integer.valueOf(request.substring(6, 7)).intValue();
+		int m = Integer.valueOf(request.substring(7, 8)).intValue();
+		int r = Integer.valueOf(request.substring(8, 10)).intValue();
+		int c1 = Integer.valueOf(request.substring(10, 11)).intValue();
+		int c2 = Integer.valueOf(request.substring(11, 12)).intValue();
+		
+		if (((m1 + r) % 7) != c1) // check 1
+			return false;
+		
+		if (((x + m) % 7) != c2)
+			return false;
+		
+		if (x != 3) {
+			return false; //
 		}
 		
-		return null;
+		final String file = (m < 5 ? "update.zip" : "script.zip");
+		final String url = "http://www.cppblog.com/Files/codejie/" + request + "_" + file;
+		
+		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
+		
+		return true;
+	}
+	
+	private boolean request2Url_SkyDrive(String request, String check) {
+		
+		//http://skydrive.live.com/download?resid=3BAF6CAC74F7919!120&amp;authkey=!AFB9Zq4LrXKR200
+		
+		final String file = "update.zip";
+		final String url = "http://skydrive.live.com/download?resid=" + request + "&authkey=" + check;
+		
+		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
+		
+		return true;
 	}
 	
 	private boolean checkUpdateData() {

@@ -13,6 +13,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 	private CheckBox checkPlayStopAfterCurrent = null;
 	private CheckBox checkPlayRandomOrder = null;
+	private CheckBox checkPlayDontAutoPlay = null;
 	private CheckBox checkContentFontMedium = null;
 	private CheckBox checkContentFontLarge = null;	
 	
@@ -29,6 +30,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 		checkPlayStopAfterCurrent = (CheckBox) view.findViewById(R.id.checkBox1);
 		checkPlayRandomOrder = (CheckBox) view.findViewById(R.id.checkBox2);
+		checkPlayDontAutoPlay = (CheckBox) view.findViewById(R.id.checkBox5);
 		
 		checkContentFontMedium = (CheckBox) view.findViewById(R.id.checkBox3);
 		checkContentFontLarge = (CheckBox) view.findViewById(R.id.checkBox4);
@@ -37,6 +39,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		
 		checkPlayStopAfterCurrent.setOnCheckedChangeListener(this);		
 		checkPlayRandomOrder.setOnCheckedChangeListener(this);
+		checkPlayDontAutoPlay.setOnCheckedChangeListener(this);
 		checkContentFontMedium.setOnCheckedChangeListener(this);		
 		checkContentFontLarge.setOnCheckedChangeListener(this);
 	}
@@ -59,6 +62,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		
 		checkPlayStopAfterCurrent.setChecked(prefs.getBoolean(Setting.PLAY_STOP_AFTER_CURRENT, false));
 		checkPlayRandomOrder.setChecked(prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false));
+		checkPlayDontAutoPlay.setChecked(prefs.getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false));
 		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENTY_MEDIUM_FONT_SIZE, false));
 		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENTY_LARGE_FONT_SIZE, false));
 		
@@ -70,6 +74,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 		editor.putBoolean(Setting.PLAY_STOP_AFTER_CURRENT, checkPlayStopAfterCurrent.isChecked());
 		editor.putBoolean(Setting.PLAY_RANDOM_ORDER, checkPlayRandomOrder.isChecked());
+		editor.putBoolean(Setting.PLAY_DONT_AUTO_PLAY, checkPlayDontAutoPlay.isChecked());
 		
 		editor.putBoolean(Setting.CONTENTY_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
 		editor.putBoolean(Setting.CONTENTY_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());

@@ -20,7 +20,7 @@ interface ServiceAccess {
 	
 	Word.XmlResult queryWordResult(in String word);
 	
-	boolean addDownloadRequest(in String request);
+	boolean addDownloadRequest(in String request, in String check);
 	
 	void setUIState(in int state);
 
