@@ -234,39 +234,43 @@ public class ELActivity extends SherlockFragmentActivity {
 	}
 	
 	
-//	@Override
-//	public boolean onCreateOptionsMenu(Menu menu) {
-//		super.onCreateOptionsMenu(menu);
-//		
-//		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
-//		actionMenu  = menu;
-//		MenuItem item = menu.findItem(R.id.el_menu_search);
-//		
-//		//searchView = new SearchView(this);
-//		//item.setActionView(R.id.searchView1);
-//		
-//		View v = item.getActionView();
-//		v.setVisibility(View.GONE);
-//		//searchView = (SearchView) menu.findItem(R.id.el_menu_search).getActionView();
-//		return true;
-//	}
-	
-
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+	
+//	    searchView = new SearchView(getSupportActionBar().getThemedContext());
+//	    searchView.setQueryHint("Search for countries…");
+		
 		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
 		actionMenu  = menu;
 		MenuItem item = menu.findItem(R.id.el_menu_search);
+//		item.setActionView(searchView);
 		
 		//searchView = new SearchView(this);
 		//item.setActionView(R.id.searchView1);
 		
-		View v = item.getActionView();
-		v.setVisibility(View.GONE);
-		
-		return true;//super.onPrepareOptionsMenu(menu);
+//		View v = item.getActionView();
+//		v.setVisibility(View.GONE);
+		searchView = (SearchView) menu.findItem(R.id.el_menu_search).getActionView();
+		return true;
 	}
+	
 
+//	@Override
+//	public boolean onPrepareOptionsMenu(Menu menu) {
+////		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
+////		actionMenu  = menu;
+//		MenuItem item = menu.findItem(R.id.el_menu_search);
+////		
+////		//searchView = new SearchView(this);
+////		//item.setActionView(R.id.searchView1);
+//		
+//		View v = item.getActionView();
+//		v.setVisibility(View.GONE);
+//		
+//		return true;//super.onPrepareOptionsMenu(menu);
+//	}
+//
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {

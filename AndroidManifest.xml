@@ -15,7 +15,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" android:logo="@drawable/ic_launcher">
-        <activity android:theme="@style/AppTheme" android:name="ELActivity" android:screenOrientation="portrait" android:launchMode="singleTask">
+        <activity android:name="ELActivity" android:screenOrientation="portrait" android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
