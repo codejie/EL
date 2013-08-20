@@ -2,6 +2,7 @@ package jie.android.el;
 
 import jie.android.el.fragment.AboutFragment;
 import jie.android.el.fragment.BaseFragment;
+import jie.android.el.fragment.DictionaryFragment;
 import jie.android.el.fragment.DownloadFragment;
 import jie.android.el.fragment.ListFragment;
 import jie.android.el.fragment.SettingFragment;
@@ -15,7 +16,7 @@ public class FragmentSwitcher {
 	public enum Type {
 		
 		LIST("list", false), SHOW("show", false), ABOUT("about", true), SETTING("setting", true),
-		DOWNLOAD("download", true);
+		DOWNLOAD("download", true), DICTIONARY("dictionary", true);
 		
 		private final String title;
 		private final boolean removed;
@@ -100,6 +101,9 @@ public class FragmentSwitcher {
 			break;
 		case ABOUT:
 			fragment = new AboutFragment();
+			break;
+		case DICTIONARY:
+			fragment = new DictionaryFragment();
 			break;
 		default:
 			return null;

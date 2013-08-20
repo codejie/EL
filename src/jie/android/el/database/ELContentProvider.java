@@ -38,7 +38,6 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_EL_ESL_LAST = Uri.parse("content://" + AUTHORITY + "/el/esl_last");
 	public static final Uri URI_EL_ESL_PLAYFLAG = Uri.parse("content://" + AUTHORITY + "/el/esl_playflag");
 	
-	
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
 	private static final int MATCH_ITEM_EL_ESL_RANDOM = 12;

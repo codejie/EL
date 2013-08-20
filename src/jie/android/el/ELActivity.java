@@ -29,6 +29,7 @@ import android.os.RemoteException;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
@@ -239,7 +240,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		super.onCreateOptionsMenu(menu);
 	
 //	    searchView = new SearchView(getSupportActionBar().getThemedContext());
-//	    searchView.setQueryHint("Search for countries…");
+//	    searchView.setQueryHint("Search for countries鈥�);
 		
 		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
 		actionMenu  = menu;
@@ -252,6 +253,14 @@ public class ELActivity extends SherlockFragmentActivity {
 //		View v = item.getActionView();
 //		v.setVisibility(View.GONE);
 		searchView = (SearchView) menu.findItem(R.id.el_menu_search).getActionView();
+		searchView.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				showFragment(FragmentSwitcher.Type.DICTIONARY, null);
+			}
+			
+		});
 		return true;
 	}
 	
@@ -282,6 +291,9 @@ public class ELActivity extends SherlockFragmentActivity {
 			break;
 		case R.id.el_menu_about:
 			showFragment(FragmentSwitcher.Type.ABOUT, null);
+			break;
+		case R.id.el_menu_search:
+			showFragment(FragmentSwitcher.Type.DICTIONARY, null);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

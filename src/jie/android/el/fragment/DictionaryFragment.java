@@ -7,15 +7,18 @@ import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 
-public class DictonaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener {
+public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener {
 
 	private PullToRefreshListView pullList = null;
 	private LinearLayout footLayout = null;
@@ -53,6 +56,27 @@ public class DictonaryFragment extends BaseFragment implements OnRefreshListener
 		
 		adapter = new DictionaryFragmentListAdapter(getELActivity());
 		pullList.setAdapter(adapter);
+
+		int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, -1); 
+		
+		if (maxRecord == -1) {
+			pullList.getRefreshableView().setOnScrollListener(new OnScrollListener() {
+
+				@Override
+				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+					getELActivity().getSharedPreferences().edit().putInt(Setting.DICTIONARY_LIST_MAXPERPAGE, visibleItemCount + 1);
+					adapter.setMaxPerPage(visibleItemCount + 1);
+					pullList.getRefreshableView().setOnScrollListener(null);
+				}
+
+				@Override
+				public void onScrollStateChanged(AbsListView view, int scrollState) {
+				}				
+			});
+			adapter.setMaxPerPage(35);
+		} else {
+			adapter.setMaxPerPage(maxRecord);
+		}
 	}
 
 	@Override
@@ -63,8 +87,7 @@ public class DictonaryFragment extends BaseFragment implements OnRefreshListener
 
 	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
-		// TODO Auto-generated method stub
-		
+		adapter.refresh();
 	}
 
 }

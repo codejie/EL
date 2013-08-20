@@ -28,6 +28,7 @@ public interface CommonConsts {
 		public static final String PLAY_DONT_AUTO_PLAY	= "play_dont_auto_play";
 		public static final String CONTENTY_MEDIUM_FONT_SIZE	= "content_medium_font_size";
 		public static final String CONTENTY_LARGE_FONT_SIZE	= "content_large_font_size";
+		public static final String DICTIONARY_LIST_MAXPERPAGE	= "dictionary_list_maxperpage";
 	}
 	
 	public interface UIMsg {
