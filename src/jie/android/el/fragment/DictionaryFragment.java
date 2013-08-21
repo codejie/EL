@@ -19,7 +19,7 @@ import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 
-public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener {
+public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
 
 	private PullToRefreshListView pullList = null;
 	private LinearLayout footLayout = null;
@@ -44,6 +44,10 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	private void initList(View view) {
 		pullList = (PullToRefreshListView) view.findViewById(R.id.pullToRefreshListView1);
 		pullList.setMode(Mode.PULL_FROM_END);
+		pullList.getLoadingLayoutProxy().setPullLabel(getText(R.string.el_fragment_dict_pulltorefresh));
+		pullList.getLoadingLayoutProxy().setReleaseLabel(getText(R.string.el_fragment_dict_releasetorefresh));
+		pullList.getLoadingLayoutProxy().setRefreshingLabel(getText(R.string.el_fragment_dict_loading));
+//		pullList.getRefreshableView().setFooterDividersEnabled(true);
 		
 		pullList.setOnRefreshListener(this);
 		pullList.setOnItemClickListener(this);
@@ -57,27 +61,29 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		
 		adapter = new DictionaryFragmentListAdapter(getELActivity());
 		pullList.setAdapter(adapter);
-
-		int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, -1); 
 		
-		if (maxRecord == -1) {
-			pullList.getRefreshableView().setOnScrollListener(new OnScrollListener() {
+		adapter.setOnRefrshListener(this);
 
-				@Override
-				public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-					getELActivity().getSharedPreferences().edit().putInt(Setting.DICTIONARY_LIST_MAXPERPAGE, visibleItemCount + 1);
-					adapter.setMaxPerPage(visibleItemCount + 1);
-					pullList.getRefreshableView().setOnScrollListener(null);
+		final int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, 2);
+		adapter.setMaxPerPage(maxRecord);
+		
+		pullList.getRefreshableView().setOnScrollListener(new OnScrollListener() {
+
+			@Override
+			public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+				if ((visibleItemCount + 1) > maxRecord) {
+					getELActivity().getSharedPreferences().edit().putInt(Setting.DICTIONARY_LIST_MAXPERPAGE, visibleItemCount + 1).commit();
+					adapter.setMaxPerPage(visibleItemCount + 1);	
 				}
+			}
 
-				@Override
-				public void onScrollStateChanged(AbsListView view, int scrollState) {
-				}				
-			});
-			adapter.setMaxPerPage(35);
-		} else {
-			adapter.setMaxPerPage(maxRecord);
-		}
+			@Override
+			public void onScrollStateChanged(AbsListView view, int scrollState) {
+			}				
+		});
+
+		adapter.setMaxPerPage(20);
+//		loadAdapter("a");
 	}
 
 	@Override
@@ -94,9 +100,40 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	@Override
 	public void onArguments(Bundle args) {
 		if (args != null) {
-			String filter = "(word like '" + args.getString(FragmentArgument.TEXT) + "%')";
-			adapter.load(filter);
+			pullList.setMode(Mode.PULL_FROM_END);
+			loadAdapter(args.getString(FragmentArgument.TEXT));
 		}
 	}
+	
+	private void loadAdapter(final String prefix) {
+		String filter = "(word like '" + prefix + "%')";
+		adapter.load(filter);		
+	}
 
+	@Override
+	public void onLoadEnd(int count, int total, int maxPerPage) {
+		pullList.onRefreshComplete();
+		
+		if (total == 0) {
+			pullList.setMode(Mode.DISABLED);
+			showListFootTip(true, R.string.el_fragment_dict_nomatchresult);
+		} else if (count == 0 || total < maxPerPage) {
+			pullList.setMode(Mode.DISABLED);
+			showListFootTip(true, R.string.el_fragment_dict_nomoreresults);
+		} else {
+			showListFootTip(false, -1);
+		}		
+
+	}
+
+	private void showListFootTip(boolean show, int resId) {
+		if (show) {
+			footLayout.setVisibility(View.VISIBLE);
+			if (resId != -1) {
+				footText.setText(resId);
+			}
+		} else {
+			footLayout.setVisibility(View.GONE);
+		}
+	}	
 }

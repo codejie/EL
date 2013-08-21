@@ -30,22 +30,16 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			 while (isAudioPlaying) {
-				if (listener != null) {
-					try {
-						listener.onPlaying(player.getCurrentPosition());
-					} catch (DeadObjectException e) {
-						listener = null;
-					} catch (RemoteException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-				
+			 while (isAudioPlaying && listener != null) {
 				try {
-					Thread.sleep(500);
+					listener.onPlaying(player.getCurrentPosition());
+					
+					Thread.sleep(777);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (DeadObjectException e) {
+					listener = null;
+				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
 			}
@@ -136,6 +130,12 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	
 	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
 		this.listener = listener;
+		
+		if (isPlaying() && this.listener != null) {
+			tickTask = new TickCounterTask();
+			tickTask.execute();
+		}
+		
 	}
 	
 	public void setData(int index) {

@@ -24,6 +24,8 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 
 		@Override
 		protected Integer doInBackground(String... params) {
+			dataArray.clear();
+
 			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INFO, project, params[0], null, params[1]);
 			try {
 				if (cursor.moveToFirst()) {
@@ -74,6 +76,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	
 	private boolean isLoading = false;
 	private LoadTask loadTask = null;
+	private int loadCount = 0;
 	
 	public DictionaryFragmentListAdapter(Context context) {
 		this.context = context;
@@ -109,15 +112,17 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		return view;
 	}
 
+	public void setOnRefrshListener(OnRefreshListener listener) {
+		onRefreshListener = listener;
+	}
+	
 	public void setMaxPerPage(int value) {
 		maxPerPage = value;
 	}
 	
 	public void load(final String filter) {
 		this.filter = filter;
-		
-		dataArray.clear();
-		
+
 		refresh();
 	}
 
@@ -130,7 +135,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		}
 		
 		loadTask = new LoadTask();
-		loadTask.execute(filter, "idx");
+		loadTask.execute(filter, "idx limit " + maxPerPage * ( ++ loadCount));
 	}
 	
 	

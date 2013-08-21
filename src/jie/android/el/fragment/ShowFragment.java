@@ -363,9 +363,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		SharedPreferences prefs = getELActivity().getSharedPreferences();
 		
 		String html = "<HTML><HEAD><STYLE>\n.header { font-size:150% }\n.body { font-size:";
-		if (prefs.getBoolean(CommonConsts.Setting.CONTENTY_MEDIUM_FONT_SIZE, false)) {
+		if (prefs.getBoolean(CommonConsts.Setting.CONTENT_MEDIUM_FONT_SIZE, false)) {
 			html += "120%";
-		} else if (prefs.getBoolean(CommonConsts.Setting.CONTENTY_LARGE_FONT_SIZE, false)) {
+		} else if (prefs.getBoolean(CommonConsts.Setting.CONTENT_LARGE_FONT_SIZE, false)) {
 			html += "150%";			
 		} else {
 			html += "100%";
@@ -669,6 +669,18 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				cursor.close();
 			}
 		}		
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		setAudioPlayListener(false);
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		setAudioPlayListener(true);		
 	}
 
 }

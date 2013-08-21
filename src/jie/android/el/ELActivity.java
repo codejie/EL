@@ -438,6 +438,8 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	public void onSwitch(FragmentSwitcher.Type oldType, FragmentSwitcher.Type newType) {
 		if (newType != FragmentSwitcher.Type.DICTIONARY) {
 			if (searchView != null) {
+				searchView.setQuery("", false);
+				searchView.clearFocus();
 				searchView.setIconified(true);
 			}
 		}

@@ -63,8 +63,8 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkPlayStopAfterCurrent.setChecked(prefs.getBoolean(Setting.PLAY_STOP_AFTER_CURRENT, false));
 		checkPlayRandomOrder.setChecked(prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false));
 		checkPlayDontAutoPlay.setChecked(prefs.getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false));
-		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENTY_MEDIUM_FONT_SIZE, false));
-		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENTY_LARGE_FONT_SIZE, false));
+		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, false));
+		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENT_LARGE_FONT_SIZE, false));
 		
 	}
 	
@@ -76,8 +76,8 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		editor.putBoolean(Setting.PLAY_RANDOM_ORDER, checkPlayRandomOrder.isChecked());
 		editor.putBoolean(Setting.PLAY_DONT_AUTO_PLAY, checkPlayDontAutoPlay.isChecked());
 		
-		editor.putBoolean(Setting.CONTENTY_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
-		editor.putBoolean(Setting.CONTENTY_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());
+		editor.putBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
+		editor.putBoolean(Setting.CONTENT_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());
 		
 		editor.commit();
 	}	
