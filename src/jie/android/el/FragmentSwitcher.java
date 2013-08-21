@@ -13,6 +13,10 @@ import android.support.v4.app.FragmentTransaction;
 
 public class FragmentSwitcher {
 	
+	public interface OnSwitchListener {
+		public void onSwitch(Type oldType, Type newType);
+	}
+	
 	public enum Type {
 		
 		LIST("list", false), SHOW("show", false), ABOUT("about", true), SETTING("setting", true),
@@ -49,6 +53,7 @@ public class FragmentSwitcher {
 	private final ELActivity activity;
 	private FragmentManager fragmentManager = null;
 	private Type curType = null;
+	private OnSwitchListener  onSwitchListener = null;
 	
 	public FragmentSwitcher(final ELActivity activity) {
 		this.activity = activity;
@@ -79,6 +84,11 @@ public class FragmentSwitcher {
 		
 		fragment.onArguments(args);
 		fragmentManager.beginTransaction().show(fragment).commitAllowingStateLoss();//.commit();
+		
+		if (onSwitchListener != null) {
+			onSwitchListener.onSwitch(curType, type);
+		}
+		
 		curType = type;
 		
 		return true;
@@ -127,7 +137,7 @@ public class FragmentSwitcher {
 //				fragmentManager.beginTransaction().hide(fragment).commit();
 			}
 			
-			curType = null;			
+//			curType = null;			
 		}
 	}
 
@@ -169,4 +179,9 @@ public class FragmentSwitcher {
 	public void restoreInstanceState(Bundle savedInstanceState) {
 //		show(curType);
 	}
+	
+	public void setOnSwitchListener(OnSwitchListener listener) {
+		onSwitchListener = listener;
+	}
+	
 }

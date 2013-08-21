@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 
@@ -88,6 +89,14 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 		adapter.refresh();
+	}
+
+	@Override
+	public void onArguments(Bundle args) {
+		if (args != null) {
+			String filter = "(word like '" + args.getString(FragmentArgument.TEXT) + "%')";
+			adapter.load(filter);
+		}
 	}
 
 }

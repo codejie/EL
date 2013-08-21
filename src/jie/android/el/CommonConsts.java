@@ -11,7 +11,7 @@ public interface CommonConsts {
 	
 	public interface FragmentArgument {
 		public enum Action {
-			NONE, PACKAGE_CHANGED, SERVICE_NOTIFICATION;
+			NONE, PACKAGE_CHANGED, SERVICE_NOTIFICATION, QUERY;
 			
 			public int getId() {
 				return this.ordinal();
@@ -20,6 +20,7 @@ public interface CommonConsts {
 		
 		public static final String	ACTION	=	"action";
 		public static final String INDEX	=	"index";
+		public static final String TEXT		=	"text";
 	}
 	
 	public interface Setting {

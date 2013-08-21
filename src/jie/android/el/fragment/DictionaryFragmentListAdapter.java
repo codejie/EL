@@ -28,7 +28,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 			try {
 				if (cursor.moveToFirst()) {
 					do {
-						dataArray.add(new Data(cursor.getInt(0), cursor.getString(2)));
+						dataArray.add(new Data(cursor.getInt(0), cursor.getString(1)));
 					} while (cursor.moveToNext());
 				}
 			} finally {
@@ -40,7 +40,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		
 		@Override
 		protected void onPostExecute(Integer result) {
-			//DictionaryFragmentListAdapter.this.notifyDataSetChanged();
+			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
 			if (onRefreshListener != null) {
 				onRefreshListener.onLoadEnd(result.intValue(), dataArray.size(), maxPerPage);
 			}
@@ -122,7 +122,9 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	}
 
 	public void refresh() {
-		if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
+		if (isLoading) {
+			return;
+		} else if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
 			isLoading = true;
 			return;
 		}

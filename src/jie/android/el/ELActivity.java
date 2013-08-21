@@ -30,13 +30,16 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 
-public class ELActivity extends SherlockFragmentActivity {
+public class ELActivity extends SherlockFragmentActivity implements FragmentSwitcher.OnSwitchListener {
 
 	private static final String Tag = ELActivity.class.getSimpleName();
 
@@ -128,6 +131,7 @@ public class ELActivity extends SherlockFragmentActivity {
 		sharedPreferences = getSharedPreferences(AppArgument.NAME, 0);
 		
 		fragmentSwitcher = new FragmentSwitcher(this);
+		fragmentSwitcher.setOnSwitchListener(this);
 		
 		this.setContentView(R.layout.activity_el);
 
@@ -239,33 +243,63 @@ public class ELActivity extends SherlockFragmentActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 	
-//	    searchView = new SearchView(getSupportActionBar().getThemedContext());
-//	    searchView.setQueryHint("Search for countries鈥�);
-		
 		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
 		actionMenu  = menu;
-		MenuItem item = menu.findItem(R.id.el_menu_search);
-//		item.setActionView(searchView);
 		
-		//searchView = new SearchView(this);
-		//item.setActionView(R.id.searchView1);
+		initSearchView(menu.findItem(R.id.el_menu_search));
 		
-//		View v = item.getActionView();
-//		v.setVisibility(View.GONE);
-		searchView = (SearchView) menu.findItem(R.id.el_menu_search).getActionView();
-		searchView.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-				showFragment(FragmentSwitcher.Type.DICTIONARY, null);
-			}
-			
-		});
 		return true;
 	}
 	
+	private void initSearchView(MenuItem menu) {
+		
+		searchView = (SearchView) menu.getActionView();
+//		searchView.setSubmitButtonEnabled(true);
+		
+		searchView.setOnSearchClickListener(new OnClickListener() {
 
-//	@Override
+			@Override
+			public void onClick(View view) {
+				if (fragmentSwitcher.getCurrentType() != FragmentSwitcher.Type.SHOW) {
+					showFragment(FragmentSwitcher.Type.DICTIONARY, null);
+				}
+			}
+			
+		});
+			
+		searchView.setOnQueryTextListener(new OnQueryTextListener() {
+
+			@Override
+			public boolean onQueryTextSubmit(String query) {
+				Bundle data = new Bundle();
+				data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.QUERY.getId());
+				data.putString(FragmentArgument.TEXT, query);
+				
+				showFragment(FragmentSwitcher.Type.DICTIONARY, data);
+				
+				return true;
+			}
+
+			@Override
+			public boolean onQueryTextChange(String newText) {
+				if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.DICTIONARY) {
+					
+					Bundle data = new Bundle();
+					data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.QUERY.getId());
+					data.putString(FragmentArgument.TEXT, newText);
+					
+					fragmentSwitcher.getFragment().onArguments(data);				
+					return true;
+				} else {
+					return false;
+				}
+			}
+			
+		});		
+
+	}
+
+	//	@Override
 //	public boolean onPrepareOptionsMenu(Menu menu) {
 ////		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
 ////		actionMenu  = menu;
@@ -398,6 +432,20 @@ public class ELActivity extends SherlockFragmentActivity {
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 		fragmentSwitcher.restoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void onSwitch(FragmentSwitcher.Type oldType, FragmentSwitcher.Type newType) {
+		if (newType != FragmentSwitcher.Type.DICTIONARY) {
+			if (searchView != null) {
+				searchView.setIconified(true);
+			}
+		}
+//		} else {
+//			if (searchView != null) {
+//				searchView.setIconified(false);
+//			}			
+//		}
 	}
 
 }
