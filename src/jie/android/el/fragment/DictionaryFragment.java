@@ -6,6 +6,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -21,11 +23,28 @@ import jie.android.el.R;
 
 public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
 
+	private static final int MSG_SEARCHVIEW	=	1;
+	
 	private PullToRefreshListView pullList = null;
 	private LinearLayout footLayout = null;
 	private TextView footText = null;
 	
 	private DictionaryFragmentListAdapter adapter = null;
+	
+	private Handler handler = new Handler() {
+
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case MSG_SEARCHVIEW:
+				Bundle data = (Bundle)msg.obj;
+				onSearchViewChanged(data.getString(FragmentArgument.TEXT));
+				break;
+			default:;
+			}
+		}
+		
+	};
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +62,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 
 	private void initList(View view) {
 		pullList = (PullToRefreshListView) view.findViewById(R.id.pullToRefreshListView1);
+		//pullList.getRefreshableView().setDivider(getResources().getDrawable(R.drawable.el_list_divider));
 		pullList.setMode(Mode.PULL_FROM_END);
 		pullList.getLoadingLayoutProxy().setPullLabel(getText(R.string.el_fragment_dict_pulltorefresh));
 		pullList.getLoadingLayoutProxy().setReleaseLabel(getText(R.string.el_fragment_dict_releasetorefresh));
@@ -98,10 +118,10 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	}
 
 	@Override
-	public void onArguments(Bundle args) {
+	public void onArguments(Bundle args) {		
 		if (args != null) {
-			pullList.setMode(Mode.PULL_FROM_END);
-			loadAdapter(args.getString(FragmentArgument.TEXT));
+			Message msg = Message.obtain(handler, MSG_SEARCHVIEW, args);
+			msg.sendToTarget();
 		}
 	}
 	
@@ -110,6 +130,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		adapter.load(filter);		
 	}
 
+	protected void onSearchViewChanged(String text) {
+		pullList.setMode(Mode.PULL_FROM_END);
+		loadAdapter(text);
+	}
+	
 	@Override
 	public void onLoadEnd(int count, int total, int maxPerPage) {
 		pullList.onRefreshComplete();

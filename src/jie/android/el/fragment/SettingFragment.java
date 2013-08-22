@@ -16,6 +16,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 	private CheckBox checkPlayDontAutoPlay = null;
 	private CheckBox checkContentFontMedium = null;
 	private CheckBox checkContentFontLarge = null;	
+	private CheckBox checkContentHideTitle = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		
 		checkContentFontMedium = (CheckBox) view.findViewById(R.id.checkBox3);
 		checkContentFontLarge = (CheckBox) view.findViewById(R.id.checkBox4);
+		checkContentHideTitle = (CheckBox) view.findViewById(R.id.checkBox6);
 
 		updateSetting();
 		
@@ -42,6 +44,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkPlayDontAutoPlay.setOnCheckedChangeListener(this);
 		checkContentFontMedium.setOnCheckedChangeListener(this);		
 		checkContentFontLarge.setOnCheckedChangeListener(this);
+		checkContentHideTitle.setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -65,7 +68,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkPlayDontAutoPlay.setChecked(prefs.getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false));
 		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, false));
 		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENT_LARGE_FONT_SIZE, false));
-		
+		checkContentHideTitle.setChecked(prefs.getBoolean(Setting.CONTENT_HIDE_TITLE, false));
 	}
 	
 	private void saveSetting() {
@@ -78,6 +81,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		
 		editor.putBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
 		editor.putBoolean(Setting.CONTENT_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());
+		editor.putBoolean(Setting.CONTENT_HIDE_TITLE, checkContentHideTitle.isChecked());
 		
 		editor.commit();
 	}	

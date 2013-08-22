@@ -33,6 +33,7 @@ import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import jie.android.el.service.Dictionary;
 import jie.android.el.service.OnPlayAudioListener;
+import jie.android.el.service.ServiceAccess;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
@@ -115,6 +116,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private static final int MSG_PLAY_ONCOMPLETED	=	5;
 	private static final int MSG_PLAY_ONERROR		=	6;
 	private static final int MSG_PLAY_ONSEEKTO		=	7;
+	private static final int MSG_HIDE_TITLE			=	8;
 	
 	private Animation animShow = null;
 	private Animation animHide = null;
@@ -155,19 +157,22 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				onIndex((Bundle)msg.obj);
 				break;
 			case MSG_PLAY_ONPREPARED:
-				OnPlayPrepared(msg.arg1);
+				onPlayPrepared(msg.arg1);
 				break;
 			case MSG_PLAY_ONPLAYING:
-				OnPlayPlaying(msg.arg1);
+				onPlayPlaying(msg.arg1);
 				break;
 			case MSG_PLAY_ONCOMPLETED:
-				OnPlayCompleted();
+				onPlayCompleted();
 				break;
 			case MSG_PLAY_ONERROR:
-				OnPlayError(msg.arg1, msg.arg2);
+				onPlayError(msg.arg1, msg.arg2);
 				break;
 			case MSG_PLAY_ONSEEKTO:
-				OnPlaySeekTo(msg.arg1);
+				onPlaySeekTo(msg.arg1);
+				break;
+			case MSG_HIDE_TITLE:
+				onHideTitle();
 				break;
 			default:;
 			}
@@ -307,7 +312,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 						playNavigate.setEnabled(false);
 					} else {
 						playNavigate.setEnabled(true);
-					}					
+					}
 				}				
 			} finally {
 				cursor.close();
@@ -317,10 +322,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	private void setAudioPlayListener(boolean attach) {
 		try {
-			if (attach) {
-				getELActivity().getServiceAccess().setAudioListener(new OnPlayListener());
-			} else {
-				getELActivity().getServiceAccess().setAudioListener(null);
+			ServiceAccess service = getELActivity().getServiceAccess();
+			if (service != null) { 
+				if (attach) {
+					getELActivity().getServiceAccess().setAudioListener(new OnPlayListener());
+				} else {
+					getELActivity().getServiceAccess().setAudioListener(null);
+				}
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -329,14 +337,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void loadData(int index, String title, String data) {
-		textView.setText(String.format("%d . %s", index, title));
-		
-//		getELActivity().setTitle(title);
+		textView.setVisibility(View.VISIBLE);
+		textView.setText(String.format("%d. %s", index, title));
 		
 		String html = assembleHtmlScript(data);
-		
-		
 		webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+		
+		if (getELActivity().getSharedPreferences().getBoolean(Setting.CONTENT_HIDE_TITLE, false)) {
+			Message msg = Message.obtain(handler, MSG_HIDE_TITLE);
+			handler.sendMessageDelayed(msg, 2500);
+		}
 	}
 
 	private String assembleHtmlScript(String data) {
@@ -577,7 +587,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		Speaker.speak(text);
 	}
 
-	protected void OnPlaySeekTo(int arg1) {
+	protected void onPlaySeekTo(int arg1) {
 		if (isPlayingSeek) {
 			playAudio();
 			
@@ -585,25 +595,25 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}
 	}
 
-	protected void OnPlayError(int what, int extra) {
+	protected void onPlayError(int what, int extra) {
 		stopAudio();
 		Toast.makeText(getELActivity(), String.format("ERROR:%d Extra:%d", what, extra), Toast.LENGTH_SHORT).show();
 	}
 
-	protected void OnPlayCompleted() {
+	protected void onPlayCompleted() {
 		stopAudio();
 		playBar.setEnabled(false);
 		playTime.setText(audioDuration);
 	}
 
-	protected void OnPlayPlaying(int msec) {
+	protected void onPlayPlaying(int msec) {
 		
 		playBar.setProgress(msec / 1000);
 		
 		playTime.setText(Utils.formatMSec(msec) + "/" + audioDuration);
 	}
 
-	protected void OnPlayPrepared(int duration) {
+	protected void onPlayPrepared(int duration) {
 		audioDuration = Utils.formatMSec(duration);
 		
 		playBar.setMax(duration / 1000 - 1);
@@ -683,4 +693,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		setAudioPlayListener(true);		
 	}
 
+	protected void onHideTitle() {
+		textView.setVisibility(View.GONE);		
+	}
 }

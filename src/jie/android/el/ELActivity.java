@@ -443,11 +443,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 				searchView.setIconified(true);
 			}
 		}
-//		} else {
-//			if (searchView != null) {
-//				searchView.setIconified(false);
-//			}			
-//		}
 	}
 
 }

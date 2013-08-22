@@ -60,4 +60,10 @@
         android:layout_height="wrap_content"
         android:text="@string/el_setting_content_font_large" />
 
+    <CheckBox
+        android:id="@+id/checkBox6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/el_setting_content_hide_title" />
+
 </LinearLayout>

@@ -36,5 +36,6 @@
     <string name="el_fragment_dict_releasetorefresh">Release to refresh</string>
     <string name="el_fragment_dict_nomoreresults">No more results</string>
     <string name="el_fragment_dict_nomatchresult">No matching result</string>
+    <string name="el_setting_content_hide_title">Automatically Hide Title</string>
 
 </resources>

@@ -46,8 +46,7 @@ public class FragmentSwitcher {
 			} else {
 				return null;
 			}
-		}
-		
+		}		
 	}
 	
 	private final ELActivity activity;
@@ -82,8 +81,8 @@ public class FragmentSwitcher {
 			}
 		}
 		
-		fragment.onArguments(args);
 		fragmentManager.beginTransaction().show(fragment).commitAllowingStateLoss();//.commit();
+		fragment.onArguments(args);
 		
 		if (onSwitchListener != null) {
 			onSwitchListener.onSwitch(curType, type);
@@ -119,7 +118,7 @@ public class FragmentSwitcher {
 			return null;
 		}
 		
-		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commitAllowingStateLoss();//commit();
 		
 		return fragment;
 	}
