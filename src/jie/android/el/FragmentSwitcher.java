@@ -151,6 +151,12 @@ public class FragmentSwitcher {
 		return curType;
 	}
 	
+	public boolean isRemovedType() {
+		if (curType == null)
+			return false;
+		return curType.hasRemoved();
+	}
+	
 	public boolean showPrevFragment() {
 		int count = fragmentManager.getBackStackEntryCount();
 		if (count > 0) {

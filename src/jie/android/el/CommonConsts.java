@@ -31,6 +31,8 @@ public interface CommonConsts {
 		public static final String CONTENT_LARGE_FONT_SIZE	= "content_large_font_size";
 		public static final String CONTENT_HIDE_TITLE	= "content_hide_title";
 		
+		public static final String DICTIONARY_LIST_NOT_EXTENSION = "dictionary_list_not_extension";
+		
 		public static final String DICTIONARY_LIST_MAXPERPAGE	= "dictionary_list_maxperpage";
 	}
 	

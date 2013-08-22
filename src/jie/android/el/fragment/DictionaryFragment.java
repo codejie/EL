@@ -127,6 +127,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	
 	private void loadAdapter(final String prefix) {
 		String filter = "(word like '" + prefix + "%')";
+		
+		if (getELActivity().getSharedPreferences().getBoolean(Setting.DICTIONARY_LIST_NOT_EXTENSION, false)) {
+			filter += " and (flag!=2)";
+		}
+		
 		adapter.load(filter);		
 	}
 
@@ -142,7 +147,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		if (total == 0) {
 			pullList.setMode(Mode.DISABLED);
 			showListFootTip(true, R.string.el_fragment_dict_nomatchresult);
-		} else if (count == 0 || total < maxPerPage) {
+		} else if (count < maxPerPage) { // || total < maxPerPage) {
 			pullList.setMode(Mode.DISABLED);
 			showListFootTip(true, R.string.el_fragment_dict_nomoreresults);
 		} else {

@@ -26,7 +26,8 @@
             android:focusableInTouchMode="false"
             android:longClickable="false"
             android:text="@string/el_fragment_dict_inputquery"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#ff333399" />
 
     </LinearLayout>
 

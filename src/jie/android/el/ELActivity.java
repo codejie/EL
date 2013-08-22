@@ -37,6 +37,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnCloseListener;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 
 public class ELActivity extends SherlockFragmentActivity implements FragmentSwitcher.OnSwitchListener {
@@ -53,6 +54,8 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	private SearchView searchView = null;
 	private Menu actionMenu = null;
 	private SharedPreferences sharedPreferences = null;	
+	
+	private boolean watchSearchChanged = false;
  
 	private Handler handler = new Handler() {
 
@@ -174,6 +177,15 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	
 	@Override
+	protected void onPause() {
+		super.onPause();
+		
+		if (fragmentSwitcher.isRemovedType()) {
+			fragmentSwitcher.showPrevFragment();
+		}		
+	}
+
+	@Override
 	protected void onDestroy() {
 		Log.d(Tag, "onDestroy");
 		
@@ -282,7 +294,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 			@Override
 			public boolean onQueryTextChange(String newText) {
-				if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.DICTIONARY) {
+				if (watchSearchChanged && fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.DICTIONARY) {
 					
 					Bundle data = new Bundle();
 					data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.QUERY.getId());
@@ -293,9 +305,20 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 				} else {
 					return false;
 				}
-			}
-			
-		});		
+			}			
+		});
+		
+//		searchView.setOnCloseListener(new OnCloseListener() {
+//
+//			@Override
+//			public boolean onClose() {
+//				if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.DICTIONARY) {
+//					fragmentSwitcher.showPrevFragment();
+//				}
+//				return true;
+//			}
+//			
+//		});
 
 	}
 
@@ -437,11 +460,14 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	@Override
 	public void onSwitch(FragmentSwitcher.Type oldType, FragmentSwitcher.Type newType) {
 		if (newType != FragmentSwitcher.Type.DICTIONARY) {
+			watchSearchChanged = false;
 			if (searchView != null) {
 				searchView.setQuery("", false);
 				searchView.clearFocus();
 				searchView.setIconified(true);
 			}
+		} else {
+			watchSearchChanged = true;
 		}
 	}
 

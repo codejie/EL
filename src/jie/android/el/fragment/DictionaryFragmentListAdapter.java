@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import jie.android.el.ELActivity;
 import jie.android.el.R;
@@ -8,6 +9,7 @@ import jie.android.el.database.ELContentProvider;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,36 +22,42 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		public void onLoadEnd(int count, int total, int maxPerPage);
 	}
 
-	private final class LoadTask extends AsyncTask<String, Void, Integer> {
+	private final class LoadTask extends AsyncTask<String, Void, List<Data>> {
 
 		@Override
-		protected Integer doInBackground(String... params) {
-			dataArray.clear();
+		protected List<Data> doInBackground(String... params) {
 
+			Log.d("====", "do...");
+
+			ArrayList<Data> result = new ArrayList<Data>();
 			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INFO, project, params[0], null, params[1]);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
-						dataArray.add(new Data(cursor.getInt(0), cursor.getString(1)));
+						result.add(new Data(cursor.getInt(0), cursor.getString(1)));
 					} while (cursor.moveToNext());
 				}
 			} finally {
 				cursor.close();
 			}
 			
-			return dataArray.size();
+			return result;
 		}
 		
 		@Override
-		protected void onPostExecute(Integer result) {
+		protected void onPostExecute(List<Data> result) {
+			dataArray.addAll(result);
 			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
 			if (onRefreshListener != null) {
-				onRefreshListener.onLoadEnd(result.intValue(), dataArray.size(), maxPerPage);
+				onRefreshListener.onLoadEnd(result.size(), dataArray.size(), maxPerPage);
 			}
 			
-			if (isLoading) {
-				isLoading = false;
-				refresh();
+			if (needLoadAgain) {
+				
+				needLoadAgain = false;
+
+				loadTask = new LoadTask();
+				loadTask.execute(filter, "idx limit " + maxPerPage * ( ++ loadCount));
 			}
 		}		
 	}
@@ -59,12 +67,22 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private final class Data {
 		
 		public int index = -1;
-		public String text = null;		
+		public String text = null;
+//		public int flag = 0;
 
-		public Data(int idx, String txt) {
+		public Data(int idx, String txt) { //, int flag) {
 			index = idx;
 			text = txt;
+//			this.flag = flag;
 		}
+		
+//		public boolean isNormal() {
+//			return flag != 2;
+//		}
+//		
+//		public boolean isReference() {
+//			return flag != 1;
+//		}
 	}
 	
 	private Context context = null;
@@ -74,9 +92,10 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private int maxPerPage = -1;
 	private String filter = null;
 	
-	private boolean isLoading = false;
+	private boolean needLoadAgain = false;
 	private LoadTask loadTask = null;
 	private int loadCount = 0;
+	private Object token = new Object();
 	
 	public DictionaryFragmentListAdapter(Context context) {
 		this.context = context;
@@ -107,7 +126,8 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		
 		view.setId(data.index);
 		
-		((TextView)view.findViewById(R.id.textView1)).setText(data.text);
+		TextView tv = (TextView)view.findViewById(R.id.textView1);
+		tv.setText(data.text);
 		
 		return view;
 	}
@@ -122,20 +142,21 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	
 	public void load(final String filter) {
 		this.filter = filter;
-
+		loadCount = 0;
+		dataArray.clear();
+		
 		refresh();
 	}
 
 	public void refresh() {
-		if (isLoading) {
-			return;
-		} else if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
-			isLoading = true;
+		
+		if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
+			needLoadAgain = true;
 			return;
 		}
-		
+
 		loadTask = new LoadTask();
-		loadTask.execute(filter, "idx limit " + maxPerPage * ( ++ loadCount));
+		loadTask.execute(filter, "idx limit " + maxPerPage * ( ++ loadCount) + " offset " + dataArray.size());
 	}
 	
 	

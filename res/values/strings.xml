@@ -8,7 +8,7 @@
 
     <string name="el_setting_play_random_play">Random Order Play</string>
 
-    <string name="el_setting_content_display">Content Display</string>
+    <string name="el_setting_content_display">Content Display Preference</string>
 
     <string name="el_setting_content_font_medium">Medium Font Size</string>
 
@@ -37,5 +37,7 @@
     <string name="el_fragment_dict_nomoreresults">No more results</string>
     <string name="el_fragment_dict_nomatchresult">No matching result</string>
     <string name="el_setting_content_hide_title">Automatically Hide Title</string>
+    <string name="el_setting_dictionary_preference">Dictionary Preference</string>
+    <string name="el_setting_dictionary_notextension">Don\'t Load Extension Words</string>
 
 </resources>

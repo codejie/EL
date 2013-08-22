@@ -345,7 +345,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		if (getELActivity().getSharedPreferences().getBoolean(Setting.CONTENT_HIDE_TITLE, false)) {
 			Message msg = Message.obtain(handler, MSG_HIDE_TITLE);
-			handler.sendMessageDelayed(msg, 2500);
+			handler.sendMessageDelayed(msg, 1500);
 		}
 	}
 

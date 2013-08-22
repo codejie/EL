@@ -17,6 +17,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 	private CheckBox checkContentFontMedium = null;
 	private CheckBox checkContentFontLarge = null;	
 	private CheckBox checkContentHideTitle = null;
+	private CheckBox checkDictionaryNotExtension = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -36,6 +37,8 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkContentFontMedium = (CheckBox) view.findViewById(R.id.checkBox3);
 		checkContentFontLarge = (CheckBox) view.findViewById(R.id.checkBox4);
 		checkContentHideTitle = (CheckBox) view.findViewById(R.id.checkBox6);
+		
+		checkDictionaryNotExtension = (CheckBox) view.findViewById(R.id.checkBox7);
 
 		updateSetting();
 		
@@ -45,6 +48,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkContentFontMedium.setOnCheckedChangeListener(this);		
 		checkContentFontLarge.setOnCheckedChangeListener(this);
 		checkContentHideTitle.setOnCheckedChangeListener(this);
+		checkDictionaryNotExtension.setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -69,6 +73,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, false));
 		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENT_LARGE_FONT_SIZE, false));
 		checkContentHideTitle.setChecked(prefs.getBoolean(Setting.CONTENT_HIDE_TITLE, false));
+		checkDictionaryNotExtension.setChecked(prefs.getBoolean(Setting.DICTIONARY_LIST_NOT_EXTENSION, false));
 	}
 	
 	private void saveSetting() {
@@ -82,6 +87,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		editor.putBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
 		editor.putBoolean(Setting.CONTENT_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());
 		editor.putBoolean(Setting.CONTENT_HIDE_TITLE, checkContentHideTitle.isChecked());
+		editor.putBoolean(Setting.DICTIONARY_LIST_NOT_EXTENSION, checkDictionaryNotExtension.isChecked());
 		
 		editor.commit();
 	}	
