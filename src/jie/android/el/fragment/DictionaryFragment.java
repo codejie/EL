@@ -5,24 +5,64 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.RemoteException;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.Setting;
+import jie.android.el.database.Word;
+import jie.android.el.utils.Speaker;
+import jie.android.el.utils.Utils;
+import jie.android.el.utils.XmlTranslator;
+import jie.android.el.view.PopupLayout;
 import jie.android.el.R;
 
-public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
+public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener, OnClickListener {
 
+	private class WordLoader extends AsyncTask<String, Void, String> {
+
+		private String word = null;
+		@Override
+		protected String doInBackground(String... arg0) {
+			word = arg0[0];
+			Word.XmlResult result;
+			try {
+				result = getELActivity().getServiceAccess().queryWordResult(word);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+				return null;
+			}
+			if (result.getXmlData().size() > 0) {
+				return XmlTranslator.trans(Utils.assembleXmlResult(word, result));
+			} else {
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			showPopWindowText(word, result);				
+		}
+	};	
+	
 	private static final int MSG_SEARCHVIEW	=	1;
 	
 	private PullToRefreshListView pullList = null;
@@ -30,6 +70,14 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	private TextView footText = null;
 	
 	private DictionaryFragmentListAdapter adapter = null;
+	
+	private Animation animShow = null;
+	private Animation animHide = null;
+	
+	private PopupLayout popupLayout = null;
+	private TextView popTextView = null;
+	private WebView popWebView = null;	
+	private ImageView popCloseButton = null;
 	
 	private Handler handler = new Handler() {
 
@@ -51,15 +99,24 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		super.onCreate(savedInstanceState);
 		
 		this.setLayoutRes(R.layout.fragment_dictionary);
+		
+		initAnimation();
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		initList(view);		
+		initList(view);
+		
+		initPopWindow(view);
 	}
 
+	private void initAnimation() {
+    	animShow = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_show);
+    	animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
+	}
+	
 	private void initList(View view) {
 		pullList = (PullToRefreshListView) view.findViewById(R.id.pullToRefreshListView1);
 		//pullList.getRefreshableView().setDivider(getResources().getDrawable(R.drawable.el_list_divider));
@@ -105,11 +162,32 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		adapter.setMaxPerPage(20);
 //		loadAdapter("a");
 	}
+	
+	private void initPopWindow(View view) {
+		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
+		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
+		popTextView.setOnClickListener(this);
+		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
+		popCloseButton = (ImageView) popupLayout.findViewById(R.id.imageView1);// .imageButton1);
+		popCloseButton.setOnClickListener(this);		
+	}
 
 	@Override
+	public void onClick(View view) {
+		switch(view.getId()) {
+		case R.id.textView1:
+			speak(popTextView.getText().toString());
+			break;
+		case R.id.imageView1:
+			showPopWindow(false);
+			break;
+		default:;
+		}
+	}
+	
+	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		// TODO Auto-generated method stub
-		
+		new WordLoader().execute(adapter.getItemText(position));
 	}
 
 	@Override
@@ -165,5 +243,42 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		} else {
 			footLayout.setVisibility(View.GONE);
 		}
+	}
+	
+	private void showPopWindow(boolean show) {
+		if (show) {
+			popupLayout.setVisibility(View.VISIBLE);
+			popupLayout.requestFocus();
+			popupLayout.startAnimation(animShow);
+		} else {
+			popupLayout.startAnimation(animHide);
+			popupLayout.setVisibility(View.GONE);			
+		}
+	}
+	
+	private void speak(final String text) {
+		Speaker.speak(text);
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			if (popupLayout.getVisibility() != View.GONE) {
+				showPopWindow(false);
+				return true;
+			}		
+		}
+		return super.onKeyDown(keyCode, event);
+	}
+	
+	public void showPopWindowText(String word, String html) {
+		popTextView.setText(word);
+		if (html != null) {
+			popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+		} else {
+			popWebView.loadDataWithBaseURL(null, "<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>", "text/html", "utf-8", null);
+		}
+		
+		showPopWindow(true);
 	}	
 }

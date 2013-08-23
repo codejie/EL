@@ -24,11 +24,11 @@ public class PopupLayout extends LinearLayout {
 		innerPaint.setARGB(238, 102, 102, 102); 
 		innerPaint.setAntiAlias(true);
 
-		borderPaint = new Paint();
-		borderPaint.setARGB(255, 255, 255, 255);
-		borderPaint.setAntiAlias(true);
-		borderPaint.setStyle(Style.STROKE);
-		borderPaint.setStrokeWidth(4);		
+//		borderPaint = new Paint();
+//		borderPaint.setARGB(255, 255, 255, 255);
+//		borderPaint.setAntiAlias(true);
+//		borderPaint.setStyle(Style.STROKE);
+//		borderPaint.setStrokeWidth(4);		
 	}
 
 	@Override
@@ -36,8 +36,9 @@ public class PopupLayout extends LinearLayout {
     	RectF drawRect = new RectF();
     	drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
     	
-    	canvas.drawRoundRect(drawRect, 5, 5, innerPaint);
-		canvas.drawRoundRect(drawRect, 5, 5, borderPaint);
+    	canvas.drawRect(drawRect, innerPaint);
+    	//canvas.drawRoundRect(drawRect, 5, 5, innerPaint);
+//		canvas.drawRoundRect(drawRect, 5, 5, borderPaint);
 		
 		super.dispatchDraw(canvas);
 	}

@@ -13,12 +13,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import jie.android.el.database.ELContentProvider;
+import jie.android.el.database.Word;
+import jie.android.el.service.Dictionary;
 
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.view.inputmethod.InputMethodManager;
 
 public class Utils {
 	public static final String formatMSec(int msec) {
@@ -129,5 +132,25 @@ public class Utils {
 		
 		return cursor;
 	}
-	
+
+	public static final String assembleXmlResult(final String word, final Word.XmlResult result) {
+		
+		String ret = "<LAC><LAC-W>" + word + "</LAC-W>";
+		for (final Word.XmlResult.XmlData data : result.getXmlData()) {
+			ret += "<LAC-R><LAC-D>" + "Vicon English-Chinese Dictionary" + "</LAC-D>";
+			int i = 0;			
+			
+			for(final Dictionary.XmlResult r : data.getResult()) {
+				//TODO : cannot get the correct word, so do not display it now.
+				//ret += "<w>" + r.word + "</w>";				
+				ret += r.result;
+				if ((++i) < data.getResult().size())
+					ret += "<s/>";
+			}
+			ret += "</LAC-R>";
+		}
+		ret += "</LAC>";
+		
+		return ret;
+	}
 }

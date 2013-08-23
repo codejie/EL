@@ -1,5 +1,7 @@
 package jie.android.el.service;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 
 import jie.android.el.CommonConsts;
@@ -143,45 +145,106 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		if (isPlaying()) {
 			player.stop();
 		}
+
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
+		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				if(!prepareData(index, cursor.getString(0), cursor.getString(1))) {
+					showWarningNotification("Can't play audio file - " + cursor.getShort(2));
+				}
+			}
+		} finally {
+			cursor.close();
+		}
+//		
+//		try {
+//			player.reset();
+//		
+//			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
+//			Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
+//			try {
+//				if (cursor.moveToFirst()) {
+//					audioIndex = index;
+//					audioTitle = cursor.getString(0);
+//
+//					String audio = cursor.getString(1);
+//					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
+//					File f = new File(audio);
+//					if (!f.exists()) {
+//						showWarningNotification("Can't find audio file - " + audio);
+//						return;
+//					}
+//					player.setDataSource(audio);
+//					player.prepare();
+//					if (listener != null) {
+//						listener.onPrepared(player.getDuration());
+//					}					
+//				}
+//			} catch (DeadObjectException e) {
+//				listener = null;				
+//			} catch (RemoteException e) {
+//				e.printStackTrace();
+//			} finally {
+//				cursor.close();
+//			}			
+//		} catch (IllegalArgumentException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (SecurityException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IllegalStateException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}		
+	}
+	
+	private boolean prepareData(int index, String title, String audio) {
+
+		audioIndex = index;
+		audioTitle = title;
+		//check audio
+		audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
+		File f = new File(audio);
+		if (!f.exists()) {
+			return false;
+		}
 		
 		try {
 			player.reset();
 		
-			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
-			Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
-			try {
-				if (cursor.moveToFirst()) {
-					audioIndex = index;
-					audioTitle = cursor.getString(0);
-
-					String audio = cursor.getString(1);
-					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
-					player.setDataSource(audio);
-					player.prepare();
-					if (listener != null) {
-						listener.onPrepared(player.getDuration());
-					}					
-				}
-			} catch (DeadObjectException e) {
-				listener = null;				
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			} finally {
-				cursor.close();
-			}			
+			player.setDataSource(audio);
+			player.prepare();
+			if (listener != null) {
+				listener.onPrepared(player.getDuration());
+			}
+			
 		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		} catch (IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
+			return false;
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}		
+			return false;
+		} catch (DeadObjectException e) {
+			listener = null;	
+			e.printStackTrace();
+			return false;
+		} catch (RemoteException e) {
+			e.printStackTrace();
+			return false;
+		}
+
+		return true;
 	}
 	
 	public void play() {
@@ -248,49 +311,71 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private void getNextAudio() {	
 		boolean random = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
-		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx", "title", "audio" }, random, true);		
-		if (cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					player.reset();
-				
-					audioIndex = cursor.getInt(0);
-					audioTitle = cursor.getString(1);
-					String audio = cursor.getString(2);
-					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
-					player.setDataSource(audio);
-					try {
-						if (listener != null) {
+		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx", "title", "audio" }, random, true);
+		
+		try {
+			if (cursor.moveToFirst()) {
+				if (prepareData(cursor.getInt(0), cursor.getString(1), cursor.getString(2))) {
+					
+					if (listener != null) {
+						try {
 							listener.onAudioChanged(audioIndex);
+						} catch (RemoteException e) {
+							e.printStackTrace();
 						}
-						
-						player.prepare();
-
-						if (listener != null) {
-							listener.onPrepared(player.getDuration());
-						}					
-					} catch (DeadObjectException e) {
-						listener = null;				
-					} catch (RemoteException e) {
-						e.printStackTrace();
 					}
 					
 					play();
-				}			
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (SecurityException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}		
-		}
+				} else {
+					showWarningNotification("Can't play audio file - " + cursor.getShort(2));
+				}
+			}
+		} finally {
+			cursor.close();
+		}		
+		
+//		if (cursor != null) {
+//			try {
+//				if (cursor.moveToFirst()) {
+//					player.reset();
+//				
+//					audioIndex = cursor.getInt(0);
+//					audioTitle = cursor.getString(1);
+//					String audio = cursor.getString(2);
+//					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
+//					player.setDataSource(audio);
+//					try {
+//						if (listener != null) {
+//							listener.onAudioChanged(audioIndex);
+//						}
+//						
+//						player.prepare();
+//
+//						if (listener != null) {
+//							listener.onPrepared(player.getDuration());
+//						}					
+//					} catch (DeadObjectException e) {
+//						listener = null;				
+//					} catch (RemoteException e) {
+//						e.printStackTrace();
+//					}
+//					
+//					play();
+//				}			
+//			} catch (IllegalArgumentException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (SecurityException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IllegalStateException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}		
+//		}
 	}
 	
 	private void showNotification(boolean show) {
@@ -310,6 +395,15 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		
 		context.sendBroadcast(intent);
 		
+	}
+	
+	private void showWarningNotification(final String text) {
+		Intent intent = new Intent(NotificationAction.ACTION_SHOW);
+		intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.WARNING.getId());
+		intent.putExtra(NotificationAction.DATA_TITLE, text);
+		intent.putExtra(NotificationAction.DATA_TEXT, "EL Warning");
+		
+		context.sendBroadcast(intent);
 	}
 
 	private void setAudioPlayFlag(int index, boolean play) {

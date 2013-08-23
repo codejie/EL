@@ -115,6 +115,10 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		return dataArray.get(position).index;
 	}
+	
+	public final String getItemText(int position) {
+		return dataArray.get(position).text;
+	}
 
 	@Override
 	public View getView(int position, View view, ViewGroup group) {

@@ -38,9 +38,8 @@
         android:layout_width="match_parent"
         android:layout_height="330dp"
         android:layout_gravity="bottom"
-        android:layout_marginLeft="5dp"
-        android:layout_marginRight="5dp"
         android:background="#ffffffff"
+        android:focusable="true"
         android:orientation="vertical"
         android:visibility="gone" >
 

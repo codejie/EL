@@ -59,7 +59,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				return null;
 			}
 			if (result.getXmlData().size() > 0) {
-				return XmlTranslator.trans(assembleXmlResult(word, result));
+				return XmlTranslator.trans(Utils.assembleXmlResult(word, result));
 			} else {
 				return null;
 			}
@@ -267,15 +267,27 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
     	animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
 	}
 
-	private void togglePopupWindow() {
-		if (popupLayout.getVisibility() == View.GONE) {
+//	private void togglePopupWindow() {
+//		if (popupLayout.getVisibility() == View.GONE) {
+//			popupLayout.setVisibility(View.VISIBLE);
+//			popupLayout.startAnimation(animShow);
+//		} else {
+//			popupLayout.startAnimation(animHide);
+//			popupLayout.setVisibility(View.GONE);
+//		}
+//	}
+	
+	private void showPopWindow(boolean show) {
+		if (show) {
 			popupLayout.setVisibility(View.VISIBLE);
-			popupLayout.startAnimation(animShow);
+			popupLayout.requestFocus();
+			popupLayout.startAnimation(animShow);			
 		} else {
 			popupLayout.startAnimation(animHide);
-			popupLayout.setVisibility(View.GONE);
+			popupLayout.setVisibility(View.GONE);			
 		}
 	}
+	
 	
 	private boolean isPopupWindowOpen() {
 		return popupLayout.getVisibility() == View.VISIBLE;
@@ -297,7 +309,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					audioExplanation = cursor.getInt(3);
 					audioFastDialog = cursor.getInt(4);
 					
-					setAudioPlayListener(true);					
+					setAudioPlayListener(true);	
 					loadData(audioIndex, title, script);
 					if (obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()) != FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {
 						setAudio(audioIndex);
@@ -447,10 +459,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (isPopupWindowOpen()) {
-				togglePopupWindow();
+				showPopWindow(false);
 			} else {
-				setAudioPlayListener(false);
 				stopAudio();
+				setAudioPlayListener(false);				
 				return false;
 			}
 			return true;			
@@ -471,26 +483,26 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		return false;
 	}
 	
-	private final String assembleXmlResult(final String word, final Word.XmlResult result) {
-		
-		String ret = "<LAC><LAC-W>" + word + "</LAC-W>";
-		for (final Word.XmlResult.XmlData data : result.getXmlData()) {
-			ret += "<LAC-R><LAC-D>" + "Vicon English-Chinese Dictionary" + "</LAC-D>";
-			int i = 0;			
-			
-			for(final Dictionary.XmlResult r : data.getResult()) {
-				//TODO : cannot get the correct word, so do not display it now.
-				//ret += "<w>" + r.word + "</w>";				
-				ret += r.result;
-				if ((++i) < data.getResult().size())
-					ret += "<s/>";
-			}
-			ret += "</LAC-R>";
-		}
-		ret += "</LAC>";
-		
-		return ret;
-	}	
+//	private final String assembleXmlResult(final String word, final Word.XmlResult result) {
+//		
+//		String ret = "<LAC><LAC-W>" + word + "</LAC-W>";
+//		for (final Word.XmlResult.XmlData data : result.getXmlData()) {
+//			ret += "<LAC-R><LAC-D>" + "Vicon English-Chinese Dictionary" + "</LAC-D>";
+//			int i = 0;			
+//			
+//			for(final Dictionary.XmlResult r : data.getResult()) {
+//				//TODO : cannot get the correct word, so do not display it now.
+//				//ret += "<w>" + r.word + "</w>";				
+//				ret += r.result;
+//				if ((++i) < data.getResult().size())
+//					ret += "<s/>";
+//			}
+//			ret += "</LAC-R>";
+//		}
+//		ret += "</LAC>";
+//		
+//		return ret;
+//	}	
 
 	private void showPopWindow(final String word, final String html) {
 		popTextView.setText(word);
@@ -500,7 +512,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			popWebView.loadDataWithBaseURL(null, "<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>", "text/html", "utf-8", null);
 		}
 		
-		togglePopupWindow();
+		showPopWindow(true);
 	}
 
 	@Override
@@ -515,7 +527,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			speak(popTextView.getText().toString());
 			break;
 		case R.id.imageView1:
-			togglePopupWindow();
+			showPopWindow(false);
 			break;			
 		case R.id.playImageView1:
 			showPopupMenu(v);
