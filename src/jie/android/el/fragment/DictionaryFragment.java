@@ -187,7 +187,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		new WordLoader().execute(adapter.getItemText(position));
+		new WordLoader().execute(adapter.getItemText(position - 1));
 	}
 
 	@Override

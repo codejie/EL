@@ -26,9 +26,9 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 
 		@Override
 		protected List<Data> doInBackground(String... params) {
-
-			Log.d("====", "do...");
-
+			
+			Log.d("====", "do..." + params[0]);
+			
 			ArrayList<Data> result = new ArrayList<Data>();
 			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INFO, project, params[0], null, params[1]);
 			try {
@@ -50,14 +50,6 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 			DictionaryFragmentListAdapter.this.notifyDataSetChanged();
 			if (onRefreshListener != null) {
 				onRefreshListener.onLoadEnd(result.size(), dataArray.size(), maxPerPage);
-			}
-			
-			if (needLoadAgain) {
-				
-				needLoadAgain = false;
-
-				loadTask = new LoadTask();
-				loadTask.execute(filter, "idx limit " + maxPerPage * ( ++ loadCount));
 			}
 		}		
 	}
@@ -92,7 +84,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private int maxPerPage = -1;
 	private String filter = null;
 	
-	private boolean needLoadAgain = false;
+	private Boolean needLoadAgain = false;
 	private LoadTask loadTask = null;
 	private int loadCount = 0;
 	private Object token = new Object();
@@ -154,11 +146,18 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 
 	public void refresh() {
 		
+//		if (needLoadAgain)
+//			return;
+//		
+//		if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
+//			needLoadAgain = true;
+//			return;
+//		}
+		
 		if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
-			needLoadAgain = true;
-			return;
+			loadTask.cancel(true);
 		}
-
+		
 		loadTask = new LoadTask();
 		loadTask.execute(filter, "idx limit " + maxPerPage * ( ++ loadCount) + " offset " + dataArray.size());
 	}

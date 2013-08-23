@@ -14,7 +14,7 @@
 
     <string name="el_setting_content_font_large">Large Font Size</string>
 
-    <string name="app_version">version 1.1 (alpha)</string>
+    <string name="app_version">version 1.2</string>
 
     <string name="app_author">codejie</string>
 
@@ -39,5 +39,6 @@
     <string name="el_setting_content_hide_title">Automatically Hide Title</string>
     <string name="el_setting_dictionary_preference">Dictionary Preference</string>
     <string name="el_setting_dictionary_notextension">Don\'t Load Extension Words</string>
+    <string name="el_fragment_about_checkpackage">Check for new packages</string>
 
 </resources>

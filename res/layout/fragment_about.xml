@@ -5,11 +5,12 @@
 
     <TextView
         android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="48dp"
+        android:gravity="center_horizontal"
         android:text="@string/app_name"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -55,10 +56,24 @@
 
     <TextView
         android:id="@+id/textIndex"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/textDuration"
         android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="false"
+        android:gravity="center_horizontal"
         android:text="@string/app_version" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:enabled="false"
+        android:text="@string/el_fragment_about_checkpackage" />
 
 </RelativeLayout>
