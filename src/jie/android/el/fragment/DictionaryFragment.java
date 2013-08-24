@@ -214,6 +214,9 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	}
 
 	protected void onSearchViewChanged(String text) {
+		if (popupLayout.getVisibility() != View.GONE) {
+			showPopWindow(false);
+		}
 		pullList.setMode(Mode.PULL_FROM_END);
 		loadAdapter(text);
 	}
