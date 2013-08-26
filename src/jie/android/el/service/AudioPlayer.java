@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.R;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.CommonConsts.NotificationAction;
@@ -216,13 +217,13 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		tickTask = new TickCounterTask();
 		tickTask.execute();
 		
-		showNotification(true,"EL is playing..");		
+		showNotification(true, context.getResources().getString(R.string.el_play_el_is_playing));		
 	}
 	
 	public void pause() {
 		if (isPlaying()) {
 			player.pause();
-			showNotification(true, "EL pause playing..");
+			showNotification(true, context.getResources().getString(R.string.el_play_el_pause_plaback));
 			playState = PlayState.PAUSE;
 		}
 	}
