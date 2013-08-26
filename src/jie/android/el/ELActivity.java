@@ -86,11 +86,12 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		}
 		
 		@Override
-		public void onAudioPlaying(int index, int duration, int position) throws RemoteException {
+		public void onAudioPlaying(int state, int index, int duration, int position) throws RemoteException {
 			Bundle data = new Bundle();
+			data.putInt(FragmentArgument.STATE, state);
 			data.putInt(FragmentArgument.INDEX, index);
-			data.putInt("duration", duration);
-			data.putInt("position", position);
+			data.putInt(FragmentArgument.DURATION, duration);
+//			data.putInt("position", position);
 			
 			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIOPLAYING, data);
 			msg.sendToTarget();

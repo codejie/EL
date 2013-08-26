@@ -21,6 +21,8 @@ public interface CommonConsts {
 		public static final String	ACTION	=	"action";
 		public static final String INDEX	=	"index";
 		public static final String TEXT		=	"text";
+		public static final String STATE	=	"state";
+		public static final String DURATION	=	"duration";
 	}
 	
 	public interface Setting {
@@ -95,5 +97,13 @@ public interface CommonConsts {
 	
 	public interface ListItemFlag {
 		public static final int LAST_PLAY	= 1;
+	}
+	
+	public enum PlayState {
+		NONE, PLAYING, PAUSE, ERROR;
+		
+		public int getId() {
+			return this.ordinal();
+		}		
 	}
 }

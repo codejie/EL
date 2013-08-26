@@ -9,6 +9,7 @@ import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
+import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
 
@@ -32,7 +33,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 
 		@Override
 		protected Void doInBackground(Void... arg0) {
-			 while (isAudioPlaying && listener != null) {
+			 while (isPlaying() && listener != null) {
 				try {
 					listener.onPlaying(player.getCurrentPosition());
 					
@@ -59,7 +60,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private String audioTitle = null;
 
 	private TickCounterTask tickTask = null;
-	private boolean isAudioPlaying = false; 
+	
+	private PlayState playState = PlayState.NONE; 
 	
 	public AudioPlayer(Context context) {
 		this.context = context;
@@ -114,7 +116,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			try {
 				listener.onCompleted();
 				
-				showNotification(false);
+				showNotification(false, null);
 
 			} catch (DeadObjectException e) {
 				listener = null;								
@@ -142,9 +144,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	
 	public void setData(int index) {
 
-		if (isPlaying()) {
-			player.stop();
-		}
+		stop();
 
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
@@ -156,51 +156,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			}
 		} finally {
 			cursor.close();
-		}
-//		
-//		try {
-//			player.reset();
-//		
-//			Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
-//			Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
-//			try {
-//				if (cursor.moveToFirst()) {
-//					audioIndex = index;
-//					audioTitle = cursor.getString(0);
-//
-//					String audio = cursor.getString(1);
-//					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
-//					File f = new File(audio);
-//					if (!f.exists()) {
-//						showWarningNotification("Can't find audio file - " + audio);
-//						return;
-//					}
-//					player.setDataSource(audio);
-//					player.prepare();
-//					if (listener != null) {
-//						listener.onPrepared(player.getDuration());
-//					}					
-//				}
-//			} catch (DeadObjectException e) {
-//				listener = null;				
-//			} catch (RemoteException e) {
-//				e.printStackTrace();
-//			} finally {
-//				cursor.close();
-//			}			
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalStateException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}		
+		}	
 	}
 	
 	private boolean prepareData(int index, String title, String audio) {
@@ -255,28 +211,27 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		
 		setAudioPlayFlag(audioIndex, true);
 		
-		isAudioPlaying = true;
+		playState = PlayState.PLAYING;
 		
 		tickTask = new TickCounterTask();
 		tickTask.execute();
 		
-		showNotification(true);		
+		showNotification(true,"EL is playing..");		
 	}
 	
 	public void pause() {
 		if (isPlaying()) {
 			player.pause();
+			showNotification(true, "EL pause playing..");
+			playState = PlayState.PAUSE;
 		}
 	}
 	
 	public void stop() {
-		if (isPlaying()) {
-			isAudioPlaying = false;
-//			tickTask.cancel(true);
+		if (isPlaying() || isPause()) {			
 			player.stop();
-			
-			showNotification(false);
-			
+			playState = PlayState.NONE;			
+			showNotification(false, null);			
 		}
 	}
 	
@@ -287,9 +242,13 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	public void reset() {
 		player.release();
 	}
+
+	public boolean isPlaying() {
+		return playState == PlayState.PLAYING; 
+	}
 	
-	public boolean isPlaying() {		
-		return isAudioPlaying && player.isPlaying();
+	public boolean isPause() {
+		return playState == PlayState.PAUSE;
 	}
 	
 	public int getAudioIndex() {
@@ -333,52 +292,9 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		} finally {
 			cursor.close();
 		}		
-		
-//		if (cursor != null) {
-//			try {
-//				if (cursor.moveToFirst()) {
-//					player.reset();
-//				
-//					audioIndex = cursor.getInt(0);
-//					audioTitle = cursor.getString(1);
-//					String audio = cursor.getString(2);
-//					audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
-//					player.setDataSource(audio);
-//					try {
-//						if (listener != null) {
-//							listener.onAudioChanged(audioIndex);
-//						}
-//						
-//						player.prepare();
-//
-//						if (listener != null) {
-//							listener.onPrepared(player.getDuration());
-//						}					
-//					} catch (DeadObjectException e) {
-//						listener = null;				
-//					} catch (RemoteException e) {
-//						e.printStackTrace();
-//					}
-//					
-//					play();
-//				}			
-//			} catch (IllegalArgumentException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (SecurityException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IllegalStateException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}		
-//		}
 	}
 	
-	private void showNotification(boolean show) {
+	private void showNotification(boolean show, final String title) {
 		
 		Intent intent = null;
 		
@@ -386,7 +302,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			intent = new Intent(NotificationAction.ACTION_SHOW);
 			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
 			intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
-			intent.putExtra(NotificationAction.DATA_TEXT, "EL is playing..");
+			intent.putExtra(NotificationAction.DATA_TEXT, title);
 		} else {
 			intent = new Intent(NotificationAction.ACTION_REMOVE);
 			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
@@ -394,7 +310,6 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		}
 		
 		context.sendBroadcast(intent);
-		
 	}
 	
 	private void showWarningNotification(final String text) {
@@ -409,28 +324,10 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private void setAudioPlayFlag(int index, boolean play) {
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL_PLAYFLAG, index);
 		context.getContentResolver().update(uri, null, null, null);
-//		
-//		
-//		ContentValues values = new ContentValues();
-//		values.put("flag", "play &~ 1");
-//		context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx!=" + index, null);
-//
-//		values.clear();
-//		values.put("flag", "play | 1");
-//		context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + index, null);
-//		
-//		
-//		
-//		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "flag" }, "idx=" + index, null, null);
-//		try {
-//			if (cursor.moveToFirst()) {
-//				ContentValues values = new ContentValues();
-//				values.put("flag", (play ? (cursor.getInt(0) | ListItemFlag.LAST_PLAY) : (cursor.getInt(0) & ~ListItemFlag.LAST_PLAY)));
-//				context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + index, null);
-//			}
-//		} finally {
-//			cursor.close();
-//		}
+	}
+
+	public PlayState getPlayState() {
+		return playState;
 	}
 	
 }

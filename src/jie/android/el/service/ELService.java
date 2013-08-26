@@ -2,6 +2,7 @@ package jie.android.el.service;
 
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
+import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts.ServiceState;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
@@ -137,8 +138,8 @@ public class ELService extends Service {
 	public void onUIConnected() {
 		postServiceState(ServiceState.READY);
 		
-		if (player.isPlaying()) {
-			postServiceIsPlaying(player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
+		if (player.isPlaying() || player.isPause()) {
+			postServiceIsPlaying(player.getPlayState(), player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
 		}
 		
 		if (Downloader.checkIncomplete(this)) {
@@ -258,10 +259,10 @@ public class ELService extends Service {
 		}
 	}
 	
-	public void postServiceIsPlaying(int index, int duration, int position) {
+	public void postServiceIsPlaying(PlayState state, int index, int duration, int position) {
 		if (serviceNotification != null) {
 			try {
-				serviceNotification.onAudioPlaying(index, duration, position);
+				serviceNotification.onAudioPlaying(state.getId(), index, duration, position);
 			} catch (RemoteException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

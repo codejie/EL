@@ -26,6 +26,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.CommonConsts.FragmentArgument;
+import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
@@ -294,7 +295,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	protected void onIndex(Bundle obj) {
-		
 		audioIndex = obj.getInt(FragmentArgument.INDEX);
 		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, audioIndex);		
@@ -317,7 +317,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 							playAudio();
 						}
 					} else {
-						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt("duration"), -1));						
+						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt(FragmentArgument.DURATION, -1)));
+						int state = obj.getInt(FragmentArgument.STATE, -1);
+						if (state == PlayState.PLAYING.getId()) {
+							playAudio();
+						} else if (state == PlayState.PAUSE.getId()) {
+							pauseAudio();
+						}
 					}
 					
 					if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
@@ -349,6 +355,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void loadData(int index, String title, String data) {
+		
+		playPlay.setSelected(false);
+		
 		textView.setVisibility(View.VISIBLE);
 		textView.setText(String.format("%d. %s", index, title));
 		
