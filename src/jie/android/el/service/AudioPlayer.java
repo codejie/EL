@@ -30,10 +30,10 @@ import android.os.RemoteException;
 
 public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
 
-	private class TickCounterTask extends AsyncTask<Void, Void, Void> {
+	private class TickCounterRunnable implements Runnable {
 
 		@Override
-		protected Void doInBackground(Void... arg0) {
+		public void run() {
 			 while (isPlaying() && listener != null) {
 				try {
 					listener.onPlaying(player.getCurrentPosition());
@@ -46,11 +46,31 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
-			}
-			
-			return null;
-		}
+			}			
+		}		
 	}
+	
+//	private class TickCounterTask extends AsyncTask<Void, Void, Void> {
+//
+//		@Override
+//		protected Void doInBackground(Void... arg0) {
+//			 while (isPlaying() && listener != null) {
+//				try {
+//					listener.onPlaying(player.getCurrentPosition());
+//					
+//					Thread.sleep(777);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				} catch (DeadObjectException e) {
+//					listener = null;
+//				} catch (RemoteException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//			
+//			return null;
+//		}
+//	}
 	
 	private Context context = null;
 	
@@ -60,7 +80,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private int audioIndex = -1;
 	private String audioTitle = null;
 
-	private TickCounterTask tickTask = null;
+//	private TickCounterTask tickTask = null;
 	
 	private PlayState playState = PlayState.NONE; 
 	
@@ -137,8 +157,10 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		this.listener = listener;
 		
 		if (isPlaying() && this.listener != null) {
-			tickTask = new TickCounterTask();
-			tickTask.execute();
+			new Thread(new TickCounterRunnable()).start();
+			
+//			tickTask = new TickCounterTask();
+//			tickTask.execute();
 		}
 		
 	}
@@ -213,9 +235,10 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		setAudioPlayFlag(audioIndex, true);
 		
 		playState = PlayState.PLAYING;
-		
-		tickTask = new TickCounterTask();
-		tickTask.execute();
+
+		new Thread(new TickCounterRunnable()).start();
+//		tickTask = new TickCounterTask();
+//		tickTask.execute();
 		
 		showNotification(true, context.getResources().getString(R.string.el_play_el_is_playing));		
 	}
@@ -223,7 +246,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	public void pause() {
 		if (isPlaying()) {
 			player.pause();
-			showNotification(true, context.getResources().getString(R.string.el_play_el_pause_plaback));
+			showNotification(true, context.getResources().getString(R.string.el_play_el_pause_playback));
 			playState = PlayState.PAUSE;
 		}
 	}

@@ -317,7 +317,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 							playAudio();
 						}
 					} else {
-						handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, obj.getInt(FragmentArgument.DURATION, -1)));
+						int duration = obj.getInt(FragmentArgument.DURATION, -1);
+						if (duration != -1) {
+							handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
+						}
 						int state = obj.getInt(FragmentArgument.STATE, -1);
 						if (state == PlayState.PLAYING.getId()) {
 							playAudio();
@@ -424,8 +427,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		try {
 			getELActivity().getServiceAccess().playAudio();
 			
-			playPlay.setSelected(true);
-			
+			playPlay.setSelected(true);			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -654,11 +656,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-		isPlayingSeek = playPlay.isSelected();
-		
-		if (isPlayingSeek) {
-			pauseAudio();
-		}
+//		isPlayingSeek = playPlay.isSelected();
+//		
+//		if (isPlayingSeek) {
+//			pauseAudio();
+//		}
 	}
 
 	@Override
