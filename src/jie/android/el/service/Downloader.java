@@ -33,6 +33,7 @@ public class Downloader {
 
 	private static final int TYPE_UPDATE	=	0;
 	private static final int TYPE_PACKAGE	=	1;
+	private static final int TYPE_CHECKNEW	=	2;
 
 	private static final int STATUS_INIT		=	-1;
 	private static final int STATUS_DONE		=	0;
@@ -152,6 +153,10 @@ public class Downloader {
 			if (!request2Url_SkyDrive(request, check)) {
 				return false;
 			}
+		} else if (request.indexOf("checknewpackages") != -1) {
+			if (!request2Url_CheckNewPackages(request, check)) {
+				return false;
+			}
 		}
 		
 		return checkUpdateData();
@@ -238,6 +243,14 @@ public class Downloader {
 		return true;
 	}
 	
+	private boolean request2Url_CheckNewPackages(String request, String check) {
+		final String file = "new_packages_update.zip";
+		final String url = "http://www.cppblog.com/Files/codejie/" + file; 
+		
+		insertUpdateData(request, TYPE_CHECKNEW, url, file, -1, -1, STATUS_INIT);
+		return true;
+	}	
+	
 	private boolean checkUpdateData() {
 //		public int status = -1; //-1: initial; 0: done; 1: start; 2: update 
 //		public int type = -1; //0: update.xml; 1: package.zip
@@ -297,7 +310,7 @@ public class Downloader {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
 			req.setDescription("downloading update script..");
-		} else {
+		} else if (type == TYPE_PACKAGE) {
 			//packages
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
@@ -305,6 +318,12 @@ public class Downloader {
 			Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
 			req.setDestinationUri(dest);
 			req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
+		} else if (type == TYPE_CHECKNEW) {
+			req = new DownloadManager.Request(Uri.parse(url));
+			req.setTitle("EL");
+			req.setDescription("check new packages..");			
+		} else {
+			return false;
 		}
 		
 		long syncid = downloadManager.enqueue(req);
@@ -319,11 +338,13 @@ public class Downloader {
 			onUpdateDownloaded(syncid, url);
 		} else if (type == TYPE_PACKAGE) {
 			onPackageDownloaded(syncid, url);
+		} else if (type == TYPE_CHECKNEW) {
+			onCheckNewDownloaded(syncid, url);
 		}
 		
-		return false;
+		return true;
 	}
-	
+
 	private void regiestReceiver() {
 		IntentFilter filter = new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE);
 		
@@ -356,6 +377,8 @@ public class Downloader {
 						onUpdateDownloaded(syncid, file);
 					} else if (type == TYPE_PACKAGE) {
 						onPackageDownloaded(syncid, file);
+					} else if (type == TYPE_CHECKNEW) {
+						onCheckNewDownloaded(syncid, file);
 					}
 				} else {
 					Log.w(Tag, "download failed (" + status + ") -" + syncid);
@@ -365,6 +388,8 @@ public class Downloader {
 						showNotification("download failed", "EL - please check request code");
 					} else if (type == TYPE_PACKAGE) {
 						showNotification("download failed", "EL - please input request code again");
+					} else if (type == TYPE_CHECKNEW) {
+						showNotification("check new packages failed", "EL - please try again");
 					}
 					
 					checkUpdateData();
@@ -557,7 +582,86 @@ public class Downloader {
 		
 		this.checkUpdateData();
 	}
+	
+	private void onCheckNewDownloaded(long syncid, String url) {
+		Log.d(Tag, "onCheckNewDownloaded() syncid:" + syncid + " url:" + url);
+		Uri uri = Uri.parse(url);
+		Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
+		if (cursor != null) {
+			try {
+				if (cursor.moveToFirst()) {
+					final String file = unzipUpdate(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
+					if (analyseCheckNewPackagesUpdated(file)) {
+						Utils.removeFile(file);
+						updateStatusBySyncId(syncid, null, STATUS_DONE);
+						
+						this.checkUpdateData();
+					}
+				}
+			} finally {
+				cursor.close();
+			}			
+		}
+	}	
 
+	private boolean analyseCheckNewPackagesUpdated(String file) {
+		
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+
+		try {
+			Document doc = factory.newDocumentBuilder().parse("file://" + file);
+			
+			NodeList pk = doc.getElementsByTagName("package");
+			if (pk == null) {
+				return true;
+			}
+			
+			for (int i = 0; i < pk.getLength(); ++ i) {
+				Element p = (Element) pk.item(i);
+				
+				NodeList idx = p.getElementsByTagName("index");
+				Log.d(Tag, "index = " + idx.item(0).getFirstChild().getNodeValue());
+				NodeList title = p.getElementsByTagName("title");
+				Log.d(Tag, "title = " + title.item(0).getFirstChild().getNodeValue());
+				NodeList desc = p.getElementsByTagName("desc");
+				Log.d(Tag, "desc = " + desc.item(0).getFirstChild().getNodeValue());
+				NodeList link = p.getElementsByTagName("link");
+				Log.d(Tag, "link = " + link.item(0).getFirstChild().getNodeValue());
+				NodeList size = p.getElementsByTagName("size");
+				Log.d(Tag, "size = " + size.item(0).getFirstChild().getNodeValue());
+				NodeList updated = p.getElementsByTagName("updated");
+				Log.d(Tag, "updated = " + updated.item(0).getFirstChild().getNodeValue());
+
+				ContentValues values = new ContentValues();
+				values.put("idx", Integer.valueOf(idx.item(0).getFirstChild().getNodeValue()));
+				values.put("title", title.item(0).getFirstChild().getNodeValue());
+				values.put("desc", desc.item(0).getFirstChild().getNodeValue());
+				values.put("link", link.item(0).getFirstChild().getNodeValue());
+				values.put("size", Integer.valueOf(size.item(0).getFirstChild().getNodeValue()));
+				values.put("updated", updated.item(0).getFirstChild().getNodeValue());
+				
+				insertCheckNewPackageUpdateData(values);
+			}
+
+			return true;
+			
+		} catch (SAXException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParserConfigurationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return false;
+	}
+
+	private void insertCheckNewPackageUpdateData(ContentValues values) {
+		service.getContentResolver().insert(ELContentProvider.URI_EL_NEW_PACKAGES, values);
+	}
 
 	private void showNotification(String title, String text) {
 		Intent intent = new Intent(NotificationAction.ACTION_SHOW);
@@ -566,5 +670,6 @@ public class Downloader {
 		intent.putExtra(NotificationAction.DATA_TEXT, text);
 		
 		service.sendBroadcast(intent);	
-	}	
+	}
+	
 }

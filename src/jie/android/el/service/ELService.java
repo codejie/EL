@@ -85,7 +85,12 @@ public class ELService extends Service {
 		public boolean addDownloadRequest(String request, String check) throws RemoteException {
 			return onDownloadRequest(request, check);
 		}
-
+		
+		@Override
+		public boolean checkNewPackages() throws RemoteException {
+			return onCheckNewPackages();
+		}
+		
 		@Override
 		public void setUIState(int state) throws RemoteException {
 			onUIStateChanged(state);
@@ -276,6 +281,10 @@ public class ELService extends Service {
 		}
 		
 		return downloader.addDownloadRequest(request,check);
+	}
+	
+	public boolean onCheckNewPackages() {
+		return onDownloadRequest("checknewpackages", null);
 	}
 	
 	public void onPackageReady() {

@@ -37,6 +37,7 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_EL_ESL_FIRST = Uri.parse("content://" + AUTHORITY + "/el/esl_first");
 	public static final Uri URI_EL_ESL_LAST = Uri.parse("content://" + AUTHORITY + "/el/esl_last");
 	public static final Uri URI_EL_ESL_PLAYFLAG = Uri.parse("content://" + AUTHORITY + "/el/esl_playflag");
+	public static final Uri URI_EL_NEW_PACKAGES = Uri.parse("content://" + AUTHORITY + "/el/new_packages");
 	
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
@@ -52,6 +53,7 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_LAC_DICT_INFO = 40;
 	private static final int MATCH_LAC_WORD_INDEX_JOIN_INFO = 50;
 	private static final int MATCH_LAC_BLOCK_INFO = 60;
+	private static final int MATCH_EL_NEW_PACKAGES = 70;
 	
 
 	private UriMatcher matcher = null;
@@ -82,6 +84,7 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL_RANDOM:
 		case MATCH_ITEM_EL_ESL_FIRST:
 		case MATCH_ITEM_EL_ESL_LAST:
+		case MATCH_EL_NEW_PACKAGES:
 			return CONTENT_TYPE;
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
@@ -108,6 +111,10 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_EL_ESL:
 			db = elDBAccess.getWritableDatabase();
 			table = "esl";
+			break;
+		case MATCH_EL_NEW_PACKAGES:
+			db = elDBAccess.getWritableDatabase();
+			table = "new_packages";
 			break;
 		default:
 			throw new IllegalArgumentException("insert() Unknown uri: " + uri);
@@ -189,7 +196,11 @@ public class ELContentProvider extends ContentProvider {
 			db = lacDBAccess.getReadableDatabase();
 			table = "block_info_100";
 			break;
-		default:
+		case MATCH_EL_NEW_PACKAGES:
+			db = elDBAccess.getReadableDatabase();
+			table = "new_packages";
+			break;
+		default:			
 			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
 		}
 		
@@ -236,6 +247,10 @@ public class ELContentProvider extends ContentProvider {
 			db = lacDBAccess.getWritableDatabase();
 			table = "sys_update";
 			break;
+		case MATCH_EL_NEW_PACKAGES:
+			db = elDBAccess.getWritableDatabase();
+			table = "new_packages";
+			break;
 		default:
 			throw new IllegalArgumentException("delete() Unknown uri: " + uri);
 		}
@@ -264,7 +279,7 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl_first", MATCH_ITEM_EL_ESL_FIRST);
 		matcher.addURI(AUTHORITY, "el/esl_last", MATCH_ITEM_EL_ESL_LAST);
 		matcher.addURI(AUTHORITY, "el/esl_playflag/#", MATCH_ITEM_EL_ESL_PLAYFLAG);
-		
+		matcher.addURI(AUTHORITY, "el/new_packages", MATCH_EL_NEW_PACKAGES);		
 	}
 	
 	private void initDatabases() {

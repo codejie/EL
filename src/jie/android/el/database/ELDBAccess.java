@@ -45,7 +45,7 @@ public class ELDBAccess extends DBAccess {
 			+ "[desc] TEXT," 
 			+ "[link] TEXT," 
 			+ "[size] INTEGER," 
-			+ "[updated] INTEGER)";
+			+ "[updated] TEXT)";
 
 		db.execSQL(sql);
 		

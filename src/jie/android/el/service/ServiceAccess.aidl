@@ -21,9 +21,10 @@ interface ServiceAccess {
 	Word.XmlResult queryWordResult(in String word);
 	
 	boolean addDownloadRequest(in String request, in String check);
+	boolean checkNewPackages();
 	
 	void setUIState(in int state);
 
 	int setNotification(in int type, in String title, in String text);
-	void removeNotification(in int type, in int id);  
+	void removeNotification(in int type, in int id);
 }
