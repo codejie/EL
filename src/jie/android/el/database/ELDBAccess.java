@@ -39,6 +39,16 @@ public class ELDBAccess extends DBAccess {
 					+ "[flag] INTEGER DEFAULT (0))";
 		db.execSQL(sql);
 		
+		sql = "CREATE TABLE [new_packages] ("
+			+ "[idx] INTEGER," 
+			+ "[title] TEXT," 
+			+ "[desc] TEXT," 
+			+ "[link] TEXT," 
+			+ "[size] INTEGER," 
+			+ "[updated] INTEGER)";
+
+		db.execSQL(sql);
+		
 		return true;
 	}	
 }
