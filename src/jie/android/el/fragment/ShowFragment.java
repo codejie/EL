@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -41,8 +42,9 @@ import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnUrlLoadingListener;
 import jie.android.el.view.PopupLayout;
+import jie.android.el.view.ShowPopWindow;
 
-public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener, OnMenuItemClickListener{
+public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener {
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
 	
@@ -563,9 +565,47 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}
 	}
 
-	@Override
-	public boolean onMenuItemClick(MenuItem item) {
-		switch (item.getItemId()) {
+	private void showPopupMenu(View v) {
+
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			
+			PopupMenu pm = new PopupMenu(getELActivity(), v);
+			pm.getMenuInflater().inflate(R.menu.fragment_show_pop, pm.getMenu());
+			pm.getMenu().getItem(0).setEnabled(audioSlowDialog != -1);
+			pm.getMenu().getItem(1).setEnabled(audioExplanation != -1);
+			pm.getMenu().getItem(2).setEnabled(audioFastDialog != -1);
+			
+			pm.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+
+				@Override
+				public boolean onMenuItemClick(MenuItem item) {
+					return onNavigate(item.getItemId());
+				}
+				
+			});
+			pm.show();
+			
+		} else {		
+			final ShowPopWindow win = new ShowPopWindow(getELActivity(), v);
+			win.setItemEnable(0, (audioSlowDialog != -1));
+			win.setItemEnable(1, (audioExplanation != -1));
+			win.setItemEnable(2, (audioFastDialog != -1));
+
+			win.setOnClickListener(new OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					onNavigate(v.getId());
+					win.dismiss();
+				}
+
+			});
+			win.show();
+		}
+	}
+
+	protected boolean onNavigate(int itemId) {
+
+		switch (itemId) {
 		case R.id.el_menu_show_slowdialog:
 			seekAudio(audioSlowDialog);
 			break;
@@ -579,16 +619,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			return false;
 		}
 		return true;
-	}
-	
-	private void showPopupMenu(View v) {
-		PopupMenu pm = new PopupMenu(getELActivity(), v);
-		pm.getMenuInflater().inflate(R.menu.fragment_show_pop, pm.getMenu());
-		pm.getMenu().getItem(0).setEnabled(audioSlowDialog != -1);
-		pm.getMenu().getItem(1).setEnabled(audioExplanation != -1);
-		pm.getMenu().getItem(2).setEnabled(audioFastDialog != -1);
-		pm.setOnMenuItemClickListener(this);
-		pm.show();
 	}
 
 	private void toggleRandom() {

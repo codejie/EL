@@ -196,7 +196,7 @@ public class PackageImporter {
 	
 	public boolean importPackage(String dbfile) {
 		try {
-			SQLiteDatabase src = SQLiteDatabase.openDatabase(dbfile, null, SQLiteDatabase.OPEN_READONLY);
+			SQLiteDatabase src = SQLiteDatabase.openDatabase(dbfile, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS |  SQLiteDatabase.OPEN_READONLY);
 			//check info table (skip)
 			//check esl table
 			Cursor cursor = src.query("esl", new String[] {"idx", "title", "script", "audio", "duration", "slowdialog", "explanations", "fastdialog", "flag"}, null, null, null, null, null);

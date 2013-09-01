@@ -37,7 +37,7 @@ public class ELService extends Service {
 		
 		@Override
 		public Word.XmlResult queryWordResult(String word) throws RemoteException {
-			return dictionary.getWordXmlResult(word);// null;//dictionary.getWordXmlResult(word);
+			return  dictionary.getWordXmlResult(word);// null;//dictionary.getWordXmlResult(word);
 		}
 
 		@Override

@@ -1,7 +1,9 @@
 package jie.android.el.utils;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
@@ -105,7 +107,7 @@ public class XmlResultLoader {
 			return 0;
 		}
 
-		final ByteBuffer in = ByteBuffer.allocateDirect(size);
+		ByteBuffer in = ByteBuffer.allocateDirect(size);
 		try {
 			if(file.getChannel().read(in, offset) != size) {
 				return -1;
@@ -126,7 +128,16 @@ public class XmlResultLoader {
 	
 	private static int decompressBlock(ByteBuffer in, int size, byte[] out) {
 		final Inflater inflater = new Inflater();
-		final InflaterInputStream stream = new InflaterInputStream(new ByteArrayInputStream(in.array(), 0, size), inflater, size);
+		
+		byte[] a = null;
+		if (in.hasArray()) {
+			a = in.array();
+		} else {
+			a = new byte[size];
+			in.position(0);
+			in.get(a, 0, size);
+		}
+		final InflaterInputStream stream = new InflaterInputStream(new ByteArrayInputStream(a, 0, size), inflater, size);
 		
 		try {
 			while(stream.read(out) > 0);
@@ -136,6 +147,17 @@ public class XmlResultLoader {
 		inflater.end();
 		return 0;
 	}
+	
+    public static byte[] getBytes(ByteBuffer obj) throws IOException {  
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();  
+        ObjectOutputStream out = new ObjectOutputStream(bout);  
+        out.writeObject(obj);  
+        out.flush();  
+        byte[] bytes = bout.toByteArray();  
+        bout.close();  
+        out.close();  
+        return bytes;  
+    } 	
 
 	public static final String getXml(int decoder, int offset, int length) {
 		if(xmlDecoder == null || xmlDecoder.getIndex() != decoder) {

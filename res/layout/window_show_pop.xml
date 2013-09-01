@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:background="@android:color/darker_gray"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/el_menu_show_slowdialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/el_menu_show_slowdialog" />
+
+    <Button
+        android:id="@+id/el_menu_show_explanation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/el_menu_show_explanation" />
+
+    <Button
+        android:id="@+id/el_menu_show_fastdialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="@string/el_menu_show_fastdialog" />
+
+</LinearLayout>
