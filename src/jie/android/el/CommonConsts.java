@@ -11,7 +11,7 @@ public interface CommonConsts {
 	
 	public interface FragmentArgument {
 		public enum Action {
-			NONE, PACKAGE_CHANGED, SERVICE_NOTIFICATION, QUERY;
+			NONE, PACKAGE_CHANGED, SERVICE_NOTIFICATION, QUERY, SELF;
 			
 			public int getId() {
 				return this.ordinal();
@@ -100,7 +100,7 @@ public interface CommonConsts {
 	}
 	
 	public enum PlayState {
-		NONE, PLAYING, PAUSE, ERROR;
+		NONE, PLAYING, PAUSE, COMPLETED, ERROR;
 		
 		public int getId() {
 			return this.ordinal();

@@ -146,8 +146,8 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 				e.printStackTrace();
 			}
 		}
-
-		if (!context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
+		boolean next = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false);
+		if (!next) {
 			getNextAudio();
 		}
 		
