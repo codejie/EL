@@ -229,7 +229,7 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	public void play() {
 		if (isPlaying())
 			return;
-						
+					
 		player.start();
 		
 		setAudioPlayFlag(audioIndex, true);
@@ -306,9 +306,9 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 						} catch (RemoteException e) {
 							e.printStackTrace();
 						}
+					} else {
+						play();
 					}
-					
-					play();
 				} else {
 					showWarningNotification("Can't play audio file - " + cursor.getShort(2));
 				}

@@ -13,7 +13,6 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnLongClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
@@ -21,7 +20,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
-import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -33,7 +31,6 @@ import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
-import jie.android.el.service.Dictionary;
 import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.service.ServiceAccess;
 import jie.android.el.utils.Speaker;
@@ -501,27 +498,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		return false;
 	}
 	
-//	private final String assembleXmlResult(final String word, final Word.XmlResult result) {
-//		
-//		String ret = "<LAC><LAC-W>" + word + "</LAC-W>";
-//		for (final Word.XmlResult.XmlData data : result.getXmlData()) {
-//			ret += "<LAC-R><LAC-D>" + "Vicon English-Chinese Dictionary" + "</LAC-D>";
-//			int i = 0;			
-//			
-//			for(final Dictionary.XmlResult r : data.getResult()) {
-//				//TODO : cannot get the correct word, so do not display it now.
-//				//ret += "<w>" + r.word + "</w>";				
-//				ret += r.result;
-//				if ((++i) < data.getResult().size())
-//					ret += "<s/>";
-//			}
-//			ret += "</LAC-R>";
-//		}
-//		ret += "</LAC>";
-//		
-//		return ret;
-//	}	
-
 	private void showPopWindow(final String word, final String html) {
 		popTextView.setText(word);
 		if (html != null) {
