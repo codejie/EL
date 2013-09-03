@@ -100,7 +100,7 @@ public interface CommonConsts {
 	}
 	
 	public enum PlayState {
-		NONE, PLAYING, PAUSE, COMPLETED, ERROR;
+		NONE, PREPARED, PLAYING, PAUSED, COMPLETED, ERROR;
 		
 		public int getId() {
 			return this.ordinal();

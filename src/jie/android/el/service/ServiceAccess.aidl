@@ -16,6 +16,7 @@ interface ServiceAccess {
 	void stopAudio();
 	void pauseAudio();
 	void seekAudio(in int position);
+	int getPlayState();
 	boolean isAudioPlaying();
 	
 	Word.XmlResult queryWordResult(in String word);

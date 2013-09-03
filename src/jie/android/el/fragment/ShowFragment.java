@@ -92,7 +92,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		public void onError(int what, int extra) throws RemoteException {
 			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONERROR, what, extra));		
 		}
-		
 
 		@Override
 		public void onSeekTo(int msec) throws RemoteException {
@@ -107,6 +106,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			args.putInt(FragmentArgument.STATE, PlayState.PLAYING.getId());
 			
 			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
+		}
+
+		@Override
+		public void onIsPlaying(int index, int state) throws RemoteException {
 		}
 	}
 		
@@ -148,7 +151,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private int audioExplanation = -1;
 	private int audioFastDialog = -1;
 	
-	private PlayState playState = PlayState.NONE;
+//	private PlayState playState = PlayState.NONE;
 		
 	private Handler handler = new Handler() {
 
@@ -289,53 +292,56 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	
 	protected void onIndex(Bundle obj) {
 		
-		playState = PlayState.NONE;
-		
-		audioIndex = obj.getInt(FragmentArgument.INDEX);
+		int index = obj.getInt(FragmentArgument.INDEX);
+		if (audioIndex == index) {
+			return;
+		}
 		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, audioIndex);		
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "slowdialog", "explanations", "fastdialog"}, null, null, null);
 		if (cursor != null) {
 			try {
 				if (cursor.moveToFirst()) {
+					
 					String title = cursor.getString(0);
 					String script = cursor.getString(1);
 					
 					audioSlowDialog = cursor.getInt(2);
 					audioExplanation = cursor.getInt(3);
 					audioFastDialog = cursor.getInt(4);
+
+					loadData(audioIndex, title, script);
 					
 					setAudioPlayListener(true);
-					loadData(audioIndex, title, script);
-					int action = obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()); 
-					if (action == FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {						
-						int duration = obj.getInt(FragmentArgument.DURATION, -1);
-						if (duration != -1) {
-							handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
-						}
-						int state = obj.getInt(FragmentArgument.STATE, -1);
-						if (state == PlayState.PLAYING.getId()) {
-							playAudio();
-						} else if (state == PlayState.PAUSE.getId()) {
-							pauseAudio();
-						}
-					} else if (action == FragmentArgument.Action.SELF.getId()) {
-						setAudio(audioIndex);
-						playAudio();
-					} else {
-						setAudio(audioIndex);
-						if (!getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
-							playAudio();
-						}
-					}
+					setAudio(audioIndex);
+//										
+//					int action = obj.getInt(FragmentArgument.ACTION, FragmentArgument.Action.NONE.getId()); 
+//					if (action == FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {						
+//						int duration = obj.getInt(FragmentArgument.DURATION, -1);
+//						if (duration != -1) {
+//							handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
+//						}
+//						int state = obj.getInt(FragmentArgument.STATE, -1);
+//						if (state == PlayState.PLAYING.getId()) {
+//							playAudio();
+//						} else if (state == PlayState.PAUSED.getId()) {
+//							pauseAudio();
+//						}
+//					} else if (action == FragmentArgument.Action.SELF.getId()) {
+//						setAudio(audioIndex);
+//						playAudio();
+//					} else {
+//						setAudio(audioIndex);
+//						if (!getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
+//							playAudio();
+//						}
+//					}
 					
-					if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
-						playNavigate.setEnabled(false);
-					} else {
-						playNavigate.setEnabled(true);
-					}
-					
-					playPlay.setEnabled(true);
+//					if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
+//						playNavigate.setEnabled(false);
+//					} else {
+//						playNavigate.setEnabled(true);
+//					}					
 				}				
 			} finally {
 				cursor.close();
@@ -361,14 +367,21 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	private void loadData(int index, String title, String data) {
 		
-		playPlay.setSelected(false);
-		
-		textView.setVisibility(View.VISIBLE);
-		textView.setText(String.format("%d. %s", index, title));
-		
 		String html = assembleHtmlScript(data);
 		webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
 		
+		playPlay.setEnabled(true);		
+		playPlay.setSelected(false);
+
+		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
+			playNavigate.setEnabled(false);
+		} else {
+			playNavigate.setEnabled(true);
+		}
+		
+		textView.setVisibility(View.VISIBLE);
+		textView.setText(String.format("%d. %s", index, title));
+				
 		if (getELActivity().getSharedPreferences().getBoolean(Setting.CONTENT_HIDE_TITLE, false)) {
 			Message msg = Message.obtain(handler, MSG_HIDE_TITLE);
 			handler.sendMessageDelayed(msg, 1500);
@@ -414,8 +427,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void setAudio(int index) {
-//		this.audio = Environment.getExternalStorageDirectory() + "/jie/el/" + audio;
-		
 		try {
 			getELActivity().getServiceAccess().setAudio(index);
 		} catch (RemoteException e) {
@@ -427,10 +438,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private void playAudio() {
 		
 		try {
-			getELActivity().getServiceAccess().playAudio();
-			
-			playState = PlayState.PLAYING;
-			
+			getELActivity().getServiceAccess().playAudio();		
 			playPlay.setSelected(true);	
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -453,8 +461,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		try {
 //			setAudioPlayListener(false);
 			getELActivity().getServiceAccess().stopAudio();
-			playPlay.setSelected(false);
-			
+			playPlay.setSelected(false);			
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

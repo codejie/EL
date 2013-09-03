@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.ListItemFlag;
@@ -28,7 +29,7 @@ import android.os.AsyncTask;
 import android.os.DeadObjectException;
 import android.os.RemoteException;
 
-public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener, OnErrorListener {
+public class AudioPlayer {
 
 	private class TickCounterRunnable implements Runnable {
 
@@ -50,28 +51,6 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 		}		
 	}
 	
-//	private class TickCounterTask extends AsyncTask<Void, Void, Void> {
-//
-//		@Override
-//		protected Void doInBackground(Void... arg0) {
-//			 while (isPlaying() && listener != null) {
-//				try {
-//					listener.onPlaying(player.getCurrentPosition());
-//					
-//					Thread.sleep(777);
-//				} catch (InterruptedException e) {
-//					e.printStackTrace();
-//				} catch (DeadObjectException e) {
-//					listener = null;
-//				} catch (RemoteException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//			
-//			return null;
-//		}
-//	}
-	
 	private Context context = null;
 	
 	private MediaPlayer player = null;
@@ -80,112 +59,98 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	private int audioIndex = -1;
 	private String audioTitle = null;
 
-//	private TickCounterTask tickTask = null;
-	
 	private PlayState playState = PlayState.NONE; 
 	
 	public AudioPlayer(Context context) {
 		this.context = context;
-		
-		init();
 	}
 
 	public void release() {
-		player.release();
+		releasePlayer();
 	}
 
-	private void init() {
+	private void initPlayer() {
 		player = new MediaPlayer();
 		
-		player.setOnCompletionListener(this);
-		player.setOnSeekCompleteListener(this);
-		player.setOnErrorListener(this);
+		player.setOnCompletionListener(new OnCompletionListener() {
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				onPlayCompletion();
+			}			
+		});
+		player.setOnSeekCompleteListener(new OnSeekCompleteListener() {
+			@Override
+			public void onSeekComplete(MediaPlayer mp) {
+				onPlaySeekComplete();
+			}			
+		});
+		player.setOnErrorListener(new OnErrorListener() {
+			@Override
+			public boolean onError(MediaPlayer mp, int what, int extra) {
+				onPlayError(what, extra);
+				return true;
+			}			
+		});
 	}
 
-	@Override
-	public boolean onError(MediaPlayer arg0, int arg1, int arg2) {
-		if (listener != null) {
-			try {
-				listener.onError(arg1, arg2);
-			} catch (DeadObjectException e) {
-				listener = null;				
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return false;
-	}
-
-	@Override
-	public void onSeekComplete(MediaPlayer arg0) {
-		if (listener != null) {
-			try {
-				listener.onSeekTo(player.getCurrentPosition());
-			} catch (DeadObjectException e) {
-				listener = null;				
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}		
-	}
-
-	@Override
-	public void onCompletion(MediaPlayer arg0) {
-		if (listener != null) {
-			try {
-				listener.onCompleted();
-				
-				showNotification(false, null);
-
-			} catch (DeadObjectException e) {
-				listener = null;								
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		boolean next = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false);
-		if (!next) {
-			getNextAudio();
+	private void releasePlayer() {
+		if (player != null) {
+			player.release();			
 		}
 		
+		showNotification(false, null);
+		
+		changePlayState(PlayState.NONE);
 	}
 	
 	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
 		this.listener = listener;
 		
-		if (isPlaying() && this.listener != null) {
-			new Thread(new TickCounterRunnable()).start();
+		if (this.listener != null) {
+			if (isPlaying() || isPause()) {
+				try {
+					this.listener.onIsPlaying(audioIndex, playState.getId());
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 			
-//			tickTask = new TickCounterTask();
-//			tickTask.execute();
+			if (isPlaying()) {
+				new Thread(new TickCounterRunnable()).start();
+			}
+			
 		}
-		
 	}
 	
 	public void setData(int index) {
 
-		stop();
-
+		releasePlayer();
+		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
-				if(!prepareData(index, cursor.getString(0), cursor.getString(1))) {
+				if(prepareData(index, cursor.getString(0), cursor.getString(1))) {
+					if (!context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
+						play();
+					}
+				} else {
 					showWarningNotification("Can't play audio file - " + cursor.getShort(2));
+					onPlayError(-1, -1);
 				}
+				
 			}
 		} finally {
 			cursor.close();
-		}	
+		}
 	}
 	
 	private boolean prepareData(int index, String title, String audio) {
 
 		audioIndex = index;
 		audioTitle = title;
+		
 		//check audio
 		audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
 		File f = new File(audio);
@@ -193,14 +158,19 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			return false;
 		}
 		
-		try {
-			player.reset();
+		initPlayer();
 		
+		try {			
 			player.setDataSource(audio);
 			player.prepare();
+					
 			if (listener != null) {
 				listener.onPrepared(player.getDuration());
 			}
+			
+			changePlayState(PlayState.PREPARED);			
+			
+			setAudioPlayFlag(audioIndex, true);
 			
 		} catch (IllegalArgumentException e) {
 			e.printStackTrace();
@@ -231,14 +201,12 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 			return;
 					
 		player.start();
+				
+		changePlayState(PlayState.PLAYING);
 		
-		setAudioPlayFlag(audioIndex, true);
-		
-		playState = PlayState.PLAYING;
-
-		new Thread(new TickCounterRunnable()).start();
-//		tickTask = new TickCounterTask();
-//		tickTask.execute();
+		if (listener != null) {
+			new Thread(new TickCounterRunnable()).start();
+		}
 		
 		showNotification(true, context.getResources().getString(R.string.el_play_el_is_playing));		
 	}
@@ -246,33 +214,31 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 	public void pause() {
 		if (isPlaying()) {
 			player.pause();
-			showNotification(true, context.getResources().getString(R.string.el_play_el_pause_playback));
-			playState = PlayState.PAUSE;
+			
+			changePlayState(PlayState.PAUSED);
+			
+			showNotification(true, context.getResources().getString(R.string.el_play_el_pause_playback));			
 		}
 	}
 	
 	public void stop() {
-		if (isPlaying() || isPause()) {			
+		if (isPlaying() || isPause()) {
 			player.stop();
-			playState = PlayState.NONE;			
-			showNotification(false, null);			
 		}
+		
+		releasePlayer();
 	}
 	
 	public void seekTo(int msec) {
 		player.seekTo(msec);
 	}
 	
-	public void reset() {
-		player.release();
-	}
-
 	public boolean isPlaying() {
 		return playState == PlayState.PLAYING; 
 	}
 	
 	public boolean isPause() {
-		return playState == PlayState.PAUSE;
+		return playState == PlayState.PAUSED;
 	}
 	
 	public int getAudioIndex() {
@@ -352,6 +318,65 @@ public class AudioPlayer implements OnCompletionListener, OnSeekCompleteListener
 
 	public PlayState getPlayState() {
 		return playState;
+	}
+	
+	protected void onPlaySeekComplete() {
+		if (listener != null) {
+			try {
+				listener.onSeekTo(player.getCurrentPosition());
+			} catch (DeadObjectException e) {
+				listener = null;				
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}		
+	}
+
+	protected void onPlayCompletion() {
+		
+		releasePlayer();
+				
+		if (listener != null) {
+			try {
+				listener.onCompleted();
+			} catch (DeadObjectException e) {
+				listener = null;								
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		boolean next = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false);
+		if (!next) {
+			getNextAudio();
+		}
+	}
+	
+	private void onPlayError(int what, int extra) {
+		
+		releasePlayer();
+		
+		if (listener != null) {
+			try {
+				listener.onError(what, extra);
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	private void changePlayState(PlayState state) {
+		playState = state;
+		if (listener != null) {
+			try {
+				listener.onStateChanged(playState.getId());
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 	
 }

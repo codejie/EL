@@ -105,6 +105,12 @@ public class ELService extends Service {
 		public void removeNotification(int type, int id) throws RemoteException {
 			onRemoveNotification(type, id);
 		}
+
+		@Override
+		public int getPlayState() throws RemoteException {
+			// TODO Auto-generated method stub
+			return 0;
+		}
 	}
 	
 	private class NotificationReceiver extends BroadcastReceiver {
