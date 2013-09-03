@@ -35,7 +35,7 @@ public class AudioPlayer {
 
 		@Override
 		public void run() {
-			 while (isPlaying() && listener != null) {
+			 while (listener != null && isPlaying()) {
 				try {
 					listener.onPlaying(player.getCurrentPosition());
 					
@@ -93,11 +93,22 @@ public class AudioPlayer {
 		});
 	}
 
+	private boolean isPlayerAvailable() {
+		if (player != null) {
+			synchronized(player) {
+				return player != null; 
+			}
+		}
+		return false;
+	}
+	
 	private void releasePlayer() {
 		if (player != null) {
-			player.release();			
-		}
-		
+			synchronized(player) {
+				player.release();
+				player = null;
+			}
+		}		
 		showNotification(false, null);
 		
 		changePlayState(PlayState.NONE);
@@ -234,11 +245,21 @@ public class AudioPlayer {
 	}
 	
 	public boolean isPlaying() {
-		return playState == PlayState.PLAYING; 
+		if (player != null) {
+			synchronized(player) {
+				return (player != null && playState == PlayState.PLAYING);
+			}
+		}
+		return false; 
 	}
 	
 	public boolean isPause() {
-		return playState == PlayState.PAUSED;
+		if (player != null) {
+			synchronized(player) {
+				return (player != null && playState == PlayState.PAUSED);
+			}
+		}
+		return false; 
 	}
 	
 	public int getAudioIndex() {

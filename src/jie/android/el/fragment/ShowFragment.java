@@ -110,6 +110,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 		@Override
 		public void onIsPlaying(int index, int state) throws RemoteException {
+			//
+		}
+
+		@Override
+		public void onStateChanged(int state) throws RemoteException {
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_STATE_CHANGED, state, -1));			
+			
 		}
 	}
 		
@@ -121,6 +128,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private static final int MSG_PLAY_ONERROR		=	6;
 	private static final int MSG_PLAY_ONSEEKTO		=	7;
 	private static final int MSG_HIDE_TITLE			=	8;
+	private static final int MSG_PLAY_STATE_CHANGED	=	9;
 	
 	private Animation animShow = null;
 	private Animation animHide = null;
@@ -169,6 +177,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				break;
 			case MSG_PLAY_ONCOMPLETED:
 				onPlayCompleted();
+				break;
+			case MSG_PLAY_STATE_CHANGED:
+				onPlayStateChanged(msg.arg1);
 				break;
 			case MSG_PLAY_ONERROR:
 				onPlayError(msg.arg1, msg.arg2);
@@ -264,16 +275,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
     	animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
 	}
 
-//	private void togglePopupWindow() {
-//		if (popupLayout.getVisibility() == View.GONE) {
-//			popupLayout.setVisibility(View.VISIBLE);
-//			popupLayout.startAnimation(animShow);
-//		} else {
-//			popupLayout.startAnimation(animHide);
-//			popupLayout.setVisibility(View.GONE);
-//		}
-//	}
-	
 	private void showPopWindow(boolean show) {
 		if (show) {
 			popupLayout.setVisibility(View.VISIBLE);
@@ -290,12 +291,21 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		return popupLayout.getVisibility() == View.VISIBLE;
 	}
 	
+	private void reset() {
+		playPlay.setEnabled(false);
+		playPlay.setSelected(false);
+	}
+	
 	protected void onIndex(Bundle obj) {
 		
 		int index = obj.getInt(FragmentArgument.INDEX);
 		if (audioIndex == index) {
 			return;
 		}
+
+		reset();
+		
+		audioIndex = index;
 		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, audioIndex);		
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "slowdialog", "explanations", "fastdialog"}, null, null, null);
@@ -458,14 +468,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	private void stopAudio() {
-		try {
-//			setAudioPlayListener(false);
-			getELActivity().getServiceAccess().stopAudio();
-			playPlay.setSelected(false);			
-		} catch (RemoteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 
 	private void seekAudio(int position) {
@@ -484,7 +486,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				showPopWindow(false);
 			} else {
 				stopAudio();
-				setAudioPlayListener(false);				
+				setAudioPlayListener(false);
 				return false;
 			}
 			return true;			
@@ -617,13 +619,14 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void togglePlay() {
-		if (playState == PlayState.COMPLETED) {
-			Bundle args = new Bundle();
-			args.putInt(FragmentArgument.INDEX, audioIndex);			
-			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SELF.getId());
-			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
-			return;
-		}
+//		
+//		if (playState == PlayState.COMPLETED) {
+//			Bundle args = new Bundle();
+//			args.putInt(FragmentArgument.INDEX, audioIndex);			
+//			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SELF.getId());
+//			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
+//			return;
+//		}
 		
 		if (playPlay.isSelected()) {
 			pauseAudio();
@@ -645,23 +648,18 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	protected void onPlayError(int what, int extra) {
-		stopAudio();
-		playState = PlayState.ERROR;
 		playNavigate.setEnabled(false);
 		playPlay.setEnabled(false);
 		Toast.makeText(getELActivity(), String.format("ERROR:%d Extra:%d", what, extra), Toast.LENGTH_SHORT).show();
 	}
 
 	protected void onPlayCompleted() {
-		stopAudio();
-		playState = PlayState.COMPLETED;
 		playBar.setEnabled(false);
 		playNavigate.setEnabled(false);
 		playTime.setText(audioDuration);
 	}
 
 	protected void onPlayPlaying(int msec) {
-		
 		playBar.setProgress(msec / 1000);		
 		playTime.setText(Utils.formatMSec(msec) + "/" + audioDuration);
 	}
@@ -676,6 +674,19 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		playTime.setText(audioDuration);
 	}
+	
+	protected void onPlayStateChanged(int state) {
+		if (state == PlayState.PREPARED.getId()) {
+			playPlay.setEnabled(true);
+			playNavigate.setEnabled(true);
+		} else if (state == PlayState.PLAYING.getId()) {
+			playPlay.setSelected(true);
+		} else if (state == PlayState.PAUSED.getId()) {
+			playPlay.setSelected(false);
+		} else if (state == PlayState.NONE.getId()) {
+			
+		}
+	}	
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
