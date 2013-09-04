@@ -11,7 +11,7 @@ public interface CommonConsts {
 	
 	public interface FragmentArgument {
 		public enum Action {
-			NONE, PACKAGE_CHANGED, SERVICE_NOTIFICATION, QUERY, SELF;
+			NONE, PACKAGE_CHANGED, SERVICE_NOTIFICATION, QUERY, PLAY;
 			
 			public int getId() {
 				return this.ordinal();
@@ -40,7 +40,7 @@ public interface CommonConsts {
 	
 	public interface UIMsg {
 		public static final int SERVICE_NOTIFICATION	=	1;
-		public static final int SERVICE_AUDIOPLAYING	=	2;
+//		public static final int SERVICE_AUDIOPLAYING	=	2;
 		public static final int SERVICE_PACKAGE_READY	=	3;
 		
 		public static final int UI_CREATED = 100;
@@ -49,7 +49,7 @@ public interface CommonConsts {
 	}
 	
 	public enum ServiceState {
-		READY, UNZIP, ERROR;
+		READY, UNZIP, ERROR, PLAYING;
 	
 		public int getId() {
 			return this.ordinal();
@@ -100,10 +100,30 @@ public interface CommonConsts {
 	}
 	
 	public enum PlayState {
-		NONE, PREPARED, PLAYING, PAUSED, COMPLETED, ERROR;
+		INVALID, NONE, PREPARED, PLAYING, PAUSED, COMPLETED, ERROR;
 		
 		public int getId() {
 			return this.ordinal();
-		}		
+		}
+		
+		public static PlayState getState(int id) {
+			if (id == PLAYING.getId()) {
+				return PLAYING;
+			} else if (id == PAUSED.getId()) {
+				return PAUSED;
+			} else if (id == NONE.getId()) {
+				return NONE;
+			} else if (id == PREPARED.getId()) {
+				return PREPARED;
+			} else if (id == ERROR.getId()) {
+				return ERROR;
+			} else if (id == COMPLETED.getId()) {
+				return COMPLETED;
+			} else if (id == INVALID.getId()) {
+				return INVALID;
+			} else {
+				return null;
+			}
+		}
 	}
 }

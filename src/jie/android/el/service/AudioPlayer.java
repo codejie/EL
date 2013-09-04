@@ -38,14 +38,10 @@ public class AudioPlayer {
 		public void run() {
 			 while (listener != null && isPlaying()) {
 				try {
-					listener.onPlaying(player.getCurrentPosition());
+					onPlayPlaying(player.getCurrentPosition());
 					
 					Thread.sleep(777);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
-				} catch (DeadObjectException e) {
-					listener = null;
-				} catch (RemoteException e) {
 					e.printStackTrace();
 				}
 			}			
@@ -82,7 +78,7 @@ public class AudioPlayer {
 		player.setOnSeekCompleteListener(new OnSeekCompleteListener() {
 			@Override
 			public void onSeekComplete(MediaPlayer mp) {
-				onPlaySeekComplete();
+				onPlaySeekComplete(player.getCurrentPosition());
 			}			
 		});
 		player.setOnErrorListener(new OnErrorListener() {
@@ -246,6 +242,9 @@ public class AudioPlayer {
 	
 	public void seekTo(int msec) {
 		player.seekTo(msec);
+		if (isPause()) {
+			onPlayPlaying(msec);
+		}
 	}
 	
 	public boolean isPlaying() {
@@ -345,10 +344,21 @@ public class AudioPlayer {
 		return playState;
 	}
 	
-	protected void onPlaySeekComplete() {
+	protected void onPlayPlaying(int position) {
 		if (listener != null) {
 			try {
-				listener.onSeekTo(player.getCurrentPosition());
+				listener.onPlaying(position);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	protected void onPlaySeekComplete(int msec) {
+		if (listener != null) {
+			try {
+				listener.onSeekTo(msec);
 			} catch (DeadObjectException e) {
 				listener = null;				
 			} catch (RemoteException e) {

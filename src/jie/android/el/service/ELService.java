@@ -69,11 +69,14 @@ public class ELService extends Service {
 		public void seekAudio(int poistion) throws RemoteException {
 			player.seekTo(poistion);
 		}
-
+		
 		@Override
-		public boolean isAudioPlaying() throws RemoteException {
-			return player.isPlaying(); 
-		}
+		public int getPlayState() throws RemoteException {
+			if (player == null) {
+				return PlayState.INVALID.getId();
+			}
+			return player.getPlayState().getId();
+		}		
 
 		@Override
 		public boolean canExit() throws RemoteException {
@@ -106,11 +109,6 @@ public class ELService extends Service {
 			onRemoveNotification(type, id);
 		}
 
-		@Override
-		public int getPlayState() throws RemoteException {
-			// TODO Auto-generated method stub
-			return 0;
-		}
 	}
 	
 	private class NotificationReceiver extends BroadcastReceiver {
@@ -150,7 +148,8 @@ public class ELService extends Service {
 		postServiceState(ServiceState.READY);
 		
 		if (player.isPlaying() || player.isPause()) {
-			postServiceIsPlaying(player.getPlayState(), player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
+			postServiceState(ServiceState.PLAYING);
+//			postServiceIsPlaying(player.getPlayState(), player.getAudioIndex(), player.getDuration(), player.getCurrentPosition());
 		}
 		
 		if (Downloader.checkIncomplete(this)) {
@@ -270,16 +269,16 @@ public class ELService extends Service {
 		}
 	}
 	
-	public void postServiceIsPlaying(PlayState state, int index, int duration, int position) {
-		if (serviceNotification != null) {
-			try {
-				serviceNotification.onAudioPlaying(state.getId(), index, duration, position);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}		
-	}
+//	public void postServiceIsPlaying(PlayState state, int index, int duration, int position) {
+//		if (serviceNotification != null) {
+//			try {
+//				serviceNotification.onAudioPlaying(state.getId(), index, duration, position);
+//			} catch (RemoteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}		
+//	}
 	
 	public boolean onDownloadRequest(String request, String check) {
 		if (downloader == null) {

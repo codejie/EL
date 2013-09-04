@@ -68,9 +68,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			case UIMsg.SERVICE_NOTIFICATION:
 				onServiceNotification(msg.arg1);
 				break;
-			case UIMsg.SERVICE_AUDIOPLAYING:
-				onServiceAudioPlaying((Bundle)msg.obj);
-				break;
+//			case UIMsg.SERVICE_AUDIOPLAYING:
+//				onServiceAudioPlaying((Bundle)msg.obj);
+//				break;
 
 			default:;
 			}
@@ -87,14 +87,14 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		
 		@Override
 		public void onAudioPlaying(int state, int index, int duration, int position) throws RemoteException {
-			Bundle data = new Bundle();
-			data.putInt(FragmentArgument.STATE, state);
-			data.putInt(FragmentArgument.INDEX, index);
-			data.putInt(FragmentArgument.DURATION, duration);
-//			data.putInt("position", position);
-			
-			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIOPLAYING, data);
-			msg.sendToTarget();
+//			Bundle data = new Bundle();
+//			data.putInt(FragmentArgument.STATE, state);
+//			data.putInt(FragmentArgument.INDEX, index);
+//			data.putInt(FragmentArgument.DURATION, duration);
+////			data.putInt("position", position);
+//			
+//			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIOPLAYING, data);
+//			msg.sendToTarget();
 		}
 
 	};
@@ -391,17 +391,19 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		return super.onKeyUp(keyCode, event);
 	}	
 
-	protected void onServiceAudioPlaying(Bundle data) {
-		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
-		fragmentSwitcher.show(FragmentSwitcher.Type.SHOW, data);
-	}
+//	protected void onServiceAudioPlaying(Bundle data) {
+//		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+//		fragmentSwitcher.show(FragmentSwitcher.Type.SHOW, data);
+//	}
 
 	protected void onServiceNotification(int state) {
 		if (state == ServiceState.READY.getId()) {
 			showProgressDialog(false, null);
 			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
-		} else {
-			
+		} else if (state == ServiceState.PLAYING.getId()) {
+			Bundle args = new Bundle();
+			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+			showFragment(FragmentSwitcher.Type.SHOW, args);			
 		}
 	}
 

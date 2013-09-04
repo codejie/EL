@@ -112,6 +112,7 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		Bundle args = new Bundle();
+		args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
 		args.putInt(FragmentArgument.INDEX, (int) id);
 		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
 	}
