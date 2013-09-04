@@ -12,12 +12,14 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import jie.android.el.service.Dictionary;
 
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
@@ -153,4 +155,13 @@ public class Utils {
 		
 		return ret;
 	}
+	
+	public static final SharedPreferences getSharedPreferences(Context context) {
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			return context.getSharedPreferences(AppArgument.NAME, Context.MODE_MULTI_PROCESS);
+		} else {
+			return context.getSharedPreferences(AppArgument.NAME, 0);
+		}
+	}
+	
 }

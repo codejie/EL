@@ -132,7 +132,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		
 		checkPath();
 		
-		sharedPreferences = getSharedPreferences(AppArgument.NAME, 0);
+		sharedPreferences = Utils.getSharedPreferences(this);// getSharedPreferences(AppArgument.NAME, Context.MODE_MULTI_PROCESS);
 		
 		fragmentSwitcher = new FragmentSwitcher(this);
 		fragmentSwitcher.setOnSwitchListener(this);

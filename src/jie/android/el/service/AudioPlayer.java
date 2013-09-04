@@ -19,6 +19,7 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -143,7 +144,10 @@ public class AudioPlayer {
 		try {
 			if (cursor.moveToFirst()) {
 				if(prepareData(index, cursor.getString(0), cursor.getString(1))) {
-					if (!context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
+					
+					SharedPreferences prefs = Utils.getSharedPreferences(this.context);
+										
+					if (!prefs.getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
 						play();
 					}
 				} else {
@@ -279,7 +283,7 @@ public class AudioPlayer {
 	}
 
 	private void getNextAudio() {	
-		boolean random = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
+		boolean random = Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
 		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx", "title", "audio" }, random, true);
 		
@@ -369,8 +373,7 @@ public class AudioPlayer {
 			}
 		}
 		
-		boolean next = context.getSharedPreferences(AppArgument.NAME, 0).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false);
-		if (!next) {
+		if (!Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
 			getNextAudio();
 		}
 	}
