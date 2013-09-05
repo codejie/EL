@@ -103,14 +103,20 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			Bundle args = new Bundle();
 			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
 			args.putInt(FragmentArgument.INDEX, index);
-			args.putInt(FragmentArgument.STATE, PlayState.PLAYING.getId());
 			
 			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
 		}
 
 		@Override
-		public void onIsPlaying(int index, int state) throws RemoteException {
-			//
+		public void onIsPlaying(int index, int state, int duration, int msec) throws RemoteException {
+			Bundle args = new Bundle();
+			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+			args.putInt(FragmentArgument.INDEX, index);
+			args.putInt(FragmentArgument.STATE, state);
+			args.putInt(FragmentArgument.DURATION, duration);
+			args.putInt(FragmentArgument.POSITION, msec);
+			
+			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
 		}
 
 		@Override
@@ -271,7 +277,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			if (action == FragmentArgument.Action.PLAY.getId()) {
 				handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 			} else if (action == FragmentArgument.Action.SERVICE_NOTIFICATION.getId()) {
-				handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
+				handler.sendMessage(Message.obtain(handler, MSG_AUDIO_PLAYING, args));
 			}
 		}
 	}	
@@ -297,19 +303,37 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		return popupLayout.getVisibility() == View.VISIBLE;
 	}
 	
-	private void reset() {
-		playPlay.setEnabled(false);
-		playPlay.setSelected(false);
-		playBar.setEnabled(false);
-	}
-	
 	protected void onIndex(Bundle obj) {
-		
-		audioIndex = obj.getInt(FragmentArgument.INDEX);
 
-		reset();
+		int action = obj.getInt(FragmentArgument.ACTION, -1);
+		int state = obj.getInt(FragmentArgument.STATE, -1);
 		
-		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, audioIndex);		
+		int index = obj.getInt(FragmentArgument.INDEX);
+		
+		
+		loadAudioData(index);
+		
+		if (action == -1 || state == -1) { //onclick and onAudioChange
+			
+			playPlay.setEnabled(false);
+			playPlay.setSelected(false);
+			playBar.setEnabled(false);
+			
+			setAudioPlayListener(true);
+			setAudio(audioIndex);			
+		} else { // notification - onPlaying
+			
+			playPlay.setEnabled(true);
+			playPlay.setSelected(state == PlayState.PLAYING.getId());
+					
+			onPlayPrepared(obj.getInt(FragmentArgument.DURATION, 0));
+			onPlayPlaying(obj.getInt(FragmentArgument.POSITION, 0));			
+		}	
+	}
+
+	private boolean loadAudioData(int index) {
+		
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);		
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "slowdialog", "explanations", "fastdialog"}, null, null, null);
 		if (cursor != null) {
 			try {
@@ -324,16 +348,17 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 					loadData(audioIndex, title, script);
 					
-					setAudioPlayListener(true);
-					setAudio(audioIndex);
+					audioIndex = index;
 					
+					return true;
 				}				
 			} finally {
 				cursor.close();
 			}
-		}		
+		}
+		return false;
 	}
-
+	
 	private void setAudioPlayListener(boolean attach) {
 		try {
 			ServiceAccess service = getELActivity().getServiceAccess();

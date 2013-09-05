@@ -2,7 +2,7 @@ package jie.android.el.service;
 
 interface OnPlayAudioListener {
 	void onPrepared(in int duration);
-	void onIsPlaying(in int index, in int state);
+	void onIsPlaying(in int index, in int state, in int duration, in int msec);
 	void onPlaying(in int msec);
 	void onCompleted();
 	void onError(in int what, in int extra);

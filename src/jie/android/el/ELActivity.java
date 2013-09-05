@@ -84,19 +84,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			Message msg = Message.obtain(handler, UIMsg.SERVICE_NOTIFICATION, state, -1);
 			msg.sendToTarget();
 		}
-		
-		@Override
-		public void onAudioPlaying(int state, int index, int duration, int position) throws RemoteException {
-//			Bundle data = new Bundle();
-//			data.putInt(FragmentArgument.STATE, state);
-//			data.putInt(FragmentArgument.INDEX, index);
-//			data.putInt(FragmentArgument.DURATION, duration);
-////			data.putInt("position", position);
-//			
-//			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIOPLAYING, data);
-//			msg.sendToTarget();
-		}
-
 	};
 	
 	ServiceConnection serviceConnection = new ServiceConnection() {

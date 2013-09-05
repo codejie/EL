@@ -117,7 +117,7 @@ public class AudioPlayer {
 		if (this.listener != null) {
 			if (isPlaying() || isPause()) {
 				try {
-					this.listener.onIsPlaying(audioIndex, playState.getId());
+					this.listener.onIsPlaying(audioIndex, playState.getId(), player.getDuration(), player.getCurrentPosition());
 				} catch (RemoteException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -284,24 +284,18 @@ public class AudioPlayer {
 	private void getNextAudio() {	
 		boolean random = Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
-		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx", "title", "audio" }, random, true);
+		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx" }, random, true);
 		
 		try {
 			if (cursor.moveToFirst()) {
-				if (prepareData(cursor.getInt(0), cursor.getString(1), cursor.getString(2))) {
-					
-					if (listener != null) {
-						try {
-							listener.onAudioChanged(audioIndex);
-						} catch (RemoteException e) {
-							e.printStackTrace();
-						}
-					} else {
-						play();
+				if (listener != null) {
+					try {
+						listener.onAudioChanged(cursor.getInt(0));
+					} catch (RemoteException e) {
+						e.printStackTrace();
 					}
-				} else {
-					showWarningNotification("Can't play audio file - " + cursor.getShort(2));
-				}
+				}				
+				setData(cursor.getInt(0));
 			}
 		} finally {
 			cursor.close();
@@ -349,7 +343,7 @@ public class AudioPlayer {
 			try {
 				listener.onPlaying(position);
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				listener = null;
 				e.printStackTrace();
 			}
 		}
@@ -359,10 +353,8 @@ public class AudioPlayer {
 		if (listener != null) {
 			try {
 				listener.onSeekTo(msec);
-			} catch (DeadObjectException e) {
-				listener = null;				
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				listener = null;
 				e.printStackTrace();
 			}
 		}		
@@ -375,10 +367,8 @@ public class AudioPlayer {
 		if (listener != null) {
 			try {
 				listener.onCompleted();
-			} catch (DeadObjectException e) {
-				listener = null;								
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				listener = null;
 				e.printStackTrace();
 			}
 		}
@@ -396,6 +386,7 @@ public class AudioPlayer {
 			try {
 				listener.onError(what, extra);
 			} catch (RemoteException e) {
+				listener = null;
 				e.printStackTrace();
 			}
 		}
@@ -407,7 +398,7 @@ public class AudioPlayer {
 			try {
 				listener.onStateChanged(playState.getId());
 			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
+				listener = null;
 				e.printStackTrace();
 			}
 		}

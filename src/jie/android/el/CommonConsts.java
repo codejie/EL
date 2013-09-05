@@ -23,6 +23,7 @@ public interface CommonConsts {
 		public static final String TEXT		=	"text";
 		public static final String STATE	=	"state";
 		public static final String DURATION	=	"duration";
+		public static final String POSITION	=	"position";
 	}
 	
 	public interface Setting {
