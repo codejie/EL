@@ -23,6 +23,10 @@ public class ELDBAccess extends DBAccess {
 		case 1:
 			db.rawQuery("update esl set flag=0", null);
 			break;
+		case 2:
+			createNewPackagesTable(db);
+			break;
+		default:;
 		}
 	}
 
@@ -39,16 +43,23 @@ public class ELDBAccess extends DBAccess {
 					+ "[flag] INTEGER DEFAULT (0))";
 		db.execSQL(sql);
 		
-		sql = "CREATE TABLE [new_packages] ("
-			+ "[idx] INTEGER," 
-			+ "[title] TEXT," 
-			+ "[desc] TEXT," 
-			+ "[link] TEXT," 
-			+ "[size] INTEGER," 
-			+ "[updated] TEXT)";
-
-		db.execSQL(sql);
+		createNewPackagesTable(db);
 		
 		return true;
-	}	
+	}
+	
+	private boolean createNewPackagesTable(SQLiteDatabase db) {
+		String sql = "CREATE TABLE IF NOT EXISTS [new_packages] ("
+				+ "[idx] INTEGER," 
+				+ "[title] TEXT," 
+				+ "[desc] TEXT," 
+				+ "[link] TEXT," 
+				+ "[size] INTEGER," 
+				+ "[updated] TEXT)";
+
+			db.execSQL(sql);
+			
+			return true;
+	}
+	
 }

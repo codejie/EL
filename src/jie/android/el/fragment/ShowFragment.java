@@ -103,6 +103,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			Bundle args = new Bundle();
 			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
 			args.putInt(FragmentArgument.INDEX, index);
+			args.putInt(FragmentArgument.STATE, PlayState.PLAYING.getId());
+			args.putInt(FragmentArgument.DURATION, 0);
+			args.putInt(FragmentArgument.POSITION, 0);
 			
 			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
 		}
@@ -313,7 +316,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		loadAudioData(index);
 		
-		if (action == -1 || state == -1) { //onclick and onAudioChange
+		if (action == FragmentArgument.Action.PLAY.getId()) { //onclick 
 			
 			playPlay.setEnabled(false);
 			playPlay.setSelected(false);
@@ -321,7 +324,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			
 			setAudioPlayListener(true);
 			setAudio(audioIndex);			
-		} else { // notification - onPlaying
+		} else { // notification - onPlaying and onAudioChange
 			
 			playPlay.setEnabled(true);
 			playPlay.setSelected(state == PlayState.PLAYING.getId());
@@ -342,14 +345,14 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					String title = cursor.getString(0);
 					String script = cursor.getString(1);
 					
+					audioIndex = index;
+
 					audioSlowDialog = cursor.getInt(2);
 					audioExplanation = cursor.getInt(3);
 					audioFastDialog = cursor.getInt(4);
 
 					loadData(audioIndex, title, script);
-					
-					audioIndex = index;
-					
+										
 					return true;
 				}				
 			} finally {
@@ -651,6 +654,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				playAudio();
 			} else {
 				Bundle args = new Bundle();
+				args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
 				args.putInt(FragmentArgument.INDEX, audioIndex);			
 				handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));				
 			}
@@ -676,6 +680,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	protected void onPlayCompleted() {
+		playPlay.setSelected(false);
 		playBar.setEnabled(false);
 		playNavigate.setEnabled(false);
 		playTime.setText(audioDuration);
@@ -742,6 +747,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			try {
 				if (cursor.moveToFirst()) {
 					Bundle args = new Bundle();
+					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());					
 					args.putInt(FragmentArgument.INDEX, cursor.getInt(0));
 					
 					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					
@@ -760,6 +766,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			try {
 				if (cursor.moveToFirst()) {
 					Bundle args = new Bundle();
+					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());					
 					args.putInt(FragmentArgument.INDEX, cursor.getInt(0));
 					
 					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					

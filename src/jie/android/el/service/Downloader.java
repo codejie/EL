@@ -606,6 +606,8 @@ public class Downloader {
 
 	private boolean analyseCheckNewPackagesUpdated(String file) {
 		
+		cleanNewPackageData();
+		
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 
 		try {
@@ -657,6 +659,10 @@ public class Downloader {
 		}
 		
 		return false;
+	}
+
+	private void cleanNewPackageData() {
+		service.getContentResolver().delete(ELContentProvider.URI_EL_NEW_PACKAGES, null, null);
 	}
 
 	private void insertCheckNewPackageUpdateData(ContentValues values) {
