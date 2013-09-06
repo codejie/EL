@@ -17,7 +17,8 @@ public class NotificationSetter {
 	private NotificationManager manager = null;
 	
 	private final int playId = 0;
-	private int otherId = 1;
+	private final int importId = 1;
+	private int otherId = 10;
 	
 	public NotificationSetter(Context context) {
 		this.context = context;
@@ -49,7 +50,7 @@ public class NotificationSetter {
 			id = playId;
 		} else if (type == NotificationType.IMPORT) {
 			nt = buildImportNotification(builder, title, text);
-			id = ++ otherId;
+			id = importId;
 		} else if (type == NotificationType.WARNING) {
 			nt = buildWarningNotification(builder, title, text);
 			id = ++ otherId;
@@ -107,6 +108,8 @@ public class NotificationSetter {
 	public void remove(NotificationType type, int id) {
 		if (type == NotificationType.PLAY) {
 			manager.cancel(playId);
+		} else if (type == NotificationType.IMPORT) {
+			manager.cancel(importId);
 		} else {
 			manager.cancel(id);
 		}

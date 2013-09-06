@@ -50,7 +50,6 @@ public class Downloader {
 				onDownloadCompleted(intent);
 			}
 		}
-		
 	}
 	
 	private ELService service = null;	
@@ -77,7 +76,7 @@ public class Downloader {
 		
 		boolean find = false;
 		for (final String file : files) {
-			p = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + file);
+			p = new File(path + file);
 			if (p != null) {
 				String local = file.substring(0, file.indexOf(".tmp"));
 				Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "length" }, "status=0 and local=?", new String[] { local }, null);
@@ -85,13 +84,15 @@ public class Downloader {
 					try {
 						if (cursor.moveToFirst()) {
 							//if (p.length() == cursor.getLong(0)) {
-								File dest = new File(Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + local);
+								File dest = new File(path + local);
 								if (p.renameTo(dest)) {
 									find = true;
 								} else {
 									Log.e(Tag, "rename failed - from '" + file + "' to '" + local + "'.");
 								}
 //							}
+						} else {
+							Utils.removeFile(path + file);
 						}
 					} finally {
 						cursor.close();
@@ -160,17 +161,6 @@ public class Downloader {
 		}
 		
 		return checkUpdateData();
-//		
-//		final String file = "update.zip";
-//		final String url = request2Url(request, file);
-//		
-//		if (url == null) {
-//			return false;
-//		}
-//		
-//		insertUpdateData(request, TYPE_UPDATE, url, file, -1, -1, STATUS_INIT);
-//		
-//		return checkUpdateData();
 	}
 	
 	private boolean request2Url_OldMode(String request, String check) {
@@ -310,6 +300,12 @@ public class Downloader {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
 			req.setDescription("downloading update script..");
+			
+			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+				Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
+				req.setDestinationUri(dest);
+			}
+			
 		} else if (type == TYPE_PACKAGE) {
 			//packages
 			req = new DownloadManager.Request(Uri.parse(url));
@@ -317,15 +313,22 @@ public class Downloader {
 			req.setDescription("downloading package..");
 			Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
 			req.setDestinationUri(dest);
-			req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
+//			req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
 		} else if (type == TYPE_CHECKNEW) {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
-			req.setDescription("check new packages..");			
+			req.setDescription("check new packages..");
+			
+			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
+				Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
+				req.setDestinationUri(dest);
+			}
+			
 		} else {
 			return false;
 		}
-		
+	
+		req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);		
 		long syncid = downloadManager.enqueue(req);
 		
 		updateStatusByIdx(idx, syncid, STATUS_START);
@@ -482,23 +485,48 @@ public class Downloader {
 
 	private void onUpdateDownloaded(long syncid, String url) {
 		Log.d(Tag, "onUpdateDownloaded() syncid:" + syncid + " url:" + url);
-		Uri uri = Uri.parse(url);
-		Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
-		if (cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					final String file = unzipUpdate(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
-					if (analyseUpdated(file)) {
-						Utils.removeFile(file);
-						updateStatusBySyncId(syncid, null, STATUS_DONE);
-						
-						this.checkUpdateData();
+		
+		String local = null;
+		
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			
+			Uri uri = Uri.parse(url);
+			Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
+			if (cursor != null) {
+				try {
+					if (cursor.moveToFirst()) {
+						local = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+					}
+				} finally {
+					cursor.close();
+				}			
+			}
+		} else {
+			
+			local = queryLocalBySyncId(syncid);			
+			if (local != null) {
+				String file = url.substring("file://".length());
+				local = outputCachePath + local;
+				File f = new File(file);
+				if (f.exists()) {
+					if (!f.renameTo(new File(local))) {
+						Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
 					}
 				}
-			} finally {
-				cursor.close();
 			}			
-		}		
+		}
+		
+		if (local != null) {
+			final String file = unzipUpdate(local);
+			if (analyseUpdated(file)) {
+				Utils.removeFile(file);
+				Utils.removeFile(local);
+				updateStatusBySyncId(syncid, null, STATUS_DONE);
+				
+				this.checkUpdateData();
+			}			
+		}
+		
 	}
 
 	private String unzipUpdate(String file) {
@@ -533,7 +561,7 @@ public class Downloader {
 				NodeList f = p.getElementsByTagName("file");
 				Log.d(Tag, "file = " + f.item(0).getFirstChild().getNodeValue());
 				NodeList s = p.getElementsByTagName("size");
-				Log.d(Tag, "size = " + f.item(0).getFirstChild().getNodeValue());				
+				Log.d(Tag, "size = " + s.item(0).getFirstChild().getNodeValue());				
 				NodeList u =  p.getElementsByTagName("url");
 				Log.d(Tag, "url = " + u.item(0).getFirstChild().getNodeValue());
 				
@@ -542,7 +570,9 @@ public class Downloader {
 					continue;
 				}
 				
-				insertUpdateData(checkcode, TYPE_PACKAGE, u.item(0).getFirstChild().getNodeValue(), f.item(0).getFirstChild().getNodeValue(), Integer.valueOf(s.item(0).getFirstChild().getNodeValue()), -1, STATUS_INIT);
+				String url = u.item(0).getFirstChild().getNodeValue().replace("%26", "&");
+				
+				insertUpdateData(checkcode, TYPE_PACKAGE, url, f.item(0).getFirstChild().getNodeValue(), Integer.valueOf(s.item(0).getFirstChild().getNodeValue()), -1, STATUS_INIT);
 			}
 
 			return true;
@@ -563,44 +593,75 @@ public class Downloader {
 	
 	private void onPackageDownloaded(long syncid, String url) {
 		
-		String file = url.substring("file://".length());
+//		String file = url.substring("file://".length());
+//		
+//		String local = queryLocalBySyncId(syncid);
+//		if (local != null) {
+//			local = outputCachePath + local;
+//			File f = new File(file);
+//			if (f.exists()) {
+//				if (!f.renameTo(new File(local))) {
+//					Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
+//				}
+//			}
+//	
+//			updateStatusBySyncId(syncid, null, STATUS_DONE);
+//		
+//			service.onPackageReady();
+//		}
+ 
+		Log.d(Tag, "onPackageDownloaded() syncid:" + syncid + " url:" + url);
 		
-		String local = queryLocalBySyncId(syncid);
-		if (local != null) {
-			local = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE + local;
-			File f = new File(file);
-			if (f.exists()) {
-				if (!f.renameTo(new File(local))) {
-					Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
-				}
-			}
-	
-			updateStatusBySyncId(syncid, null, STATUS_DONE);
+		updateStatusBySyncId(syncid, null, STATUS_DONE);
 		
-			service.onPackageReady();
-		}
+		service.onPackageReady();
 		
 		this.checkUpdateData();
 	}
 	
 	private void onCheckNewDownloaded(long syncid, String url) {
+		
 		Log.d(Tag, "onCheckNewDownloaded() syncid:" + syncid + " url:" + url);
-		Uri uri = Uri.parse(url);
-		Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
-		if (cursor != null) {
-			try {
-				if (cursor.moveToFirst()) {
-					final String file = unzipUpdate(cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA)));
-					if (analyseCheckNewPackagesUpdated(file)) {
-						Utils.removeFile(file);
-						updateStatusBySyncId(syncid, null, STATUS_DONE);
-						
-						this.checkUpdateData();
+		
+		String local = null;
+		
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+			Uri uri = Uri.parse(url);
+			Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
+			if (cursor != null) {
+				try {
+					if (cursor.moveToFirst()) {
+						local = cursor.getString(cursor.getColumnIndex(MediaStore.Files.FileColumns.DATA));
+					}
+				} finally {
+					cursor.close();
+				}			
+			}
+		} else {
+			local = queryLocalBySyncId(syncid);
+			
+			if (local != null) {
+				String file = url.substring("file://".length());
+				local = outputCachePath + local;
+				File f = new File(file);
+				if (f.exists()) {
+					if (!f.renameTo(new File(local))) {
+						Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
 					}
 				}
-			} finally {
-				cursor.close();
 			}			
+		}
+		
+		if (local != null) {
+			final String file = unzipUpdate(local);
+			if (analyseCheckNewPackagesUpdated(file)) {
+				Utils.removeFile(file);
+				Utils.removeFile(local);
+				
+				updateStatusBySyncId(syncid, null, STATUS_DONE);
+				
+				this.checkUpdateData();
+			}
 		}
 	}	
 

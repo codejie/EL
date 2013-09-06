@@ -170,6 +170,8 @@ public class PackageImporter {
 			if (!taskRunning) {
 				taskRunning = true;	
 				new Thread(new ImportRunnable(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE)).start();
+				Log.d(Tag, "start to import " + packageList.get(0));
+				showNotification(true, packageList.get(0), "EL is importing package..");
 //				new ImportTask().execute(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
 			}
 		}

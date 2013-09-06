@@ -638,14 +638,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void togglePlay() {
-//		
-//		if (playState == PlayState.COMPLETED) {
-//			Bundle args = new Bundle();
-//			args.putInt(FragmentArgument.INDEX, audioIndex);			
-//			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SELF.getId());
-//			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
-//			return;
-//		}
 
 		if (playPlay.isSelected()) {
 			pauseAudio();

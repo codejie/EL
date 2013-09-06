@@ -174,17 +174,11 @@ public class ELService extends Service {
 		initDictionary();		
 		initPlayer();
 		
-//		if (Downloader.checkIncomplete(this)) {
-//			initDownloader();
-//		}
-		
 		final String[] res = PackageImporter.check();
 		if (res != null && res.length > 0) {
 			packageImporter = new PackageImporter(this, res);
 			packageImporter.startImport();
 		}
-		
-//		loadBundledPackage();
 	}
 
 	@Override
@@ -269,17 +263,6 @@ public class ELService extends Service {
 		}
 	}
 	
-//	public void postServiceIsPlaying(PlayState state, int index, int duration, int position) {
-//		if (serviceNotification != null) {
-//			try {
-//				serviceNotification.onAudioPlaying(state.getId(), index, duration, position);
-//			} catch (RemoteException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//		}		
-//	}
-	
 	public boolean onDownloadRequest(String request, String check) {
 		if (downloader == null) {
 			initDownloader();
@@ -293,6 +276,8 @@ public class ELService extends Service {
 	}
 	
 	public void onPackageReady() {
+		Downloader.checkDownloaded(this);
+		
 		if (packageImporter == null) {
 			packageImporter = new PackageImporter(this, null);
 			packageImporter.startImport();			
