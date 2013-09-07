@@ -137,7 +137,12 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 
 	@Override
 	public void onResume() {
-		super.onResume();		
+		super.onResume();
+		
+		if (adapter != null) {
+			adapter.notifyDataSetChanged();
+		}
+		
 		getELActivity().getContentResolver().registerContentObserver(ELContentProvider.URI_EL_ESL, true, changedObserver);
 	}
 

@@ -43,6 +43,11 @@ public class PackageImporter {
 		
 		@Override
 		public void run() {
+			if (taskRunning) {
+				return;
+			}
+			
+			taskRunning = false;
 			//unzip
 			dbfile = unzipPackage(zipfile, output);
 			if (dbfile == null) {
@@ -62,11 +67,9 @@ public class PackageImporter {
 			showNotification(true, local, "EL imports package successfully");				
 
 			Utils.removeFile(dbfile);
-			Utils.removeFile(zipfile);
 			
 			packageList.remove(local);			
 			
-			taskRunning = false;
 			startImport();
 		}
 		
@@ -167,13 +170,10 @@ public class PackageImporter {
 	
 	public void startImport() {
 		if (packageList.size() > 0) {
-			if (!taskRunning) {
-				taskRunning = true;	
-				new Thread(new ImportRunnable(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE)).start();
-				Log.d(Tag, "start to import " + packageList.get(0));
-				showNotification(true, packageList.get(0), "EL is importing package..");
+			new Thread(new ImportRunnable(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE)).start();
+			Log.d(Tag, "start to import " + packageList.get(0));
+			showNotification(true, packageList.get(0), "EL is importing package..");
 //				new ImportTask().execute(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
-			}
 		}
 	}
 	
@@ -182,6 +182,8 @@ public class PackageImporter {
 //		String output = Environment.getExternalStorageDirectory() + "/jie/el";
 		
 		String[] ret = Utils.unzipFile(file, output);
+		
+		Utils.removeFile(file);
 				
 		if (ret.length > 0) {
 			for (String f : ret) {
@@ -284,7 +286,7 @@ public class PackageImporter {
 		if (succ) {
 			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.IMPORT.getId());
 		} else {
-			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.WARNING.getId());
+			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.IMPORT.getId());
 		}
 		intent.putExtra(NotificationAction.DATA_TITLE, title);
 		intent.putExtra(NotificationAction.DATA_TEXT, text);

@@ -14,7 +14,7 @@
 
     <string name="el_setting_content_font_large">Large Font Size</string>
 
-    <string name="app_version">version 1.2.2</string>
+    <string name="app_version">version 1.3.0</string>
 
     <string name="app_author">codejie</string>
 
@@ -26,7 +26,7 @@
 
     <string name="el_menu_show_fastdialog">Fast Dialog</string>
 
-    <string name="el_fragment_downloader_removeall">Remove all download records</string>
+    <string name="el_fragment_downloader_removeall">Remove all downloading records</string>
 
     <string name="el_setting_play_auto">Don\'t Automatically Play</string>
 

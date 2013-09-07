@@ -276,8 +276,6 @@ public class ELService extends Service {
 	}
 	
 	public void onPackageReady() {
-		Downloader.checkDownloaded(this);
-		
 		if (packageImporter == null) {
 			packageImporter = new PackageImporter(this, null);
 			packageImporter.startImport();			

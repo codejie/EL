@@ -145,11 +145,13 @@ public class Downloader {
 	public boolean addDownloadRequest(final String request, final String check) {
 		
 		if (request.indexOf("-") != -1) {
-			if (!request2Url_OldMode(request, check))
+			if (!request2Url_OldMode(request, check)) {
 				return false;
+			}
 		} else if (request.length() == 12) {
-			if (!request2Url_NewMode(request, check))
-				return false;			
+			if (!request2Url_NewMode(request, check)) {
+				return false;
+			}
 		} else if (request.indexOf("3BAF6CAC74F7919") != -1) {
 			if (!request2Url_SkyDrive(request, check)) {
 				return false;
@@ -195,7 +197,7 @@ public class Downloader {
 		if (seq == null)
 			return false;
 		
-		int m1 = Integer.valueOf(request.substring(5, 6)).intValue();
+		int n6 = Integer.valueOf(request.substring(5, 6)).intValue();
 		
 		int x = Integer.valueOf(request.substring(6, 7)).intValue();
 		int m = Integer.valueOf(request.substring(7, 8)).intValue();
@@ -203,7 +205,7 @@ public class Downloader {
 		int c1 = Integer.valueOf(request.substring(10, 11)).intValue();
 		int c2 = Integer.valueOf(request.substring(11, 12)).intValue();
 		
-		if (((m1 + r) % 7) != c1) // check 1
+		if (((n6 + r) % 7) != c1) // check 1
 			return false;
 		
 		if (((x + m) % 7) != c2)
@@ -271,7 +273,7 @@ public class Downloader {
 		
 		Log.d(Tag, "all update process done.");
 		
-		return false;
+		return true;
 	}	
 
 	private boolean isDownloading(long syncid) {
@@ -317,7 +319,7 @@ public class Downloader {
 		} else if (type == TYPE_CHECKNEW) {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
-			req.setDescription("check new packages..");
+			req.setDescription("check for new packages..");
 			
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
 				Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
@@ -392,7 +394,7 @@ public class Downloader {
 					} else if (type == TYPE_PACKAGE) {
 						showNotification("download failed", "EL - please input request code again");
 					} else if (type == TYPE_CHECKNEW) {
-						showNotification("check new packages failed", "EL - please try again");
+						showNotification("check for new packages failed", "EL - please try again");
 					}
 					
 					checkUpdateData();
@@ -592,29 +594,29 @@ public class Downloader {
 	}
 	
 	private void onPackageDownloaded(long syncid, String url) {
-		
-//		String file = url.substring("file://".length());
-//		
-//		String local = queryLocalBySyncId(syncid);
-//		if (local != null) {
-//			local = outputCachePath + local;
-//			File f = new File(file);
-//			if (f.exists()) {
-//				if (!f.renameTo(new File(local))) {
-//					Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
-//				}
-//			}
-//	
-//			updateStatusBySyncId(syncid, null, STATUS_DONE);
-//		
-//			service.onPackageReady();
-//		}
- 
+
 		Log.d(Tag, "onPackageDownloaded() syncid:" + syncid + " url:" + url);
 		
-		updateStatusBySyncId(syncid, null, STATUS_DONE);
+		String file = url.substring("file://".length());
 		
-		service.onPackageReady();
+		String local = queryLocalBySyncId(syncid);
+		if (local != null) {
+			local = outputCachePath + local;
+			File f = new File(file);
+			if (f.exists()) {
+				if (!f.renameTo(new File(local))) {
+					Log.e(Tag, "download rename failed - from:" + file + " to:" + local);
+				}
+			}
+	
+			updateStatusBySyncId(syncid, null, STATUS_DONE);
+		
+			service.onPackageReady();
+		}
+// 		
+//		updateStatusBySyncId(syncid, null, STATUS_DONE);
+//		
+//		service.onPackageReady();
 		
 		this.checkUpdateData();
 	}

@@ -22,6 +22,8 @@ import android.widget.Toast;
 
 public class AboutFragment extends BaseFragment {
 
+	private static final String PACKAGE_URL = "http://item.taobao.com/item.htm?id=19680021933";
+	
 	private class PackageAdapter extends SimpleCursorAdapter {
 		
 		public PackageAdapter(Context context, Cursor c) {
@@ -91,7 +93,7 @@ public class AboutFragment extends BaseFragment {
 			cursor.close();
 		}
 		
-		cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_NEW_PACKAGES, new String[] { "idx as _id", "title", "updated", "desc" }, null, null, "idx");		
+		cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_NEW_PACKAGES, new String[] { "idx as _id", "title", "updated", "desc" }, null, null, "idx desc");		
 		list.setAdapter(new PackageAdapter(getELActivity(), cursor));
 		
 		list.setOnItemClickListener(new OnItemClickListener() {
@@ -99,21 +101,21 @@ public class AboutFragment extends BaseFragment {
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				onPackageItemClick(position, id);
-			}
-			
-		});
-		
+			}			
+		});		
 	}
 
 	protected void onPackageItemClick(int position, long id) {
-		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://item.taobao.com/item.htm?id=19680021933"));
+		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PACKAGE_URL));
 		startActivity(intent);		
 	}
 
 	protected void onCheckNewPackages() {
 		try {
-			if (!getELActivity().getServiceAccess().checkNewPackages()) {
-				Toast.makeText(getELActivity(), "check new packages failed.", Toast.LENGTH_SHORT).show();
+			if (getELActivity().getServiceAccess().checkNewPackages()) {
+				Toast.makeText(getELActivity(), "retrieving the info of new packages..", Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(getELActivity(), "check for new packages failed.", Toast.LENGTH_SHORT).show();
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

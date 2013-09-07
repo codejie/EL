@@ -295,36 +295,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 				}
 			}			
 		});
-		
-//		searchView.setOnCloseListener(new OnCloseListener() {
-//
-//			@Override
-//			public boolean onClose() {
-//				if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.DICTIONARY) {
-//					fragmentSwitcher.showPrevFragment();
-//				}
-//				return true;
-//			}
-//			
-//		});
 
 	}
 
-	//	@Override
-//	public boolean onPrepareOptionsMenu(Menu menu) {
-////		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
-////		actionMenu  = menu;
-//		MenuItem item = menu.findItem(R.id.el_menu_search);
-////		
-////		//searchView = new SearchView(this);
-////		//item.setActionView(R.id.searchView1);
-//		
-//		View v = item.getActionView();
-//		v.setVisibility(View.GONE);
-//		
-//		return true;//super.onPrepareOptionsMenu(menu);
-//	}
-//
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -377,11 +350,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		}		
 		return super.onKeyUp(keyCode, event);
 	}	
-
-//	protected void onServiceAudioPlaying(Bundle data) {
-//		data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
-//		fragmentSwitcher.show(FragmentSwitcher.Type.SHOW, data);
-//	}
 
 	protected void onServiceNotification(int state) {
 		if (state == ServiceState.READY.getId()) {

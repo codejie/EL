@@ -73,6 +73,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	
 	private class OnPlayListener extends OnPlayAudioListener.Stub {
 		
+		private boolean attached = false;
+		
+		public boolean isAttached() {
+			return attached;
+		}
+		
+		public void setAttached(boolean attached) {
+			this.attached = attached;
+		}
+		
 		@Override
 		public void onPrepared(int duration) throws RemoteException {
 			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
@@ -168,7 +178,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private int audioExplanation = -1;
 	private int audioFastDialog = -1;
 	
-//	private PlayState playState = PlayState.NONE;
+	private OnPlayListener onPlayListener = new OnPlayListener();
 		
 	private Handler handler = new Handler() {
 
@@ -313,7 +323,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		
 		int index = obj.getInt(FragmentArgument.INDEX);
 		
-		
 		loadAudioData(index);
 		
 		if (action == FragmentArgument.Action.PLAY.getId()) { //onclick 
@@ -323,7 +332,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			playBar.setEnabled(false);
 			
 			setAudioPlayListener(true);
-			setAudio(audioIndex);			
+			setAudio(audioIndex);
 		} else { // notification - onPlaying and onAudioChange
 			
 			playPlay.setEnabled(true);
@@ -363,14 +372,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	private void setAudioPlayListener(boolean attach) {
+		
+		if (attach == onPlayListener.isAttached()) {
+			return;
+		}
+		
 		try {
 			ServiceAccess service = getELActivity().getServiceAccess();
 			if (service != null) { 
-				if (attach) {
-					service.setAudioListener(new OnPlayListener());
-				} else {
-					service.setAudioListener(null);
-				}
+				service.setAudioListener(attach ? onPlayListener : null);
+				onPlayListener.setAttached(attach);
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -504,8 +515,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			if (isPopupWindowOpen()) {
 				showPopWindow(false);
 			} else {
+				setAudioPlayListener(false);				
 				stopAudio();
-				setAudioPlayListener(false);
 				return false;
 			}
 			return true;			
@@ -731,7 +742,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 //		playAudio();
 	}
 	
-	private void getNextAudio() {	
+	private void getNextAudio() {
 		boolean random = getELActivity().getSharedPreferences().getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
 		Cursor cursor = Utils.getNextAudio(getELActivity(), audioIndex, new String[] { "idx" }, random, true);		
@@ -751,6 +762,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	private void getPrevAudio() {
+		
 		boolean random = getELActivity().getSharedPreferences().getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
 		Cursor cursor = Utils.getNextAudio(getELActivity(), audioIndex, new String[] { "idx" }, random, false);		

@@ -84,10 +84,8 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	private int maxPerPage = -1;
 	private String filter = null;
 	
-	private Boolean needLoadAgain = false;
 	private LoadTask loadTask = null;
 	private int loadCount = 0;
-	private Object token = new Object();
 	
 	public DictionaryFragmentListAdapter(Context context) {
 		this.context = context;
@@ -145,14 +143,6 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 	}
 
 	public void refresh() {
-		
-//		if (needLoadAgain)
-//			return;
-//		
-//		if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
-//			needLoadAgain = true;
-//			return;
-//		}
 		
 		if (loadTask != null && loadTask.getStatus() != AsyncTask.Status.FINISHED) {
 			loadTask.cancel(true);

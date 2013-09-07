@@ -67,6 +67,7 @@ public class AudioPlayer {
 	}
 
 	private void initPlayer() {
+		
 		player = new MediaPlayer();
 		
 		player.setOnCompletionListener(new OnCompletionListener() {
@@ -88,6 +89,8 @@ public class AudioPlayer {
 				return true;
 			}			
 		});
+		
+//		player.reset();
 	}
 
 	private boolean isPlayerAvailable() {
@@ -147,7 +150,7 @@ public class AudioPlayer {
 						play();
 					}
 				} else {
-					showWarningNotification("Can't play audio file - " + cursor.getShort(2));
+					showWarningNotification("Can't play audio file - " + cursor.getString(0));
 					onPlayError(-1, -1);
 				}
 				
@@ -171,8 +174,10 @@ public class AudioPlayer {
 		
 		initPlayer();
 		
-		try {			
+		try {
+//			player.reset();
 			player.setDataSource(audio);
+//			player.prepareAsync();
 			player.prepare();
 					
 			if (listener != null) {
@@ -397,8 +402,12 @@ public class AudioPlayer {
 		if (listener != null) {
 			try {
 				listener.onStateChanged(playState.getId());
+			} catch (DeadObjectException e) {
+				listener = null;
 			} catch (RemoteException e) {
 				listener = null;
+				e.printStackTrace();
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
