@@ -38,6 +38,10 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_EL_ESL_LAST = Uri.parse("content://" + AUTHORITY + "/el/esl_last");
 	public static final Uri URI_EL_ESL_PLAYFLAG = Uri.parse("content://" + AUTHORITY + "/el/esl_playflag");
 	public static final Uri URI_EL_NEW_PACKAGES = Uri.parse("content://" + AUTHORITY + "/el/new_packages");
+	public static final Uri URI_EL_SCORE = Uri.parse("content://" + AUTHORITY + "/el/score");
+	public static final Uri URI_EL_SCORE_RANDOM = Uri.parse("content://" + AUTHORITY + "/el/score_random");
+	public static final Uri URI_EL_SCORE_NEXT = Uri.parse("content://" + AUTHORITY + "/el/score_next");
+	
 	
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
@@ -54,6 +58,10 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_LAC_WORD_INDEX_JOIN_INFO = 50;
 	private static final int MATCH_LAC_BLOCK_INFO = 60;
 	private static final int MATCH_EL_NEW_PACKAGES = 70;
+	private static final int MATCH_EL_SCORE = 80;
+	private static final int MATCH_ITEM_EL_SCORE = 81;
+	private static final int MATCH_ITEM_EL_SCORE_RANDOM = 82;
+	private static final int MATCH_ITEM_EL_SCORE_NEXT = 83;
 	
 
 	private UriMatcher matcher = null;
@@ -85,12 +93,16 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL_FIRST:
 		case MATCH_ITEM_EL_ESL_LAST:
 		case MATCH_EL_NEW_PACKAGES:
+		case MATCH_EL_SCORE:
+		case MATCH_ITEM_EL_SCORE_RANDOM:
+		case MATCH_ITEM_EL_SCORE_NEXT:
 			return CONTENT_TYPE;
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
 		case MATCH_ITEM_EL_ESL_NEXT:
 		case MATCH_ITEM_EL_ESL_PREV:
 		case MATCH_ITEM_EL_ESL_PLAYFLAG:
+		case MATCH_ITEM_EL_SCORE:
 			return CONTENT_ITEM_TYPE;
 		default:
 			throw new IllegalArgumentException("Unknown uri: " + uri); 
@@ -115,6 +127,10 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_EL_NEW_PACKAGES:
 			db = elDBAccess.getWritableDatabase();
 			table = "new_packages";
+			break;
+		case MATCH_EL_SCORE:
+			db = elDBAccess.getWritableDatabase();
+			table = "score";
 			break;
 		default:
 			throw new IllegalArgumentException("insert() Unknown uri: " + uri);
@@ -279,7 +295,11 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl_first", MATCH_ITEM_EL_ESL_FIRST);
 		matcher.addURI(AUTHORITY, "el/esl_last", MATCH_ITEM_EL_ESL_LAST);
 		matcher.addURI(AUTHORITY, "el/esl_playflag/#", MATCH_ITEM_EL_ESL_PLAYFLAG);
-		matcher.addURI(AUTHORITY, "el/new_packages", MATCH_EL_NEW_PACKAGES);		
+		matcher.addURI(AUTHORITY, "el/new_packages", MATCH_EL_NEW_PACKAGES);
+		matcher.addURI(AUTHORITY, "el/score", MATCH_EL_SCORE);
+		matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
+		matcher.addURI(AUTHORITY, "el/score_random/#", MATCH_ITEM_EL_SCORE_RANDOM);
+		matcher.addURI(AUTHORITY, "el/score_next/#", MATCH_ITEM_EL_SCORE_NEXT);
 	}
 	
 	private void initDatabases() {
