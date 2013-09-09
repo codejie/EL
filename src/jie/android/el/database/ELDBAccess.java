@@ -9,7 +9,6 @@ public class ELDBAccess extends DBAccess {
 
 	public ELDBAccess(Context context, String name) {
 		super(context, name);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -26,6 +25,9 @@ public class ELDBAccess extends DBAccess {
 		case 2:
 			createNewPackagesTable(db);
 			break;
+		case 3:
+			createScoreTable(db);
+			break;	
 		default:;
 		}
 	}
@@ -44,6 +46,7 @@ public class ELDBAccess extends DBAccess {
 		db.execSQL(sql);
 		
 		createNewPackagesTable(db);
+		createScoreTable(db);
 		
 		return true;
 	}
@@ -57,9 +60,22 @@ public class ELDBAccess extends DBAccess {
 				+ "[size] INTEGER," 
 				+ "[updated] TEXT)";
 
-			db.execSQL(sql);
-			
-			return true;
+		db.execSQL(sql);
+		
+		return true;
+	}
+	
+	private boolean createScoreTable(SQLiteDatabase db) {
+		String sql = "CREATE TABLE IF NOT EXISTS [score] ("
+				+ "[word_index] INTEGER PRIMARY KEY," 
+				+ "[lesson_index] INTEGER," 
+				+ "[checkin_date] INTEGER," 
+				+ "[checkin_count] INTEGER," 
+				+ "[score] INTEGER," 
+				+ "[level] INTEGER)";
+		db.execSQL(sql);
+		
+		return true;
 	}
 	
 }
