@@ -1,5 +1,7 @@
 package jie.android.el.view;
 
+import jie.android.el.R;
+import jie.android.el.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -17,7 +19,7 @@ public class ELPopupWindow extends LinearLayout {
 
 		init();
 		
-		initViews();		
+		initViews(context);		
 	}
 
 	private void init() {
@@ -42,8 +44,10 @@ public class ELPopupWindow extends LinearLayout {
     	canvas.drawRect(drawRect, innerPaint);		
 	}
 
-	private void initViews() {
-
+	private void initViews(Context context) {
+		
+		AttributeSet attrs = Utils.getAttributeSet(context, "android.widget.Linearlayout", R.layout.layout_popwin_linearlayout);		
+		LinearLayout ll = new LinearLayout(context, attrs);
 	}
 
 }

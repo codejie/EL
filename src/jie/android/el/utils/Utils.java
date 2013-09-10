@@ -12,6 +12,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.xmlpull.v1.XmlPullParserException;
+
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
@@ -20,9 +22,12 @@ import jie.android.el.service.Dictionary;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.XmlResourceParser;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.AttributeSet;
+import android.util.Xml;
 import android.view.inputmethod.InputMethodManager;
 
 public class Utils {
@@ -162,6 +167,62 @@ public class Utils {
 		} else {
 			return context.getSharedPreferences(AppArgument.NAME, 0);
 		}
+	}
+
+	public static AttributeSet getAttributeSet(Context context, final String className, int resId) {
+
+		XmlResourceParser p = context.getResources().getXml(resId);
+		int state = XmlResourceParser.START_DOCUMENT;
+		do {
+			try {
+				state = p.next();
+
+				if (state == XmlResourceParser.START_TAG) {
+					if (p.getName().equals(className)) {
+						return Xml.asAttributeSet(p);
+					}
+				}
+				
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+				break;
+			} catch (IOException e) {
+				e.printStackTrace();
+				break;
+			}
+		} while (state != XmlResourceParser.END_DOCUMENT);
+		
+		return null;
+	}
+	
+	public static AttributeSet getAttributeSet(Context context, int resId, String className, String id) {
+		XmlResourceParser xrp = context.getResources().getXml(resId);
+		try {
+			int event = xrp.next();
+			
+			while (event != XmlResourceParser.END_DOCUMENT) {
+				if (event == XmlResourceParser.START_TAG) {
+					if (xrp.getName().equals(className)) {
+						String vid = xrp.getAttributeValue("http://schemas.android.com/apk/res/android", "android:id");
+						if (vid != null) {
+							if (vid.endsWith("/" + id)) {
+								return Xml.asAttributeSet(xrp);
+							}
+						}
+					}
+				}
+				event = xrp.next();
+			}			
+			
+		} catch (XmlPullParserException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 	
 }
