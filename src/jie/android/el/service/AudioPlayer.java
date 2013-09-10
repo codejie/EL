@@ -247,7 +247,7 @@ public class AudioPlayer {
 	
 	public void seekTo(int msec) {
 		player.seekTo(msec);
-		if (isPause()) {
+		if (!isPlaying()) {
 			onPlayPlaying(msec);
 		}
 	}

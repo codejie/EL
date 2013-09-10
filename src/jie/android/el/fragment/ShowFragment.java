@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
@@ -18,8 +17,6 @@ import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
-import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
@@ -36,10 +33,11 @@ import jie.android.el.service.ServiceAccess;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
+import jie.android.el.view.ELPopupMenu;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnUrlLoadingListener;
 import jie.android.el.view.PopupLayout;
-import jie.android.el.view.ShowPopWindow;
+import jie.android.el.view.ELPopupMenu.ItemId;
 
 public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener {
 
@@ -233,6 +231,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		initAnimation();
 		
 		textView = (TextView) view.findViewById(R.id.textIndex);
+		textView.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View arg0) {
+				textView.setVisibility(View.GONE);
+			}			
+		});
+		
 		webView = (WebView) view.findViewById(R.id.webView1);
 		LACWebViewClient client = new LACWebViewClient();
 		client.setOnUrlLoadingListener(new OnUrlLoadingListener() {
@@ -586,59 +591,29 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void showPopupMenu(View v) {
-
-		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+		ELPopupMenu pm = new ELPopupMenu(getELActivity(), v, new ELPopupMenu.OnItemClickListener() {
 			
-			PopupMenu pm = new PopupMenu(getELActivity(), v);
-			pm.getMenuInflater().inflate(R.menu.fragment_show_pop, pm.getMenu());
-			pm.getMenu().getItem(0).setEnabled(audioSlowDialog != -1);
-			pm.getMenu().getItem(1).setEnabled(audioExplanation != -1);
-			pm.getMenu().getItem(2).setEnabled(audioFastDialog != -1);
-			
-			pm.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-
-				@Override
-				public boolean onMenuItemClick(MenuItem item) {
-					return onNavigate(item.getItemId());
-				}
-				
-			});
-			pm.show();
-			
-		} else {		
-			final ShowPopWindow win = new ShowPopWindow(getELActivity(), v);
-			win.setItemEnable(0, (audioSlowDialog != -1));
-			win.setItemEnable(1, (audioExplanation != -1));
-			win.setItemEnable(2, (audioFastDialog != -1));
-
-			win.setOnClickListener(new OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					onNavigate(v.getId());
-					win.dismiss();
-				}
-
-			});
-			win.show();
-		}
+			@Override
+			public void OnClick(ItemId item) {
+				onNavigate(item);
+			}
+		});
+		
+		pm.setItemEnabled(ELPopupMenu.ItemId.ITEM_SLOWDIALOG, audioSlowDialog != -1);
+		pm.setItemEnabled(ELPopupMenu.ItemId.ITEM_EXPLANATIONS, audioExplanation != -1);
+		pm.setItemEnabled(ELPopupMenu.ItemId.ITEM_FASTDIALOG, audioFastDialog != -1);
+		
+		pm.show();
 	}
 
-	protected boolean onNavigate(int itemId) {
-
-		switch (itemId) {
-		case R.id.el_menu_show_slowdialog:
+	protected void onNavigate(ELPopupMenu.ItemId itemId) {
+		if (itemId == ELPopupMenu.ItemId.ITEM_SLOWDIALOG) {
 			seekAudio(audioSlowDialog);
-			break;
-		case R.id.el_menu_show_explanation:
+		} else if (itemId == ELPopupMenu.ItemId.ITEM_EXPLANATIONS) {
 			seekAudio(audioExplanation);
-			break;
-		case R.id.el_menu_show_fastdialog:
+		} else if (itemId == ELPopupMenu.ItemId.ITEM_FASTDIALOG) {
 			seekAudio(audioFastDialog);
-			break;
-		default:
-			return false;
 		}
-		return true;
 	}
 
 	private void toggleRandom() {
