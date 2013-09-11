@@ -2,6 +2,8 @@ package jie.android.el.fragment;
 
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
+import jie.android.el.database.ELDBAccess;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.database.ContentObserver;
@@ -18,11 +20,13 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class AboutFragment extends BaseFragment {
 
 	private static final String PACKAGE_URL = "http://item.taobao.com/item.htm?id=19680021933";
+	private static final String EL_DOWNLOAD_URL = "http://www.cppblog.com/codejie/archive/2010/07/23/108996.html";
 	
 	private class PackageAdapter extends SimpleCursorAdapter {
 		
@@ -32,6 +36,7 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	private ListView list;
+	private TextView latest;
 	private Cursor cursor;
 	private ContentObserver observer;
 	
@@ -69,23 +74,57 @@ public class AboutFragment extends BaseFragment {
 			}
 			
 		});
+		
+		TextView ver = (TextView) view.findViewById(R.id.textView2);
+		ver.setText("version " + getELActivity().getResources().getText(R.string.app_version).toString());
 	}
 
 	private void loadPackageList(final View v) {
 
 		list = (ListView) v.findViewById(R.id.listView1);
-		
 		observer = new ContentObserver(new Handler()) {
 
 			@Override
 			public void onChange(boolean selfChange) {
+				loadLatest(v);
 				loadList();
 			}			
 		};
 		
 		getELActivity().getContentResolver().registerContentObserver(ELContentProvider.URI_EL_NEW_PACKAGES, true, observer);
 		
+		loadLatest(v);
 		loadList();
+	}
+	
+	protected void loadLatest(View v) {
+		TextView tv = (TextView) v.findViewById(R.id.textView7);
+		tv.setVisibility(View.GONE);
+		
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_SYS_INFO, ELDBAccess.SYSINFO_LATESTVERSION);
+		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "value" }, null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				String ver = cursor.getString(0); 
+				if (!ver.equals(getELActivity().getResources().getText(R.string.app_version).toString())) {
+					tv.setText("(latest version is " + ver + ")");
+					tv.setVisibility(View.VISIBLE);
+					tv.setClickable(true);
+					tv.setFocusable(true);
+					tv.setOnClickListener(new OnClickListener() {
+	
+						@Override
+						public void onClick(View v) {
+							Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(EL_DOWNLOAD_URL));
+							startActivity(intent);
+						}
+						
+					});
+				}
+			}
+		} finally {
+			cursor.close();
+		}
 	}
 	
 	protected void loadList() {

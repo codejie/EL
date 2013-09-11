@@ -32,10 +32,11 @@ import jie.android.el.database.Word;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
+import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.PopupLayout;
 import jie.android.el.R;
 
-public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener, OnClickListener {
+public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
 
 	private class WordLoader extends AsyncTask<String, Void, String> {
 
@@ -74,10 +75,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	private Animation animShow = null;
 	private Animation animHide = null;
 	
-	private PopupLayout popupLayout = null;
-	private TextView popTextView = null;
-	private WebView popWebView = null;	
-	private ImageView popCloseButton = null;
+	private ELPopupWindow popWindow;
 	
 	private Handler handler = new Handler() {
 
@@ -164,25 +162,25 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	}
 	
 	private void initPopWindow(View view) {
-		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
-		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
-		popTextView.setOnClickListener(this);
-		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
-		popCloseButton = (ImageView) popupLayout.findViewById(R.id.imageView1);// .imageButton1);
-		popCloseButton.setOnClickListener(this);		
-	}
-
-	@Override
-	public void onClick(View view) {
-		switch(view.getId()) {
-		case R.id.textView1:
-			speak(popTextView.getText().toString());
-			break;
-		case R.id.imageView1:
-			showPopWindow(false);
-			break;
-		default:;
-		}
+	
+		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
+		popWindow.setOnPopupWindowListener(new ELPopupWindow.OnPopupWindowListener() {			
+			@Override
+			public boolean onTextLongClick(String text) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public void onTextClick(String text) {
+				speak(text);			
+			}
+			
+			@Override
+			public void onCloseClick() {
+				showPopWindow(false);
+			}
+		});		
 	}
 	
 	@Override
@@ -214,7 +212,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	}
 
 	protected void onSearchViewChanged(String text) {
-		if (popupLayout.getVisibility() != View.GONE) {
+		if (popWindow.isShowing()) {
 			showPopWindow(false);
 		}
 		pullList.setMode(Mode.PULL_FROM_END);
@@ -250,13 +248,10 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	
 	private void showPopWindow(boolean show) {
 		if (show) {
-			popupLayout.setVisibility(View.VISIBLE);
-			popupLayout.requestFocus();
-			popupLayout.startAnimation(animShow);
+			popWindow.show(show, animShow);
 		} else {
-			popupLayout.startAnimation(animHide);
-			popupLayout.setVisibility(View.GONE);			
-		}
+			popWindow.show(false, animHide);
+		}		
 	}
 	
 	private void speak(final String text) {
@@ -266,7 +261,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (popupLayout.getVisibility() != View.GONE) {
+			if (popWindow.isShowing()) {
 				showPopWindow(false);
 				return true;
 			}		
@@ -275,11 +270,11 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	}
 	
 	public void showPopWindowText(String word, String html) {
-		popTextView.setText(word);
+		popWindow.setText(word);
 		if (html != null) {
-			popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+			popWindow.loadWebContent(html);
 		} else {
-			popWebView.loadDataWithBaseURL(null, "<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>", "text/html", "utf-8", null);
+			popWindow.loadWebContent("<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>");
 		}
 		
 		showPopWindow(true);

@@ -77,7 +77,7 @@ public class ELPopupMenu {
 
 	private Object makePopupMenu(Context context, View parent) {
 		PopupMenu pm = new PopupMenu(context, parent);
-		pm.getMenuInflater().inflate(R.menu.fragment_show_pop, pm.getMenu());
+		pm.getMenuInflater().inflate(R.menu.popmenu_menu, pm.getMenu());
 		pm.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 
 			@Override
@@ -98,7 +98,7 @@ public class ELPopupMenu {
 
 	private Object makePopupWinodow(Context context, View parent) {
 		LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View v = inflater.inflate(R.layout.window_show_pop, null);
+		View v = inflater.inflate(R.layout.layout_popmenu_window, null);
 		v.setFocusable(true);
 		v.setFocusableInTouchMode(true);
 		

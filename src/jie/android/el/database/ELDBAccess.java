@@ -1,11 +1,15 @@
 package jie.android.el.database;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
 public class ELDBAccess extends DBAccess {
 	
 	public static final String DBFILE	=	"el.db";
+	
+	public static final int SYSINFO_DBVERSION		=	1;
+	public static final int SYSINFO_LATESTVERSION	=	2;
 
 	public ELDBAccess(Context context, String name) {
 		super(context, name);
@@ -26,6 +30,7 @@ public class ELDBAccess extends DBAccess {
 			createNewPackagesTable(db);
 			break;
 		case 3:
+			createSysInfoTable(db);
 			createScoreTable(db);
 			break;	
 		default:;
@@ -45,6 +50,7 @@ public class ELDBAccess extends DBAccess {
 					+ "[flag] INTEGER DEFAULT (0))";
 		db.execSQL(sql);
 		
+		createSysInfoTable(db);
 		createNewPackagesTable(db);
 		createScoreTable(db);
 		
@@ -61,6 +67,18 @@ public class ELDBAccess extends DBAccess {
 				+ "[updated] TEXT)";
 
 		db.execSQL(sql);
+		
+		return true;
+	}
+	
+	private boolean createSysInfoTable(SQLiteDatabase db) {
+		String sql = "CREATE TABLE IF NOT EXISTS [sys_info] ([idx] INTEGER,[value] TEXT)";		
+		db.execSQL(sql);
+		
+		ContentValues values = new ContentValues();
+		values.put("idx", SYSINFO_DBVERSION);
+		values.put("value", DBAccess.VERSION);
+		db.insert("sys_info", null, values);
 		
 		return true;
 	}

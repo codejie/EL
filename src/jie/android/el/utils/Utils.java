@@ -169,33 +169,30 @@ public class Utils {
 		}
 	}
 
-	public static AttributeSet getAttributeSet(Context context, final String className, int resId) {
+	public static AttributeSet getAttributeSet(Context context, int resId, final String className) {
 
 		XmlResourceParser p = context.getResources().getXml(resId);
-		int state = XmlResourceParser.START_DOCUMENT;
-		do {
-			try {
-				state = p.next();
-
-				if (state == XmlResourceParser.START_TAG) {
+		
+		try {
+			int event = p.next();
+			while (event != XmlResourceParser.END_DOCUMENT) {
+				if (event == XmlResourceParser.START_TAG) {
 					if (p.getName().equals(className)) {
 						return Xml.asAttributeSet(p);
 					}
 				}
-				
-			} catch (XmlPullParserException e) {
-				e.printStackTrace();
-				break;
-			} catch (IOException e) {
-				e.printStackTrace();
-				break;
+				event = p.next();
 			}
-		} while (state != XmlResourceParser.END_DOCUMENT);
+		} catch (XmlPullParserException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		return null;
 	}
 	
-	public static AttributeSet getAttributeSet(Context context, int resId, String className, String id) {
+	public static AttributeSet getAttributeSet(Context context, int resId, String className, int id) {
 		XmlResourceParser xrp = context.getResources().getXml(resId);
 		try {
 			int event = xrp.next();
@@ -203,9 +200,9 @@ public class Utils {
 			while (event != XmlResourceParser.END_DOCUMENT) {
 				if (event == XmlResourceParser.START_TAG) {
 					if (xrp.getName().equals(className)) {
-						String vid = xrp.getAttributeValue("http://schemas.android.com/apk/res/android", "android:id");
+						String vid = xrp.getAttributeValue("http://schemas.android.com/apk/res/android", "id");
 						if (vid != null) {
-							if (vid.endsWith("/" + id)) {
+							if (Integer.valueOf(vid.substring(1)) == id) {
 								return Xml.asAttributeSet(xrp);
 							}
 						}

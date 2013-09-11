@@ -34,6 +34,7 @@ import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.ELPopupMenu;
+import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnUrlLoadingListener;
 import jie.android.el.view.PopupLayout;
@@ -153,10 +154,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private TextView textView = null;
 	private WebView webView = null;
 	
-	private PopupLayout popupLayout = null;
-	private TextView popTextView = null;
-	private WebView popWebView = null;	
-	private ImageView popCloseButton = null;
+	private ELPopupWindow popWindow = null;
 	
 	private LinearLayout seekLayout = null;
 	private LinearLayout controlLayout = null;
@@ -249,13 +247,25 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			
 		});
 		webView.setWebViewClient(client);
-
-		popupLayout = (PopupLayout)view.findViewById(R.id.popup_window);		
-		popTextView = (TextView) popupLayout.findViewById(R.id.textView1);
-		popTextView.setOnClickListener(this);
-		popWebView = (WebView) popupLayout.findViewById(R.id.webView2);
-		popCloseButton = (ImageView) popupLayout.findViewById(R.id.imageView1);// .imageButton1);
-		popCloseButton.setOnClickListener(this);
+		
+		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
+		popWindow.setOnPopupWindowListener(new ELPopupWindow.OnPopupWindowListener() {			
+			@Override
+			public boolean onTextLongClick(String text) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+			
+			@Override
+			public void onTextClick(String text) {
+				speak(text);			
+			}
+			
+			@Override
+			public void onCloseClick() {
+				showPopWindow(false);
+			}
+		});
 
 		seekLayout = (LinearLayout) view.findViewById(R.id.seekLayout);
 		seekLayout.setOnClickListener(this);
@@ -307,18 +317,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	private void showPopWindow(boolean show) {
 		if (show) {
-			popupLayout.setVisibility(View.VISIBLE);
-			popupLayout.requestFocus();
-			popupLayout.startAnimation(animShow);			
+			popWindow.show(show, animShow);
 		} else {
-			popupLayout.startAnimation(animHide);
-			popupLayout.setVisibility(View.GONE);			
+			popWindow.show(false, animHide);
 		}
-	}
-	
-	
-	private boolean isPopupWindowOpen() {
-		return popupLayout.getVisibility() == View.VISIBLE;
 	}
 	
 	protected void onIndex(Bundle obj) {
@@ -517,7 +519,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (isPopupWindowOpen()) {
+			if (popWindow.isShowing()) {
 				showPopWindow(false);
 			} else {
 				setAudioPlayListener(false);				
@@ -543,11 +545,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 	
 	private void showPopWindow(final String word, final String html) {
-		popTextView.setText(word);
+		popWindow.setText(word);
 		if (html != null) {
-			popWebView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
+			popWindow.loadWebContent(html);
 		} else {
-			popWebView.loadDataWithBaseURL(null, "<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>", "text/html", "utf-8", null);
+			popWindow.loadWebContent("<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>");
 		}
 		
 		showPopWindow(true);
@@ -556,17 +558,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-//		case R.id.webView1:
-//			if (isPopupWindowOpen()) {
-//				togglePopupWindow();
-//			}
-//			break;
-		case R.id.textView1:
-			speak(popTextView.getText().toString());
-			break;
-		case R.id.imageView1:
-			showPopWindow(false);
-			break;			
 		case R.id.playImageView1:
 			showPopupMenu(v);
 			break;

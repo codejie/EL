@@ -15,9 +15,11 @@ import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.database.ELContentProvider;
+import jie.android.el.database.ELDBAccess;
 import jie.android.el.utils.Utils;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -676,6 +678,15 @@ public class Downloader {
 		try {
 			Document doc = factory.newDocumentBuilder().parse("file://" + file);
 			
+			NodeList lv = doc.getElementsByTagName("latest_version");
+			if (lv != null) {
+				Log.d(Tag, "latest_version = " + lv.item(0).getFirstChild().getNodeValue());
+				ContentValues values = new ContentValues();
+				values.put("idx", ELDBAccess.SYSINFO_LATESTVERSION);
+				values.put("value", lv.item(0).getFirstChild().getNodeValue());
+				insertLatestVersionUpdateData(values);
+			}
+			
 			NodeList pk = doc.getElementsByTagName("package");
 			if (pk == null) {
 				return true;
@@ -730,6 +741,12 @@ public class Downloader {
 
 	private void insertCheckNewPackageUpdateData(ContentValues values) {
 		service.getContentResolver().insert(ELContentProvider.URI_EL_NEW_PACKAGES, values);
+	}
+	
+	private void insertLatestVersionUpdateData(ContentValues values) {
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_SYS_INFO, ELDBAccess.SYSINFO_LATESTVERSION);
+		service.getContentResolver().delete(uri, null, null);
+		service.getContentResolver().insert(ELContentProvider.URI_EL_SYS_INFO, values);
 	}
 
 	private void showNotification(String title, String text) {

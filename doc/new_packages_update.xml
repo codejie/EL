@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<udpate>
+<latest_version></latest_version>
 <new_packages>
     <package>
         <index></index>
@@ -12,3 +14,4 @@
         
     </package>
 </new_packages>
+</udpate>
