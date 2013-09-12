@@ -28,6 +28,8 @@ public class ELPopupWindow extends LinearLayout {
 	private Paint borderPaint;
 	
 	private OnPopupWindowListener listener;
+	private Animation animShow = null;
+	private Animation animHide = null;
 	
 	private TextView textView;
 	private WebView webView;
@@ -59,7 +61,7 @@ public class ELPopupWindow extends LinearLayout {
     	
     	canvas.drawRect(drawRect, innerPaint);
     	
-		super.dispatchDraw(canvas);		    	
+		super.dispatchDraw(canvas);
 	}
 
 	private void initViews(Context context) {
@@ -123,6 +125,17 @@ public class ELPopupWindow extends LinearLayout {
 			setVisibility(View.GONE);			
 		}		
 	}
+	
+	public void show(boolean show) {
+		if (show) {
+			setVisibility(View.VISIBLE);
+			requestFocus();
+			startAnimation(animShow);			
+		} else {
+			startAnimation(animHide);
+			setVisibility(View.GONE);			
+		}
+	}
 
 	public boolean isShowing() {
 		return getVisibility() != View.GONE;
@@ -130,5 +143,10 @@ public class ELPopupWindow extends LinearLayout {
 	
 	public void setOnPopupWindowListener(OnPopupWindowListener l) {
 		listener = l;
+	}
+	
+	public void setAnimation(Animation show, Animation hide) {
+		animShow = show;
+		animHide = hide;
 	}
 }

@@ -36,8 +36,8 @@ import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.ELPopupMenu;
 import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.LACWebViewClient;
+import jie.android.el.view.OnPopupWindowDefaultListener;
 import jie.android.el.view.OnUrlLoadingListener;
-import jie.android.el.view.PopupLayout;
 import jie.android.el.view.ELPopupMenu.ItemId;
 
 public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener {
@@ -249,23 +249,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		webView.setWebViewClient(client);
 		
 		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
-		popWindow.setOnPopupWindowListener(new ELPopupWindow.OnPopupWindowListener() {			
+		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow) {
 			@Override
 			public boolean onTextLongClick(String text) {
-				// TODO Auto-generated method stub
 				return false;
-			}
-			
-			@Override
-			public void onTextClick(String text) {
-				speak(text);			
-			}
-			
-			@Override
-			public void onCloseClick() {
-				showPopWindow(false);
-			}
-		});
+			}			
+		});	
+		popWindow.setAnimation(animShow, animHide);
 
 		seekLayout = (LinearLayout) view.findViewById(R.id.seekLayout);
 		seekLayout.setOnClickListener(this);
@@ -316,11 +306,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void showPopWindow(boolean show) {
-		if (show) {
-			popWindow.show(show, animShow);
-		} else {
-			popWindow.show(false, animHide);
-		}
+		popWindow.show(show);
 	}
 	
 	protected void onIndex(Bundle obj) {

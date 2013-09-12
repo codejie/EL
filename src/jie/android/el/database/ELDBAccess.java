@@ -85,7 +85,7 @@ public class ELDBAccess extends DBAccess {
 	
 	private boolean createScoreTable(SQLiteDatabase db) {
 		String sql = "CREATE TABLE IF NOT EXISTS [score] ("
-				+ "[word_index] INTEGER PRIMARY KEY," 
+				+ "[word] TEXT PRIMARY KEY," 
 				+ "[lesson_index] INTEGER," 
 				+ "[checkin_date] INTEGER," 
 				+ "[checkin_count] INTEGER," 

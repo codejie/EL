@@ -12,18 +12,14 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.webkit.WebView;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import jie.android.el.CommonConsts.FragmentArgument;
@@ -33,7 +29,7 @@ import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.ELPopupWindow;
-import jie.android.el.view.PopupLayout;
+import jie.android.el.view.OnPopupWindowDefaultListener;
 import jie.android.el.R;
 
 public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
@@ -164,23 +160,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	private void initPopWindow(View view) {
 	
 		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
-		popWindow.setOnPopupWindowListener(new ELPopupWindow.OnPopupWindowListener() {			
-			@Override
-			public boolean onTextLongClick(String text) {
-				// TODO Auto-generated method stub
-				return false;
-			}
-			
-			@Override
-			public void onTextClick(String text) {
-				speak(text);			
-			}
-			
-			@Override
-			public void onCloseClick() {
-				showPopWindow(false);
-			}
-		});		
+		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow));	
+		popWindow.setAnimation(animShow, animHide);
 	}
 	
 	@Override
