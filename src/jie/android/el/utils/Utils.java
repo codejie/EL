@@ -31,6 +31,9 @@ import android.util.Xml;
 import android.view.inputmethod.InputMethodManager;
 
 public class Utils {
+	
+	public static String NS_ANDROID = "http://schemas.android.com/apk/res/android";
+	
 	public static final String formatMSec(int msec) {
 		return String.format("%02d:%02d", 
 			    TimeUnit.MILLISECONDS.toMinutes(msec),
@@ -200,7 +203,7 @@ public class Utils {
 			while (event != XmlResourceParser.END_DOCUMENT) {
 				if (event == XmlResourceParser.START_TAG) {
 					if (xrp.getName().equals(className)) {
-						String vid = xrp.getAttributeValue("http://schemas.android.com/apk/res/android", "id");
+						String vid = xrp.getAttributeValue(NS_ANDROID, "id");
 						if (vid != null) {
 							if (Integer.valueOf(vid.substring(1)) == id) {
 								return Xml.asAttributeSet(xrp);

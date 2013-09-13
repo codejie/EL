@@ -3,6 +3,4 @@
     <item android:id="@+id/el_menu_show_slowdialog" android:title="@string/el_menu_show_slowdialog"></item>
     <item android:id="@+id/el_menu_show_explanation" android:title="@string/el_menu_show_explanation"></item>
     <item android:id="@+id/el_menu_show_fastdialog" android:title="@string/el_menu_show_fastdialog"></item>
-    
-
 </menu>
