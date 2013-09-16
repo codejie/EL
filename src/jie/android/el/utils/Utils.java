@@ -29,6 +29,7 @@ import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Xml;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Toast;
 
 public class Utils {
 	
@@ -224,5 +225,11 @@ public class Utils {
 		
 		return null;
 	}
-	
+
+	public static void showToast(Context context, int resId) {
+		showToast(context, context.getText(resId).toString());
+	}
+	public static void showToast(Context context, final String text) {
+		Toast.makeText(context, text, Toast.LENGTH_SHORT).show();
+	}
 }

@@ -30,6 +30,7 @@ import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.service.ServiceAccess;
+import jie.android.el.utils.ScoreHelper;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
@@ -252,7 +253,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow) {
 			@Override
 			public boolean onTextLongClick(String text) {
-				return false;
+				ScoreHelper.insertWord(getELActivity(), text, audioIndex);
+				Utils.showToast(getELActivity(), String.format(getELActivity().getText(R.string.el_toast_add_word_to_score).toString(), text));
+				return true;
 			}			
 		});	
 		popWindow.setAnimation(animShow, animHide);
