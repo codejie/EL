@@ -39,7 +39,6 @@ import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.LACWebViewClient;
 import jie.android.el.view.OnPopupWindowDefaultListener;
 import jie.android.el.view.OnUrlLoadingListener;
-import jie.android.el.view.ELPopupMenu.ItemId;
 
 public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener {
 
@@ -571,27 +570,27 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void showPopupMenu(View v) {
-		ELPopupMenu pm = new ELPopupMenu(getELActivity(), v, new ELPopupMenu.OnItemClickListener() {
+		ELPopupMenu pm = new ELPopupMenu(getELActivity(), R.menu.popmenu_menu, v, new ELPopupMenu.OnItemClickListener() {
 			
 			@Override
-			public void OnClick(ItemId item) {
-				onNavigate(item);
+			public void OnClick(int id) {
+				onNavigate(id);
 			}
 		});
 		
-		pm.setItemEnabled(ELPopupMenu.ItemId.ITEM_SLOWDIALOG, audioSlowDialog != -1);
-		pm.setItemEnabled(ELPopupMenu.ItemId.ITEM_EXPLANATIONS, audioExplanation != -1);
-		pm.setItemEnabled(ELPopupMenu.ItemId.ITEM_FASTDIALOG, audioFastDialog != -1);
+		pm.setItemEnabled(R.id.el_menu_show_slowdialog, audioSlowDialog != -1);
+		pm.setItemEnabled(R.id.el_menu_show_explanation, audioExplanation != -1);
+		pm.setItemEnabled(R.id.el_menu_show_fastdialog, audioFastDialog != -1);
 		
 		pm.show();
 	}
 
-	protected void onNavigate(ELPopupMenu.ItemId itemId) {
-		if (itemId == ELPopupMenu.ItemId.ITEM_SLOWDIALOG) {
+	protected void onNavigate(int id) {
+		if (id == R.id.el_menu_show_slowdialog) {
 			seekAudio(audioSlowDialog);
-		} else if (itemId == ELPopupMenu.ItemId.ITEM_EXPLANATIONS) {
+		} else if (id == R.id.el_menu_show_explanation) {
 			seekAudio(audioExplanation);
-		} else if (itemId == ELPopupMenu.ItemId.ITEM_FASTDIALOG) {
+		} else if (id == R.id.el_menu_show_fastdialog) {
 			seekAudio(audioFastDialog);
 		}
 	}
