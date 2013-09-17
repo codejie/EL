@@ -230,6 +230,10 @@ public class ELContentProvider extends ContentProvider {
 			table = "sys_info";
 			selection = "idx=" + ContentUris.parseId(uri);
 			break;
+		case MATCH_EL_SCORE:
+			db = elDBAccess.getReadableDatabase();
+			table = "score";
+			break;
 		default:			
 			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
 		}
@@ -241,6 +245,7 @@ public class ELContentProvider extends ContentProvider {
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		int res = matcher.match(uri);
 		String table = null;
+		int ret = -1;
 		switch (res) {
 		case MATCH_LAC_SYS_UPDATE:
 			db = lacDBAccess.getWritableDatabase();
@@ -252,16 +257,25 @@ public class ELContentProvider extends ContentProvider {
 			break;
 		case MATCH_ITEM_EL_ESL_PLAYFLAG:
 			db = elDBAccess.getWritableDatabase();
-			db.execSQL("UPDATE esl SET flag = flag & ~" + ListItemFlag.LAST_PLAY + " where idx!=" + ContentUris.parseId(uri));
-			db.execSQL("UPDATE esl SET flag = flag | " + ListItemFlag.LAST_PLAY + " where idx=" + ContentUris.parseId(uri));
+			db.execSQL("UPDATE esl SET flag = flag & ~" + ListItemFlag.LAST_PLAY + " WHERE idx!=" + ContentUris.parseId(uri));
+			db.execSQL("UPDATE esl SET flag = flag | " + ListItemFlag.LAST_PLAY + " WHERE idx=" + ContentUris.parseId(uri));
 			
-			getContext().getContentResolver().notifyChange(URI_EL_ESL, null);
+			getContext().getContentResolver().notifyChange(URI_EL_ESL, null);			
+			ret = 1;
+			break;
+		case MATCH_EL_SCORE:
+			db = elDBAccess.getWritableDatabase();			
+			db.execSQL("UPDATE score SET checkin_count=checkin_count+1 WHERE " + selection);
 			
-			return 1;
+			getContext().getContentResolver().notifyChange(URI_EL_SCORE, null);
+			ret = 1;
+			break;
 		default:
 			throw new IllegalArgumentException("update() Unknown uri: " + uri);
 		}
-		int ret = db.update(table, values, selection, selectionArgs);
+		if (ret == -1) {
+			ret = db.update(table, values, selection, selectionArgs);
+		}
 		if (ret > 0) {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
