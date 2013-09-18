@@ -238,19 +238,32 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		return sharedPreferences;
 	}
 	
-	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-	
-		getSupportMenuInflater().inflate(R.menu.activity_el, menu);
+
+		BaseFragment fragment = fragmentSwitcher.getFragment();
+		if (fragment != null && fragment.getMenuRes() != -1) {
+			fragment.onCreateOptionsMenu(menu, getSupportMenuInflater());
+		} else {
+			getSupportMenuInflater().inflate(R.menu.activity_el, menu);		
+			initSearchView(menu.findItem(R.id.el_menu_search));
+		}
+		
 		actionMenu  = menu;
-		
-		initSearchView(menu.findItem(R.id.el_menu_search));
-		
+
 		return true;
 	}
 	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		
+		BaseFragment fragment = fragmentSwitcher.getFragment();
+		if (fragment != null) {
+			fragment.onPrepareOptionsMenu(menu);
+		}
+		return super.onPrepareOptionsMenu(menu); 
+	}
+
 	private void initSearchView(MenuItem menu) {
 		
 		searchView = (SearchView) menu.getActionView();
@@ -312,6 +325,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			break;
 		case R.id.el_menu_search:
 			showFragment(FragmentSwitcher.Type.DICTIONARY, null);
+			break;
+		case R.id.el_menu_vocab:
+			showFragment(FragmentSwitcher.Type.VOCAB,null);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import jie.android.el.ELActivity;
+import android.app.Activity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
 
 public class BaseFragment extends SherlockFragment {
 
@@ -25,14 +27,39 @@ public class BaseFragment extends SherlockFragment {
 	}
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-
+	public void onAttach(Activity activity) {
+		super.onAttach(activity);
+		
 		if (menuRes != -1) {
-			menu.clear();
-			getELActivity().getSupportMenuInflater().inflate(menuRes, menu);
+			getSherlockActivity().invalidateOptionsMenu();
 		}
 	}
+
+	@Override
+	public void onDetach() {
+		
+		if (menuRes != -1) {
+			getSherlockActivity().invalidateOptionsMenu();
+		}		
+		
+		super.onDetach();
+	}
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		if (menuRes != -1) {
+			menu.clear();
+			inflater.inflate(menuRes, menu);
+		}		
+	}
+
+//	@Override
+//	public void onPrepareOptionsMenu(Menu menu) {
+//		if (menuRes != -1) {
+//			menu.clear();
+//			getELActivity().getSupportMenuInflater().inflate(menuRes, menu);
+//		}
+//	}
 
 	public int getLayoutRes() {
 		return layoutRes;
@@ -48,6 +75,9 @@ public class BaseFragment extends SherlockFragment {
 
 	public void setMenuRes(int resMenu) {
 		this.menuRes = resMenu;
+		if (this.menuRes != -1) {
+			this.getSherlockActivity().invalidateOptionsMenu();
+		}
 	}
 	
 	public ELActivity getELActivity() {

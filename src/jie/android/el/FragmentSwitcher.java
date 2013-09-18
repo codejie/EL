@@ -7,6 +7,7 @@ import jie.android.el.fragment.DownloadFragment;
 import jie.android.el.fragment.ListFragment;
 import jie.android.el.fragment.SettingFragment;
 import jie.android.el.fragment.ShowFragment;
+import jie.android.el.fragment.VocabFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -20,7 +21,7 @@ public class FragmentSwitcher {
 	public enum Type {
 		
 		LIST("list", false), SHOW("show", false), ABOUT("about", true), SETTING("setting", true),
-		DOWNLOAD("download", true), DICTIONARY("dictionary", true);
+		DOWNLOAD("download", true), DICTIONARY("dictionary", true), VOCAB("vocab", true);
 		
 		private final String title;
 		private final boolean removed;
@@ -113,6 +114,9 @@ public class FragmentSwitcher {
 			break;
 		case DICTIONARY:
 			fragment = new DictionaryFragment();
+			break;
+		case VOCAB:
+			fragment = new VocabFragment();
 			break;
 		default:
 			return null;
