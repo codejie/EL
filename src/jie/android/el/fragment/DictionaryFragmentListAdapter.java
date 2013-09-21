@@ -30,7 +30,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 			Log.d("====", "do..." + params[0]);
 			
 			ArrayList<Data> result = new ArrayList<Data>();
-			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INFO, project, params[0], null, params[1]);
+			Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_WORD_INFO, projection, params[0], null, params[1]);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
@@ -54,7 +54,7 @@ public class DictionaryFragmentListAdapter extends BaseAdapter {
 		}		
 	}
 
-	private static final String[] project = new String[] {"idx", "word" };
+	private static final String[] projection = new String[] {"idx", "word" };
 	
 	private final class Data {
 		

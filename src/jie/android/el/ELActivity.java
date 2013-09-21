@@ -327,7 +327,8 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			showFragment(FragmentSwitcher.Type.DICTIONARY, null);
 			break;
 		case R.id.el_menu_vocab:
-			showFragment(FragmentSwitcher.Type.VOCAB,null);
+			//showFragment(FragmentSwitcher.Type.VOCAB,null);
+			showFragment(FragmentSwitcher.Type.MEMORY,null);
 			break;
 		}
 		return super.onOptionsItemSelected(item);

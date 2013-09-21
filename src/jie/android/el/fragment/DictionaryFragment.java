@@ -27,6 +27,7 @@ import jie.android.el.CommonConsts.Setting;
 import jie.android.el.database.Word;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
+import jie.android.el.utils.WordLoader;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.OnPopupWindowDefaultListener;
@@ -34,29 +35,37 @@ import jie.android.el.R;
 
 public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
 
-	private class WordLoader extends AsyncTask<String, Void, String> {
-
-		private String word = null;
+//	private class WordLoader extends AsyncTask<String, Void, String> {
+//
+//		private String word = null;
+//		@Override
+//		protected String doInBackground(String... arg0) {
+//			word = arg0[0];
+//			Word.XmlResult result;
+//			try {
+//				result = getELActivity().getServiceAccess().queryWordResult(word);
+//			} catch (RemoteException e) {
+//				e.printStackTrace();
+//				return null;
+//			}
+//			if (result.getXmlData().size() > 0) {
+//				return XmlTranslator.trans(Utils.assembleXmlResult(word, result));
+//			} else {
+//				return null;
+//			}
+//		}
+//
+//		@Override
+//		protected void onPostExecute(String result) {
+//			showPopWindowText(word, result);				
+//		}
+//	};
+	
+	private WordLoader.OnPostExecuteCallback wordLoaderCallback = new WordLoader.OnPostExecuteCallback() {
+		
 		@Override
-		protected String doInBackground(String... arg0) {
-			word = arg0[0];
-			Word.XmlResult result;
-			try {
-				result = getELActivity().getServiceAccess().queryWordResult(word);
-			} catch (RemoteException e) {
-				e.printStackTrace();
-				return null;
-			}
-			if (result.getXmlData().size() > 0) {
-				return XmlTranslator.trans(Utils.assembleXmlResult(word, result));
-			} else {
-				return null;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(String result) {
-			showPopWindowText(word, result);				
+		public void OnPostExecute(String word, String result) {
+			showPopWindowText(word, result);
 		}
 	};	
 	
@@ -135,7 +144,7 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 		
 		adapter.setOnRefrshListener(this);
 
-		final int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, 2);
+		final int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, 15);
 		adapter.setMaxPerPage(maxRecord);
 		
 		pullList.getRefreshableView().setOnScrollListener(new OnScrollListener() {
@@ -166,7 +175,8 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		new WordLoader().execute(adapter.getItemText(position - 1));
+		WordLoader loader = new WordLoader(getELActivity().getServiceAccess(), wordLoaderCallback);
+		loader.execute(adapter.getItemText(position - 1));
 	}
 
 	@Override

@@ -1,114 +1,41 @@
 package jie.android.el.fragment;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.actionbarsherlock.view.Menu;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 
 import jie.android.el.R;
 import jie.android.el.CommonConsts.Setting;
-import jie.android.el.fragment.VocabFragment.VocabListAdapter.Data;
+import jie.android.el.utils.WordLoader;
 import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.OnPopupWindowDefaultListener;
-import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
 
-public class VocabFragment extends BaseFragment implements OnItemClickListener, OnRefreshListener<ListView> {
-
-	public final class VocabListAdapter extends BaseAdapter {
-
-		public final class Data {
-			public String word;
-			public int lesson;
-			
-			public Data(String word, int lesson) {
-				this.word = word;
-				this.lesson = lesson;
-			}
-		}
-		
-		private final class LoadTask extends AsyncTask<Integer, Void, List<Data>> {
-
-			@Override
-			protected List<Data> doInBackground(Integer... params) {
-				
-				
-				return null;
-			}
-
-			@Override
-			protected void onPostExecute(List<Data> result) {
-				// TODO Auto-generated method stub
-				super.onPostExecute(result);
-			}
-			
-		}
-		
-		
-		private Context context;
-		private ArrayList<Data> dataArray = new ArrayList<Data>();
-
-		public VocabListAdapter(Context context) {
-			this.context = context;
-		}
+public class VocabFragment extends BaseFragment implements OnItemClickListener, OnRefreshListener<ListView>, VocabFragmentListAdapter.OnRefreshListener {
+	
+	private WordLoader.OnPostExecuteCallback wordLoaderCallback = new WordLoader.OnPostExecuteCallback() {
 		
 		@Override
-		public int getCount() {
-			return dataArray.size();
+		public void OnPostExecute(String word, String result) {
+			showPopWindowText(word, result);
 		}
-
-		@Override
-		public Object getItem(int position) {
-			return dataArray.get(position);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			if (convertView == null) {
-				convertView = LayoutInflater.from(context).inflate(R.layout.layout_vocab_item, false);
-			}
-			
-			Data data = dataArray.get(position);
-			
-			TextView tv = (TextView) convertView.findViewById(R.id.textView1);
-			tv.setText(data.word);
-			
-			tv = (TextView) convertView.findViewById(R.id.textView2);
-			tv.setText(String.valueOf(data.lesson));
-			
-			return null;
-		}
-		
-	}
+	};	
 	
 	private PullToRefreshListView pullList = null;
 	
-	private LinearLayout footLayout = null;
-	private TextView footText = null;
+//	private LinearLayout footLayout = null;
+//	private TextView footText = null;
 	
-	private DictionaryFragmentListAdapter adapter = null;
+	private VocabFragmentListAdapter.FlatListAdapter adapter = null;
 	
 	private Animation animShow = null;
 	private Animation animHide = null;
@@ -132,7 +59,9 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 		
 		initList(view);
 		
-		initPopWindow(view);		
+		initPopWindow(view);
+		
+		adapter.load(null, null);
 	}
 
 	private void initAnimation() {
@@ -152,19 +81,18 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 		pullList.setOnRefreshListener(this);
 		pullList.setOnItemClickListener(this);
 		
-		View v = getELActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
-		footLayout = (LinearLayout) v.findViewById(R.id.footLayout);
-		footText = (TextView) v.findViewById(R.id.textFoot);
+//		View v = getELActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
+//		footLayout = (LinearLayout) v.findViewById(R.id.footLayout);
+//		footText = (TextView) v.findViewById(R.id.textFoot);		
+//		pullList.getRefreshableView().addFooterView(v);
+//		pullList.getRefreshableView().setFooterDividersEnabled(false);
 		
-		pullList.getRefreshableView().addFooterView(v);
-		pullList.getRefreshableView().setFooterDividersEnabled(false);
-		
-		adapter = new DictionaryFragmentListAdapter(getELActivity());
+		adapter = new VocabFragmentListAdapter.FlatListAdapter(getELActivity());
 		pullList.setAdapter(adapter);
 		
-		adapter.setOnRefrshListener(this);
+		adapter.setOnRefreshListener(this);
 
-		final int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, 2);
+		final int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, 15);
 		adapter.setMaxPerPage(maxRecord);
 		
 		pullList.getRefreshableView().setOnScrollListener(new OnScrollListener() {
@@ -195,6 +123,36 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+		WordLoader loader = new WordLoader(getELActivity().getServiceAccess(), wordLoaderCallback);
+		loader.execute(adapter.getItemText(position - 1));		
 	}
 
+	@Override
+	public void onLoadEnd(int count, int total, int maxPerPage) {
+		pullList.onRefreshComplete();
+	}
+
+	@Override
+	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+		adapter.refresh();
+	}
+	
+	private void showPopWindow(boolean show) {
+		if (show) {
+			popWindow.show(show, animShow);
+		} else {
+			popWindow.show(false, animHide);
+		}		
+	}	
+
+	public void showPopWindowText(String word, String html) {
+		popWindow.setText(word);
+		if (html != null) {
+			popWindow.loadWebContent(html);
+		} else {
+			popWindow.loadWebContent("<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>");
+		}
+		
+		showPopWindow(true);
+	}
 }
