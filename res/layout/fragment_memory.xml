@@ -1,91 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
-        android:layout_margin="4dp" >
-
-        <TextView
-            android:id="@+id/textView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|left"
-            android:layout_marginLeft="4dp"
-            android:layout_marginRight="4dp"
-            android:text="Small Text"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|right"
-            android:gravity="bottom|right"
-            android:paddingRight="16dp"
-            android:paddingTop="8dp"
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="4dp"
-        android:clickable="true"
-        android:paddingBottom="4dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="4dp"
-        android:text="Large Text"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <RadioGroup
-        android:id="@+id/radioGroup1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="16dp" >
-
-        <RadioButton
-            android:id="@+id/radio0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:checked="true"
-            android:text="RadioButton" />
-
-        <RadioButton
-            android:id="@+id/radio1"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="RadioButton" />
-
-        <RadioButton
-            android:id="@+id/radio2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="RadioButton" />
-
-        <RadioButton
-            android:id="@+id/radio3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="RadioButton" />
-
-    </RadioGroup>
-
-    <WebView
-        android:id="@+id/webView1"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+    
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical" >
+	
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_margin="4dp" >
+	
+	        <TextView
+	            android:id="@+id/textView1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="top|left"
+	            android:layout_marginLeft="4dp"
+	            android:layout_marginRight="4dp"
+	            android:text="Small Text"
+	            android:textAppearance="?android:attr/textAppearanceSmall"
+	            android:visibility="gone" />
+	
+	        <TextView
+	            android:id="@+id/textView3"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:layout_gravity="bottom|right"
+	            android:gravity="bottom|right"
+	            android:paddingRight="16dp"
+	            android:paddingTop="8dp"
+	            android:text="Medium Text"/>
+	
+	    </LinearLayout>
+	
+	    <TextView
+	        android:id="@+id/textView2"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="4dp"
+	        android:layout_marginTop="4dp"
+	        android:clickable="true"
+	        android:paddingBottom="4dp"
+	        android:paddingLeft="16dp"
+	        android:paddingTop="4dp"
+	        android:text="Large Text"
+	        android:textAppearance="?android:attr/textAppearanceLarge" />
+	
+	    <RadioGroup
+	        android:id="@+id/radioGroup1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="8dp"
+	        android:layout_marginLeft="16dp" >
+	
+	        <RadioButton
+	            android:id="@+id/radio0"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:checked="true"
+	            android:text="RadioButton" />
+	
+	        <RadioButton
+	            android:id="@+id/radio1"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="RadioButton" />
+	
+	        <RadioButton
+	            android:id="@+id/radio2"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="RadioButton" />
+	
+	        <RadioButton
+	            android:id="@+id/radio3"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:text="RadioButton" />
+	
+	    </RadioGroup>	
+	</LinearLayout>  
+	
+    <RelativeLayout
+        android:id="@+id/layoutResult"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="8dp"
-        android:visibility="gone" />
+        android:visibility="gone" >
 
-</LinearLayout>
+        <View
+            android:id="@+id/view1"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_centerVertical="true"
+            android:visibility="invisible" />
+
+        <WebView
+            android:id="@+id/webView1"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignTop="@id/view1"
+            android:layout_alignParentBottom="true" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/webView1"
+            android:layout_alignBottom="@id/view1"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical"
+            android:paddingRight="16dp" >
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="0.8"
+                android:visibility="invisible" />
+
+            <ImageButton
+                android:id="@+id/imageButton1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@android:drawable/btn_star" />
+
+            <ImageButton
+                android:id="@+id/imageButton2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:src="@android:drawable/btn_star" />
+
+        </LinearLayout>
+
+    </RelativeLayout>
+		
+</FrameLayout>

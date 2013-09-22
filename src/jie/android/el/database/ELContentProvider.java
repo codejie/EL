@@ -234,6 +234,16 @@ public class ELContentProvider extends ContentProvider {
 			db = elDBAccess.getReadableDatabase();
 			table = "score";
 			break;
+		case MATCH_ITEM_EL_SCORE_RANDOM:
+			db = elDBAccess.getReadableDatabase();
+			table = "score";
+			sortOrder = "random() limit 1";
+			break;
+		case MATCH_ITEM_EL_SCORE_NEXT:
+			db = elDBAccess.getReadableDatabase();
+			table = "score";
+			sortOrder = "score limit 1";
+			break;
 		default:			
 			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
 		}
@@ -332,8 +342,8 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/new_packages", MATCH_EL_NEW_PACKAGES);
 		matcher.addURI(AUTHORITY, "el/score", MATCH_EL_SCORE);
 		matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
-		matcher.addURI(AUTHORITY, "el/score_random/#", MATCH_ITEM_EL_SCORE_RANDOM);
-		matcher.addURI(AUTHORITY, "el/score_next/#", MATCH_ITEM_EL_SCORE_NEXT);
+		matcher.addURI(AUTHORITY, "el/score_random", MATCH_ITEM_EL_SCORE_RANDOM);
+		matcher.addURI(AUTHORITY, "el/score_next", MATCH_ITEM_EL_SCORE_NEXT);
 		matcher.addURI(AUTHORITY, "el/sys_info", MATCH_EL_SYS_INFO);
 		matcher.addURI(AUTHORITY, "el/sys_info/#", MATCH_ITEM_EL_SYS_INFO);
 	}
