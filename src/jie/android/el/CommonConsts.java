@@ -28,15 +28,19 @@ public interface CommonConsts {
 	
 	public interface Setting {
 		public static final String PLAY_STOP_AFTER_CURRENT	= "play_stop_after_current";
-		public static final String PLAY_RANDOM_ORDER	= "play_random_order";
-		public static final String PLAY_DONT_AUTO_PLAY	= "play_dont_auto_play";
+		public static final String PLAY_RANDOM_ORDER		= "play_random_order";
+		public static final String PLAY_DONT_AUTO_PLAY		= "play_dont_auto_play";
 		public static final String CONTENT_MEDIUM_FONT_SIZE	= "content_medium_font_size";
 		public static final String CONTENT_LARGE_FONT_SIZE	= "content_large_font_size";
-		public static final String CONTENT_HIDE_TITLE	= "content_hide_title";
+		public static final String CONTENT_HIDE_TITLE		= "content_hide_title";
 		
-		public static final String DICTIONARY_LIST_NOT_EXTENSION = "dictionary_list_not_extension";
+		public static final String DICTIONARY_LIST_NOT_EXTENSION	= "dictionary_list_not_extension";
 		
-		public static final String DICTIONARY_LIST_MAXPERPAGE	= "dictionary_list_maxperpage";
+		public static final String DICTIONARY_LIST_MAXPERPAGE		= "dictionary_list_maxperpage";
+		
+		public static final String MEMORY_MODE_RANDOM	= "memory_mode_random";
+		public static final String MEMORY_NEED_CHECK	= "memory_need_check";
+		public static final String MEMORY_SHOW_RESULT	= "memory_show_result";
 	}
 	
 	public interface UIMsg {

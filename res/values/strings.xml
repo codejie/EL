@@ -32,5 +32,10 @@
     <string name="el_menu_download">Download</string>
     <string name="el_menu_setting">Settings</string>
     <string name="el_toast_add_word_to_score">\'%s\' is added to vocab list</string>
+    <string name="el_memory_level0">So easy !</string>
+    <string name="el_memory_level1">I know it.</string>
+    <string name="el_memory_level2">Maybe it is..</string>
+    <string name="el_memory_level3">What is it ?</string>
+    <string name="el_memory_level_title">How do you think this word ?</string>
 
 </resources>

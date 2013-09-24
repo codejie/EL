@@ -41,6 +41,8 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_EL_SCORE = Uri.parse("content://" + AUTHORITY + "/el/score");
 	public static final Uri URI_EL_SCORE_RANDOM = Uri.parse("content://" + AUTHORITY + "/el/score_random");
 	public static final Uri URI_EL_SCORE_NEXT = Uri.parse("content://" + AUTHORITY + "/el/score_next");
+	public static final Uri URI_EL_SCORE_UPDATE_CHECKIN = Uri.parse("content://" + AUTHORITY + "/el/score/update_checkin");
+	public static final Uri URI_EL_SCORE_UPDATE_SCORE = Uri.parse("content://" + AUTHORITY + "/el/score/update_score");
 	public static final Uri URI_EL_SYS_INFO = Uri.parse("content://" + AUTHORITY + "/el/sys_info");
 	
 	
@@ -63,6 +65,8 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_ITEM_EL_SCORE = 81;
 	private static final int MATCH_ITEM_EL_SCORE_RANDOM = 82;
 	private static final int MATCH_ITEM_EL_SCORE_NEXT = 83;
+	private static final int MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN = 84;
+	private static final int MATCH_ITEM_EL_SCORE_UPDATE_SCORE = 85;
 	private static final int MATCH_EL_SYS_INFO = 90;
 	private static final int MATCH_ITEM_EL_SYS_INFO = 91;
 	
@@ -107,6 +111,8 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL_PREV:
 		case MATCH_ITEM_EL_ESL_PLAYFLAG:
 		case MATCH_ITEM_EL_SCORE:
+		case MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN:
+		case MATCH_ITEM_EL_SCORE_UPDATE_SCORE:			
 		case MATCH_ITEM_EL_SYS_INFO:
 			return CONTENT_ITEM_TYPE;
 		default:
@@ -242,7 +248,6 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_SCORE_NEXT:
 			db = elDBAccess.getReadableDatabase();
 			table = "score";
-			sortOrder = "score limit 1";
 			break;
 		default:			
 			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
@@ -273,12 +278,16 @@ public class ELContentProvider extends ContentProvider {
 			getContext().getContentResolver().notifyChange(URI_EL_ESL, null);			
 			ret = 1;
 			break;
-		case MATCH_EL_SCORE:
+		case MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN:
 			db = elDBAccess.getWritableDatabase();			
 			db.execSQL("UPDATE score SET checkin_count=checkin_count+1 WHERE " + selection);
 			
 			getContext().getContentResolver().notifyChange(URI_EL_SCORE, null);
 			ret = 1;
+			break;
+		case MATCH_ITEM_EL_SCORE_UPDATE_SCORE:
+			db = elDBAccess.getWritableDatabase();
+			table = "score";
 			break;
 		default:
 			throw new IllegalArgumentException("update() Unknown uri: " + uri);
@@ -344,6 +353,8 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
 		matcher.addURI(AUTHORITY, "el/score_random", MATCH_ITEM_EL_SCORE_RANDOM);
 		matcher.addURI(AUTHORITY, "el/score_next", MATCH_ITEM_EL_SCORE_NEXT);
+		matcher.addURI(AUTHORITY, "el/score/update_checkin", MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN);
+		matcher.addURI(AUTHORITY, "el/score/update_score", MATCH_ITEM_EL_SCORE_UPDATE_SCORE);		
 		matcher.addURI(AUTHORITY, "el/sys_info", MATCH_EL_SYS_INFO);
 		matcher.addURI(AUTHORITY, "el/sys_info/#", MATCH_ITEM_EL_SYS_INFO);
 	}

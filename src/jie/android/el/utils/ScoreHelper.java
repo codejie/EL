@@ -8,7 +8,7 @@ import android.database.Cursor;
 
 public final class ScoreHelper {
 
-	private static final int DEFAULT_SCORE 	= 	7;
+	private static final int DEFAULT_SCORE 	= 	14;
 	private static final int DEFAULT_LEVEL	=	3;
 	
 	public static boolean insertWord(Context context, String word, int lesson) {
@@ -25,7 +25,7 @@ public final class ScoreHelper {
 			
 			context.getContentResolver().insert(ELContentProvider.URI_EL_SCORE, values);			
 		} else {
-			context.getContentResolver().update(ELContentProvider.URI_EL_SCORE, null, "word='" + word + "'", null);
+			context.getContentResolver().update(ELContentProvider.URI_EL_SCORE_UPDATE_CHECKIN, null, "word='" + word + "'", null);
 		}
 		
 		return true;
