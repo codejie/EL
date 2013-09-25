@@ -48,7 +48,8 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	}	
 
 	private static final int MSG_LOADNEXT	=	1;
-	private static final int MAX_LOAD_ONCE	=	60;
+	private static final int MAX_RECORD_LOAD_ONCE	=	60;
+	private static final int MAX_SCORE_AUTO_DELETE	=	90;
 	
     private static final float rateTable[][] = {
         { 1.75f, 0.80f, 0.45f, 0.17f },
@@ -64,8 +65,9 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 
 	private static final String[] projection = new String[] { "word", "checkin_date", "checkin_count", "score", "level" };	
 	
-	private TextView textTip;
+	private TextView textCounter;
 	private TextView textWord;
+	private TextView textTip;
 	private RadioGroup radioGroup;
 	
 	private RelativeLayout layoutResult;
@@ -86,6 +88,7 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	private boolean isRandom = false;
 	private boolean needCheck = true;
 	private boolean needShowResult = true;
+	private boolean isAutoDelete = false;
 	
 	private Handler handler = new Handler() {
 
@@ -124,15 +127,17 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 		isRandom = prefs.getBoolean(Setting.MEMORY_MODE_RANDOM, false);
 		needCheck = prefs.getBoolean(Setting.MEMORY_NEED_CHECK, true);
 		needShowResult = prefs.getBoolean(Setting.MEMORY_SHOW_RESULT, true);
+		isAutoDelete = prefs.getBoolean(Setting.MEMORY_AUTO_DELETE, false);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 		
-		textTip = (TextView) view.findViewById(R.id.textView3);
+		textCounter = (TextView) view.findViewById(R.id.textView3);
 		textWord = (TextView) view.findViewById(R.id.textView2);
 		textWord.setOnClickListener(this);
+		textTip = (TextView) view.findViewById(R.id.textView4);
 		radioGroup = (RadioGroup) view.findViewById(R.id.radioGroup1);
 		radioGroup.clearCheck();
 		radioGroup.setOnCheckedChangeListener(this);
@@ -140,10 +145,16 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 		layoutResult = (RelativeLayout) view.findViewById(R.id.layoutResult);
 		webView = (WebView) view.findViewById(R.id.webView1);
 		btnNo = (ImageButton) view.findViewById(R.id.imageButton1);
-		btnNo.setOnClickListener(this);
+		if (needCheck) {
+			btnNo.setOnClickListener(this);
+		} else {
+			btnNo.setVisibility(View.GONE);
+		}
 		btnYes = (ImageButton) view.findViewById(R.id.imageButton2);
 		btnYes.setOnClickListener(this);		
 	
+		showResultLayout(false);
+
 		tipTotal = getScoreTotal();
 		
 		handler.sendEmptyMessage(MSG_LOADNEXT);
@@ -164,7 +175,7 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	private ScoreData loadNext() {
 		if (!isRandom) {
 			if (scoreData.isEmpty()) {
-				String sort = "score limit " + MAX_LOAD_ONCE + " offset " + (loadCount ++) * MAX_LOAD_ONCE;
+				String sort = "score limit " + MAX_RECORD_LOAD_ONCE + " offset " + (loadCount ++) * MAX_RECORD_LOAD_ONCE;
 				Cursor cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_SCORE_NEXT, projection, null, null, sort);
 				try {
 					if (cursor.moveToFirst()) {
@@ -194,29 +205,28 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	}
 	
 	private void showWord() {
-
-		showResultLayout(false);
 		
 		curData = loadNext();
 		
 		if (curData != null) {
 			
-			textTip.setText(String.format("%d/%d", ++ tipCount, tipTotal));
+			textCounter.setText(String.format("%d/%d", ++ tipCount, tipTotal));
 			textWord.setText(curData.word);
-			
-			radioGroup.clearCheck();
 			
 			loadWordResult(curData.word);
 			
 		} else { 
 			Toast.makeText(getELActivity(), "No more words in vocab", Toast.LENGTH_SHORT).show();
-			textTip.setText(String.format("%d/%d", tipCount, tipTotal));
+			textCounter.setText(String.format("%d/%d", tipCount, tipTotal));
 			textWord.setText("No more words");
 			enableLevelRadios(false);
-//			radioGroup.setClickable(false);
+			radioGroup.setVisibility(View.INVISIBLE);
+			textTip.setText(R.string.el_memory_level_title_1);
 		}
 		
-		radioGroup.clearCheck();		
+		radioGroup.setOnCheckedChangeListener(null);
+		radioGroup.clearCheck();	
+		radioGroup.setOnCheckedChangeListener(this);
 	}
 	
 	private void loadWordResult(String word) {
@@ -224,16 +234,16 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 		loader.execute(word);		
 	}
 	
-	private void showResultLayout(boolean show) {
-		enableLevelRadios(show ? false : true);
-		//radioGroup.setClickable(show ? false : true);
+	private void showResultLayout(boolean show) {		
 		layoutResult.setVisibility(show ? View.VISIBLE : View.GONE);
+		enableLevelRadios(show ? false : true);
 	}
 
 	private void enableLevelRadios(boolean enabled) {
 		for (int i = 0; i < radioGroup.getChildCount(); ++ i) {
 			radioGroup.getChildAt(i).setEnabled(enabled);
 		}
+		radioGroup.setClickable(enabled);
 	}
 	
 	private void calcScoreData(ScoreData data, int level, int judge) {
@@ -245,6 +255,15 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	
 	private void updateScoreData(ScoreData data, int level, int judge) {
 		calcScoreData(data, level, judge);
+		
+		if (isAutoDelete) {
+			if (data.score > MAX_SCORE_AUTO_DELETE) {
+				getELActivity().getContentResolver().delete(ELContentProvider.URI_EL_SCORE, "word=?", new String[] { data.word });
+				tipTotal --;
+				tipCount --;
+			}
+			return;
+		}
 		
 		ContentValues values = new ContentValues();
 		values.put("score", data.score);
@@ -262,11 +281,14 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 			updateScoreData(curData, level, judge);
 			
 			handler.sendEmptyMessage(MSG_LOADNEXT);
+			
+			showResultLayout(false);
 		}
 	}
 
 	@Override
 	public void onCheckedChanged(RadioGroup group, int checkedId) {
+
 		switch(checkedId) {
 		case R.id.radio0:
 			level = 0;
@@ -283,8 +305,13 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 		default:
 			return;
 		}
-		
-		showResultLayout(true);
+
+		if (needShowResult) {	
+			showResultLayout(true);
+		} else {
+			updateScoreData(curData, level, 0);			
+			handler.sendEmptyMessage(MSG_LOADNEXT);			
+		}
 	}
 
 	private void showResult(String word, String result) {

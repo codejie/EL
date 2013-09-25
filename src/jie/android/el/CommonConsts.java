@@ -41,6 +41,7 @@ public interface CommonConsts {
 		public static final String MEMORY_MODE_RANDOM	= "memory_mode_random";
 		public static final String MEMORY_NEED_CHECK	= "memory_need_check";
 		public static final String MEMORY_SHOW_RESULT	= "memory_show_result";
+		public static final String MEMORY_AUTO_DELETE 	= "memory_auto_delete";
 	}
 	
 	public interface UIMsg {

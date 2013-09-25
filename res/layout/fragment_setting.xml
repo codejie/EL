@@ -1,88 +1,124 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_margin="10dp"
-    android:orientation="vertical" >
+    android:fillViewport="true" >
 
-    <TextView
-        android:id="@+id/TextView01"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:text="@string/el_setting_play_preference"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:orientation="vertical"
+	    android:padding="8dp" >
+	
+	    <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="4dp"
+	        android:text="@string/el_setting_play_preference"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <View
+	        style="@style/Divider" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox1"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_play_stop_after_current" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox2"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_play_random_play" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox5"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_play_auto" />
+	
+	    <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="4dp"
+	        android:layout_marginTop="10dp"
+	        android:text="@string/el_setting_content_display"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <View
+	        style="@style/Divider" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox3"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_content_font_medium" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox4"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_content_font_large" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox6"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_content_hide_title" />
 
-    <View
-        android:id="@+id/view1"
-        style="@style/Divider" />
+	    <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="4dp"
+	        android:layout_marginTop="10dp"
+	        android:text="@string/el_setting_memory_preference"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <CheckBox
-        android:id="@+id/checkBox1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_play_stop_after_current" />
+	    <View style="@style/Divider" />
 
-    <CheckBox
-        android:id="@+id/checkBox2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_play_random_play" />
+	    <CheckBox
+	        android:id="@+id/checkBox8"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_memory_random_load" />
 
-    <CheckBox
-        android:id="@+id/checkBox5"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_play_auto" />
+	    <CheckBox
+	        android:id="@+id/checkBox9"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_memory_show_result" />
 
-    <TextView
-        android:id="@+id/textIndex"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/el_setting_content_display"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+	    <CheckBox
+	        android:id="@+id/checkBox10"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_memory_double_check" />
 
-    <View
-        android:id="@+id/View01"
-        style="@style/Divider" />
-
-    <CheckBox
-        android:id="@+id/checkBox3"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_content_font_medium" />
-
-    <CheckBox
-        android:id="@+id/checkBox4"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_content_font_large" />
-
-    <CheckBox
-        android:id="@+id/checkBox6"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_content_hide_title" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="4dp"
-        android:layout_marginTop="10dp"
-        android:text="@string/el_setting_dictionary_preference"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
-    <View
-        android:id="@+id/View02"
-        style="@style/Divider" />
-
-    <CheckBox
-        android:id="@+id/checkBox7"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/el_setting_dictionary_notextension" />
-
-</LinearLayout>
+	    <CheckBox
+	        android:id="@+id/checkBox11"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_memory_auto_delete" />
+	    	    	
+	    <TextView
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_marginBottom="4dp"
+	        android:layout_marginTop="10dp"
+	        android:text="@string/el_setting_dictionary_preference"
+	        android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	    <View
+	        style="@style/Divider" />
+	
+	    <CheckBox
+	        android:id="@+id/checkBox7"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_dictionary_notextension" />
+	
+	</LinearLayout>
+    
+    
+</ScrollView>

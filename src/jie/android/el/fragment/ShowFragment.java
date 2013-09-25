@@ -45,32 +45,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
 	
-//	private class WordLoader extends AsyncTask<String, Void, String> {
-//
-//		private String word = null;
-//		@Override
-//		protected String doInBackground(String... arg0) {
-//			word = arg0[0];
-//			Word.XmlResult result;
-//			try {
-//				result = getELActivity().getServiceAccess().queryWordResult(word);
-//			} catch (RemoteException e) {
-//				e.printStackTrace();
-//				return null;
-//			}
-//			if (result.getXmlData().size() > 0) {
-//				return XmlTranslator.trans(Utils.assembleXmlResult(word, result));
-//			} else {
-//				return null;
-//			}
-//		}
-//
-//		@Override
-//		protected void onPostExecute(String result) {
-//			showPopWindow(word, result);				
-//		}
-//	};
-	
 	private class OnPlayListener extends OnPlayAudioListener.Stub {
 		
 		private boolean attached = false;

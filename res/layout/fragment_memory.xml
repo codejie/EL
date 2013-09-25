@@ -97,8 +97,7 @@
     <RelativeLayout
         android:id="@+id/layoutResult"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="gone" >
+        android:layout_height="match_parent" >
 
         <View
             android:id="@+id/view1"
@@ -135,14 +134,15 @@
                 android:id="@+id/imageButton1"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@android:drawable/btn_star" />
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/el_memory_no" />
 
             <ImageButton
                 android:id="@+id/imageButton2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:src="@android:drawable/btn_star" />
+                android:src="@drawable/el_memory_yes" />
 
         </LinearLayout>
 

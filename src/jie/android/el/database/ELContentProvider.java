@@ -62,7 +62,7 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_LAC_BLOCK_INFO = 60;
 	private static final int MATCH_EL_NEW_PACKAGES = 70;
 	private static final int MATCH_EL_SCORE = 80;
-	private static final int MATCH_ITEM_EL_SCORE = 81;
+//	private static final int MATCH_ITEM_EL_SCORE = 81;
 	private static final int MATCH_ITEM_EL_SCORE_RANDOM = 82;
 	private static final int MATCH_ITEM_EL_SCORE_NEXT = 83;
 	private static final int MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN = 84;
@@ -110,7 +110,7 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL_NEXT:
 		case MATCH_ITEM_EL_ESL_PREV:
 		case MATCH_ITEM_EL_ESL_PLAYFLAG:
-		case MATCH_ITEM_EL_SCORE:
+//		case MATCH_ITEM_EL_SCORE:
 		case MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN:
 		case MATCH_ITEM_EL_SCORE_UPDATE_SCORE:			
 		case MATCH_ITEM_EL_SYS_INFO:
@@ -320,6 +320,10 @@ public class ELContentProvider extends ContentProvider {
 			selection = "idx=" + ContentUris.parseId(uri);
 			selectionArgs = null;
 			break;
+		case MATCH_EL_SCORE:
+			db = elDBAccess.getWritableDatabase();
+			table = "score";
+			break;
 		default:
 			throw new IllegalArgumentException("delete() Unknown uri: " + uri);
 		}
@@ -350,7 +354,7 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl_playflag/#", MATCH_ITEM_EL_ESL_PLAYFLAG);
 		matcher.addURI(AUTHORITY, "el/new_packages", MATCH_EL_NEW_PACKAGES);
 		matcher.addURI(AUTHORITY, "el/score", MATCH_EL_SCORE);
-		matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
+//		matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
 		matcher.addURI(AUTHORITY, "el/score_random", MATCH_ITEM_EL_SCORE_RANDOM);
 		matcher.addURI(AUTHORITY, "el/score_next", MATCH_ITEM_EL_SCORE_NEXT);
 		matcher.addURI(AUTHORITY, "el/score/update_checkin", MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN);

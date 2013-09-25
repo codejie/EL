@@ -25,6 +25,7 @@ import android.widget.TextView;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.database.Word;
+import jie.android.el.utils.ScoreHelper;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.WordLoader;
@@ -35,31 +36,6 @@ import jie.android.el.R;
 
 public class DictionaryFragment extends BaseFragment implements OnRefreshListener<ListView>, OnItemClickListener, DictionaryFragmentListAdapter.OnRefreshListener {
 
-//	private class WordLoader extends AsyncTask<String, Void, String> {
-//
-//		private String word = null;
-//		@Override
-//		protected String doInBackground(String... arg0) {
-//			word = arg0[0];
-//			Word.XmlResult result;
-//			try {
-//				result = getELActivity().getServiceAccess().queryWordResult(word);
-//			} catch (RemoteException e) {
-//				e.printStackTrace();
-//				return null;
-//			}
-//			if (result.getXmlData().size() > 0) {
-//				return XmlTranslator.trans(Utils.assembleXmlResult(word, result));
-//			} else {
-//				return null;
-//			}
-//		}
-//
-//		@Override
-//		protected void onPostExecute(String result) {
-//			showPopWindowText(word, result);				
-//		}
-//	};
 	
 	private WordLoader.OnPostExecuteCallback wordLoaderCallback = new WordLoader.OnPostExecuteCallback() {
 		
@@ -169,7 +145,16 @@ public class DictionaryFragment extends BaseFragment implements OnRefreshListene
 	private void initPopWindow(View view) {
 	
 		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
-		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow));	
+//		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow));
+		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow) {
+			@Override
+			public boolean onTextLongClick(String text) {
+				ScoreHelper.insertWord(getELActivity(), text, 0);
+				Utils.showToast(getELActivity(), String.format(getELActivity().getText(R.string.el_toast_add_word_to_score).toString(), text));
+				return true;
+			}			
+		});	
+		
 		popWindow.setAnimation(animShow, animHide);
 	}
 	
