@@ -44,19 +44,19 @@ import jie.android.el.view.OnUrlLoadingListener;
 public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener {
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
-	
+
 	private class OnPlayListener extends OnPlayAudioListener.Stub {
-		
+
 		private boolean attached = false;
-		
+
 		public boolean isAttached() {
 			return attached;
 		}
-		
+
 		public void setAttached(boolean attached) {
 			this.attached = attached;
 		}
-		
+
 		@Override
 		public void onPrepared(int duration) throws RemoteException {
 			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
@@ -74,12 +74,12 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 		@Override
 		public void onError(int what, int extra) throws RemoteException {
-			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONERROR, what, extra));		
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONERROR, what, extra));
 		}
 
 		@Override
 		public void onSeekTo(int msec) throws RemoteException {
-			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONSEEKTO, msec, -1));			
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONSEEKTO, msec, -1));
 		}
 
 		@Override
@@ -90,8 +90,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			args.putInt(FragmentArgument.STATE, PlayState.PLAYING.getId());
 			args.putInt(FragmentArgument.DURATION, 0);
 			args.putInt(FragmentArgument.POSITION, 0);
-			
-			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
+
+			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 		}
 
 		@Override
@@ -102,47 +102,46 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			args.putInt(FragmentArgument.STATE, state);
 			args.putInt(FragmentArgument.DURATION, duration);
 			args.putInt(FragmentArgument.POSITION, msec);
-			
-			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));			
+
+			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 		}
 
 		@Override
 		public void onStateChanged(int state) throws RemoteException {
-			handler.sendMessage(Message.obtain(handler, MSG_PLAY_STATE_CHANGED, state, -1));			
-			
+			handler.sendMessage(Message.obtain(handler, MSG_PLAY_STATE_CHANGED, state, -1));
+
 		}
 	}
-	
+
 	private WordLoader.OnPostExecuteCallback wordLoaderCallback = new WordLoader.OnPostExecuteCallback() {
-		
+
 		@Override
 		public void OnPostExecute(String word, String result) {
 			showPopWindow(word, result);
 		}
 	};
-	
-		
-	private static final int MSG_INDEX				=	1;
-	private static final int MSG_AUDIO_PLAYING		=	2;
-	private static final int MSG_PLAY_ONPREPARED	=	3;
-	private static final int MSG_PLAY_ONPLAYING		=	4;
-	private static final int MSG_PLAY_ONCOMPLETED	=	5;
-	private static final int MSG_PLAY_ONERROR		=	6;
-	private static final int MSG_PLAY_ONSEEKTO		=	7;
-	private static final int MSG_HIDE_TITLE			=	8;
-	private static final int MSG_PLAY_STATE_CHANGED	=	9;
-	
+
+	private static final int MSG_INDEX = 1;
+	private static final int MSG_AUDIO_PLAYING = 2;
+	private static final int MSG_PLAY_ONPREPARED = 3;
+	private static final int MSG_PLAY_ONPLAYING = 4;
+	private static final int MSG_PLAY_ONCOMPLETED = 5;
+	private static final int MSG_PLAY_ONERROR = 6;
+	private static final int MSG_PLAY_ONSEEKTO = 7;
+	private static final int MSG_HIDE_TITLE = 8;
+	private static final int MSG_PLAY_STATE_CHANGED = 9;
+
 	private Animation animShow = null;
 	private Animation animHide = null;
-	
+
 	private TextView textView = null;
 	private WebView webView = null;
-	
+
 	private ELPopupWindow popWindow = null;
-	
+
 	private LinearLayout seekLayout = null;
 	private LinearLayout controlLayout = null;
-	
+
 	private TextView playTime = null;
 	private SeekBar playBar = null;
 	private ImageView playNavigate = null;
@@ -150,24 +149,24 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private ImageView playPrev = null;
 	private ImageView playPlay = null;
 	private ImageView playNext = null;
-		
+
 	private String audioDuration = null;
-	
+
 	private int audioIndex = -1;
 	private int audioSlowDialog = -1;
 	private int audioExplanation = -1;
 	private int audioFastDialog = -1;
-	
+
 	private OnPlayListener onPlayListener = new OnPlayListener();
-		
+
 	private Handler handler = new Handler() {
 
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case MSG_INDEX:
-				onIndex((Bundle)msg.obj);
-				break;				
+				onIndex((Bundle) msg.obj);
+				break;
 			case MSG_PLAY_ONPREPARED:
 				onPlayPrepared(msg.arg1);
 				break;
@@ -192,34 +191,35 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			case MSG_AUDIO_PLAYING:
 				onAudioPlaying();
 				break;
-			default:;
+			default:
+				;
 			}
-		}		
+		}
 	};
-	
+
 	private boolean isPlayingSeek = false;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		this.setLayoutRes(R.layout.fragment_show);
 	}
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
+
 		initAnimation();
-		
+
 		textView = (TextView) view.findViewById(R.id.textIndex);
 		textView.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				textView.setVisibility(View.GONE);
-			}			
+			}
 		});
-		
+
 		webView = (WebView) view.findViewById(R.id.webView1);
 		LACWebViewClient client = new LACWebViewClient();
 		client.setOnUrlLoadingListener(new OnUrlLoadingListener() {
@@ -228,10 +228,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			public boolean onLoading(String url) {
 				return onUrlLoading(url);
 			}
-			
+
 		});
 		webView.setWebViewClient(client);
-		
+
 		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
 		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow) {
 			@Override
@@ -239,25 +239,25 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				ScoreHelper.insertWord(getELActivity(), text, audioIndex);
 				Utils.showToast(getELActivity(), String.format(getELActivity().getText(R.string.el_toast_add_word_to_score).toString(), text));
 				return true;
-			}			
-		});	
+			}
+		});
 		popWindow.setAnimation(animShow, animHide);
 
 		seekLayout = (LinearLayout) view.findViewById(R.id.seekLayout);
 		seekLayout.setOnClickListener(this);
 		controlLayout = (LinearLayout) view.findViewById(R.id.controlLayout);
-		
+
 		playTime = (TextView) view.findViewById(R.id.playTextTime);
 		playTime.setOnClickListener(this);
 		playBar = (SeekBar) view.findViewById(R.id.playSeekBar);
 		playBar.setOnSeekBarChangeListener(this);
 		playBar.setEnabled(false);
-		
+
 		playNavigate = (ImageView) view.findViewById(R.id.playImageView1);
 		playNavigate.setOnClickListener(this);
-		
+
 		playShuffle = (ImageView) view.findViewById(R.id.playImageView2);
-		playShuffle.setOnClickListener(this);		
+		playShuffle.setOnClickListener(this);
 		playPrev = (ImageView) view.findViewById(R.id.playImageView3);
 		playPrev.setOnClickListener(this);
 		playPlay = (ImageView) view.findViewById(R.id.playImageView4);
@@ -265,7 +265,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playNext = (ImageView) view.findViewById(R.id.playImageView5);
 		playNext.setOnClickListener(this);
 	}
-	
+
 	@Override
 	public void onHiddenChanged(boolean hidden) {
 		super.onHiddenChanged(hidden);
@@ -273,7 +273,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			playShuffle.setSelected(getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_RANDOM_ORDER, false));
 		}
 	}
-	
+
 	@Override
 	public void onArguments(Bundle args) {
 		if (args != null) {
@@ -284,55 +284,56 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				handler.sendMessage(Message.obtain(handler, MSG_AUDIO_PLAYING, args));
 			}
 		}
-	}	
-	
+	}
+
 	private void initAnimation() {
-    	animShow = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_show);
-    	animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
+		animShow = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_show);
+		animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
 	}
 
 	private void showPopWindow(boolean show) {
 		popWindow.show(show);
 	}
-	
+
 	protected void onIndex(Bundle obj) {
 
 		int action = obj.getInt(FragmentArgument.ACTION, -1);
 		int state = obj.getInt(FragmentArgument.STATE, -1);
-		
+
 		int index = obj.getInt(FragmentArgument.INDEX);
-		
+
 		loadAudioData(index);
-		
-		if (action == FragmentArgument.Action.PLAY.getId()) { //onclick 
-			
+
+		if (action == FragmentArgument.Action.PLAY.getId()) { // onclick
+
 			playPlay.setEnabled(false);
 			playPlay.setSelected(false);
 			playBar.setEnabled(false);
-			
+
 			setAudioPlayListener(true);
 			setAudio(audioIndex);
 		} else { // notification - onPlaying and onAudioChange
-			
+
 			playPlay.setEnabled(true);
 			playPlay.setSelected(state == PlayState.PLAYING.getId());
-					
+
 			onPlayPrepared(obj.getInt(FragmentArgument.DURATION, 0));
-			onPlayPlaying(obj.getInt(FragmentArgument.POSITION, 0));			
-		}	
+			onPlayPlaying(obj.getInt(FragmentArgument.POSITION, 0));
+		}
 	}
 
 	private boolean loadAudioData(int index) {
-		
-		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);		
-		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "slowdialog", "explanations", "fastdialog"}, null, null, null);
+
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);
+		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script", "slowdialog", "explanations", "fastdialog" }, null,
+				null, null);
 		if (cursor != null) {
 			try {
 				if (cursor.moveToFirst()) {
-					
+
 					String title = cursor.getString(0);
 					String script = cursor.getString(1);
-					
+
 					audioIndex = index;
 
 					audioSlowDialog = cursor.getInt(2);
@@ -340,25 +341,25 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 					audioFastDialog = cursor.getInt(4);
 
 					loadData(audioIndex, title, script);
-										
+
 					return true;
-				}				
+				}
 			} finally {
 				cursor.close();
 			}
 		}
 		return false;
 	}
-	
+
 	private void setAudioPlayListener(boolean attach) {
-		
+
 		if (attach == onPlayListener.isAttached()) {
 			return;
 		}
-		
+
 		try {
 			ServiceAccess service = getELActivity().getServiceAccess();
-			if (service != null) { 
+			if (service != null) {
 				service.setAudioListener(attach ? onPlayListener : null);
 				onPlayListener.setAttached(attach);
 			}
@@ -369,11 +370,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void loadData(int index, String title, String data) {
-		
+
 		String html = assembleHtmlScript(data);
 		webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
-		
-		playPlay.setEnabled(true);		
+
+		playPlay.setEnabled(true);
 		playPlay.setSelected(false);
 
 		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
@@ -381,10 +382,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		} else {
 			playNavigate.setEnabled(true);
 		}
-		
+
 		textView.setVisibility(View.VISIBLE);
 		textView.setText(String.format("%d. %s", index, title));
-				
+
 		if (getELActivity().getSharedPreferences().getBoolean(Setting.CONTENT_HIDE_TITLE, false)) {
 			Message msg = Message.obtain(handler, MSG_HIDE_TITLE);
 			handler.sendMessageDelayed(msg, 1500);
@@ -392,40 +393,71 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private String assembleHtmlScript(String data) {
-		
-//		<HTML>
-//		<HEAD>
-//		<STYLE>
-//		.header { font-size:150% }
-//		.body { font-size:100% }
-//		.lac { color:#65881a; text-decoration:none; }
-//		.src { color:#65881a }
-//		</STYLE>
-//		</HEAD>
-//		<BODY>
-//		<DIV>
-//		<P class="header">ESL Podcast 31</P>
-//		<P class="header">Reading the Newspaper</P>
-//		<P class="body">I <A href="lac://fell" class="lac">fell</A> <A href="lac://into" class="lac">into</A> the <A href="lac://habit" class="lac">habit</A> of reading the newspaper every morning when I was a kid. <A href="lac://Back" class="lac">Back</A> then, there used to be two daily <NOBR>newspapers��a</NOBR> morning <A href="lac://edition" class="lac">edition</A> and an afternoon edition. Nowadays, of course, many cities in the U.S. have just a morning paper. <A href="lac://I��m" class="lac">I��m</A> not too <A href="lac://picky" class="lac">picky</A> about which newspaper I read, although <A href="lac://when it comes to" class="src">when it comes to</A> national newspapers, I <A href="lac://" class="lac">prefer</A> reading the New York Times or the Wall Street lournal over USA Today. <A href="lac://" class="src">Don��t get me wrong: </A>I��m not a news <A href="lac://junkie" class="lac">junkie</A>. I just like <A href="lac://browsing" class="lac">browsing</A> the different sections, reading the headlines, and checking out the <A href="lac://classifieds" class="lac">classifieds</A>. I usually <A href="lac://skip" class="lac">skip</A> the sports section and the <A href="lac://funnies" class="lac">funnies</A>, and only <A href="lac://flip through" class="lac">flip through</A> the food and health sections, but I always read the front page and the <A href="lac://editorial" class="lac">editorial</A> page. On the weekends, I��ll <A href="lac://skim" class="lac">skim</A> the entertainment section for the movie listings and reviews.</P>
-//		<P class="body">I��m sort of <NOBR>old-fashioned</NOBR> in that I still like reading a real, paper newspaper. Sure, I also read some of my news online, but nothing <A href="lac://beats" class="lac">beats</A> <A href="lac://lounging" class="lac">lounging <A href="lac://around" class="lac">around</A> on Sunday morning reading the big, thick paper. Don��t worry, though: I always <A href="lac://recycle" class="lac">recycle</A> my <A href="lac://stack" class="lac">stack</A> of newspapers.</P>
-//		</DIV>
-//		</BODY>
-//		</HTML>		
-		
+
+		// <HTML>
+		// <HEAD>
+		// <STYLE>
+		// .header { font-size:150% }
+		// .body { font-size:100% }
+		// .lac { color:#65881a; text-decoration:none; }
+		// .src { color:#65881a }
+		// </STYLE>
+		// </HEAD>
+		// <BODY>
+		// <DIV>
+		// <P class="header">ESL Podcast 31</P>
+		// <P class="header">Reading the Newspaper</P>
+		// <P class="body">I <A href="lac://fell" class="lac">fell</A> <A
+		// href="lac://into" class="lac">into</A> the <A href="lac://habit"
+		// class="lac">habit</A> of reading the newspaper every morning when I
+		// was a kid. <A href="lac://Back" class="lac">Back</A> then, there used
+		// to be two daily <NOBR>newspapers��a</NOBR> morning <A
+		// href="lac://edition" class="lac">edition</A> and an afternoon
+		// edition. Nowadays, of course, many cities in the U.S. have just a
+		// morning paper. <A href="lac://I��m" class="lac">I��m</A> not too <A
+		// href="lac://picky" class="lac">picky</A> about which newspaper I
+		// read, although <A href="lac://when it comes to" class="src">when it
+		// comes to</A> national newspapers, I <A href="lac://"
+		// class="lac">prefer</A> reading the New York Times or the Wall Street
+		// lournal over USA Today. <A href="lac://" class="src">Don��t get me
+		// wrong: </A>I��m not a news <A href="lac://junkie"
+		// class="lac">junkie</A>. I just like <A href="lac://browsing"
+		// class="lac">browsing</A> the different sections, reading the
+		// headlines, and checking out the <A href="lac://classifieds"
+		// class="lac">classifieds</A>. I usually <A href="lac://skip"
+		// class="lac">skip</A> the sports section and the <A
+		// href="lac://funnies" class="lac">funnies</A>, and only <A
+		// href="lac://flip through" class="lac">flip through</A> the food and
+		// health sections, but I always read the front page and the <A
+		// href="lac://editorial" class="lac">editorial</A> page. On the
+		// weekends, I��ll <A href="lac://skim" class="lac">skim</A> the
+		// entertainment section for the movie listings and reviews.</P>
+		// <P class="body">I��m sort of <NOBR>old-fashioned</NOBR> in that I
+		// still like reading a real, paper newspaper. Sure, I also read some of
+		// my news online, but nothing <A href="lac://beats"
+		// class="lac">beats</A> <A href="lac://lounging" class="lac">lounging
+		// <A href="lac://around" class="lac">around</A> on Sunday morning
+		// reading the big, thick paper. Don��t worry, though: I always <A
+		// href="lac://recycle" class="lac">recycle</A> my <A href="lac://stack"
+		// class="lac">stack</A> of newspapers.</P>
+		// </DIV>
+		// </BODY>
+		// </HTML>
+
 		SharedPreferences prefs = getELActivity().getSharedPreferences();
-		
+
 		String html = "<HTML><HEAD><STYLE>\n.header { font-size:150% }\n.body { font-size:";
 		if (prefs.getBoolean(CommonConsts.Setting.CONTENT_MEDIUM_FONT_SIZE, false)) {
 			html += "120%";
 		} else if (prefs.getBoolean(CommonConsts.Setting.CONTENT_LARGE_FONT_SIZE, false)) {
-			html += "150%";			
+			html += "150%";
 		} else {
 			html += "100%";
 		}
 		html += "}\n.lac { color:#65aa1a; text-decoration:none; }\n.src { color:#65881a }\n.jie { color:#65aa88; text-decoration:none; }\n</STYLE></HEAD><BODY>";
 		html += data;
 		html += "</BODY></HTML>";
-		
+
 		return html;
 	}
 
@@ -437,29 +469,29 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void playAudio() {
-		
+
 		try {
-			getELActivity().getServiceAccess().playAudio();		
-			playPlay.setSelected(true);	
+			getELActivity().getServiceAccess().playAudio();
+			playPlay.setSelected(true);
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void pauseAudio() {
 		try {
 			getELActivity().getServiceAccess().pauseAudio();
 			playPlay.setSelected(false);
-			
+
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void stopAudio() {
 		try {
 			getELActivity().getServiceAccess().stopAudio();
@@ -477,7 +509,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			e.printStackTrace();
 		}
 	}
-	
+
 	private PlayState getPlayState() {
 		try {
 			return PlayState.getState(getELActivity().getServiceAccess().getPlayState());
@@ -487,25 +519,26 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}
 		return null;
 	}
-	
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (popWindow.isShowing()) {
 				showPopWindow(false);
 			} else {
-				setAudioPlayListener(false);				
+				setAudioPlayListener(false);
 				stopAudio();
 				return false;
 			}
-			return true;			
+			return true;
 		}
 		return super.onKeyDown(keyCode, event);
 	}
-	
+
 	protected boolean onUrlLoading(String url) {
-//		Toast.makeText(getELActivity(), "url = " + url, Toast.LENGTH_SHORT).show();
-		
+		// Toast.makeText(getELActivity(), "url = " + url,
+		// Toast.LENGTH_SHORT).show();
+
 		int pos = url.indexOf("lac://", 0);
 		if (pos != -1) {
 			String word = url.substring(6);
@@ -513,10 +546,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			loader.execute(word);
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private void showPopWindow(final String word, final String html) {
 		popWindow.setText(word);
 		if (html != null) {
@@ -524,7 +557,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		} else {
 			popWindow.loadWebContent("<html><body>404, Not Found.<p>please tell this to me (codejie@gmail.com).</body></html>");
 		}
-		
+
 		showPopWindow(true);
 	}
 
@@ -550,23 +583,24 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		case R.id.seekLayout:
 			controlLayout.setVisibility(controlLayout.getVisibility() == View.GONE ? View.VISIBLE : View.GONE);
 			break;
-		default:;
+		default:
+			;
 		}
 	}
 
 	private void showPopupMenu(View v) {
 		ELPopupMenu pm = new ELPopupMenu(getELActivity(), R.menu.popmenu_menu, v, new ELPopupMenu.OnItemClickListener() {
-			
+
 			@Override
 			public void OnClick(int id) {
 				onNavigate(id);
 			}
 		});
-		
+
 		pm.setItemEnabled(R.id.el_menu_show_slowdialog, audioSlowDialog != -1);
 		pm.setItemEnabled(R.id.el_menu_show_explanation, audioExplanation != -1);
 		pm.setItemEnabled(R.id.el_menu_show_fastdialog, audioFastDialog != -1);
-		
+
 		pm.show();
 	}
 
@@ -581,7 +615,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void toggleRandom() {
-		boolean selected = !playShuffle.isSelected();		
+		boolean selected = !playShuffle.isSelected();
 		getELActivity().getSharedPreferences().edit().putBoolean(Setting.PLAY_RANDOM_ORDER, selected).commit();
 
 		playShuffle.setSelected(selected);
@@ -592,13 +626,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		if (playPlay.isSelected()) {
 			pauseAudio();
 		} else {
-			 if(getPlayState() != PlayState.NONE) {
+			if (getPlayState() != PlayState.NONE) {
 				playAudio();
 			} else {
 				Bundle args = new Bundle();
 				args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
-				args.putInt(FragmentArgument.INDEX, audioIndex);			
-				handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));				
+				args.putInt(FragmentArgument.INDEX, audioIndex);
+				handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 			}
 		}
 	}
@@ -610,7 +644,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	protected void onPlaySeekTo(int arg1) {
 		if (isPlayingSeek) {
 			playAudio();
-			
+
 			isPlayingSeek = false;
 		}
 	}
@@ -635,30 +669,30 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	protected void onPlayPrepared(int duration) {
 		audioDuration = Utils.formatMSec(duration);
-		
+
 		playBar.setMax(duration / 1000 - 1);
 		playBar.setProgress(0);
-		
+
 		playBar.setEnabled(true);
-		
+
 		playTime.setText(audioDuration);
 	}
-	
+
 	protected void onPlayStateChanged(int state) {
 		if (state == PlayState.PREPARED.getId()) {
 			playPlay.setEnabled(true);
-//			playNavigate.setEnabled(true);
+			// playNavigate.setEnabled(true);
 		} else if (state == PlayState.PLAYING.getId()) {
 			playPlay.setSelected(true);
-//			playNavigate.setEnabled(true);
+			// playNavigate.setEnabled(true);
 		} else if (state == PlayState.PAUSED.getId()) {
 			playPlay.setSelected(false);
-//			playNavigate.setEnabled(false);
+			// playNavigate.setEnabled(false);
 		} else if (state == PlayState.NONE.getId()) {
 			playPlay.setSelected(false);
-//			playNavigate.setEnabled(false);			
+			// playNavigate.setEnabled(false);
 		}
-	}	
+	}
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -669,55 +703,55 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	@Override
 	public void onStartTrackingTouch(SeekBar seekBar) {
-//		isPlayingSeek = playPlay.isSelected();
-//		
-//		if (isPlayingSeek) {
-//			pauseAudio();
-//		}
+		// isPlayingSeek = playPlay.isSelected();
+		//
+		// if (isPlayingSeek) {
+		// pauseAudio();
+		// }
 	}
 
 	@Override
 	public void onStopTrackingTouch(SeekBar seekBar) {
-//		playAudio();
+		// playAudio();
 	}
-	
+
 	private void getNextAudio() {
 		boolean random = getELActivity().getSharedPreferences().getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
-		Cursor cursor = Utils.getNextAudio(getELActivity(), audioIndex, new String[] { "idx" }, random, true);		
+		Cursor cursor = Utils.getNextAudio(getELActivity(), audioIndex, new String[] { "idx" }, random, true);
 		if (cursor != null) {
 			try {
 				if (cursor.moveToFirst()) {
 					Bundle args = new Bundle();
-					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());					
+					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
 					args.putInt(FragmentArgument.INDEX, cursor.getInt(0));
-					
-					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					
+
+					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 				}
 			} finally {
 				cursor.close();
 			}
 		}
 	}
-	
+
 	private void getPrevAudio() {
-		
+
 		boolean random = getELActivity().getSharedPreferences().getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
-		Cursor cursor = Utils.getNextAudio(getELActivity(), audioIndex, new String[] { "idx" }, random, false);		
+		Cursor cursor = Utils.getNextAudio(getELActivity(), audioIndex, new String[] { "idx" }, random, false);
 		if (cursor != null) {
 			try {
 				if (cursor.moveToFirst()) {
 					Bundle args = new Bundle();
-					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());					
+					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
 					args.putInt(FragmentArgument.INDEX, cursor.getInt(0));
-					
-					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));					
+
+					handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
 				}
 			} finally {
 				cursor.close();
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -729,13 +763,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public void onResume() {
 		super.onResume();
-		setAudioPlayListener(true);		
+		setAudioPlayListener(true);
 	}
 
 	protected void onHideTitle() {
-		textView.setVisibility(View.GONE);		
+		textView.setVisibility(View.GONE);
 	}
-	
+
 	protected void onAudioPlaying() {
 		setAudioPlayListener(true);
 	}

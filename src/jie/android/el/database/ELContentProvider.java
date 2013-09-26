@@ -20,11 +20,11 @@ import android.os.Environment;
 public class ELContentProvider extends ContentProvider {
 
 	private static final String Tag = ELContentProvider.class.getSimpleName();
-	
+
 	private static final String AUTHORITY = "jie.android.el";
 	private static final String CONTENT_TYPE = "vnd.android.cursor.dir/vnd.jie.android.el";
 	private static final String CONTENT_ITEM_TYPE = "vnd.android.cursor.item/vnd.jie.android.el";
-	
+
 	public static final Uri URI_EL_ESL = Uri.parse("content://" + AUTHORITY + "/el/esl");
 	public static final Uri URI_LAC_WORD_INFO = Uri.parse("content://" + AUTHORITY + "/lac/word_info");
 	public static final Uri URI_LAC_SYS_UPDATE = Uri.parse("content://" + AUTHORITY + "/lac/sys_update");
@@ -44,8 +44,7 @@ public class ELContentProvider extends ContentProvider {
 	public static final Uri URI_EL_SCORE_UPDATE_CHECKIN = Uri.parse("content://" + AUTHORITY + "/el/score/update_checkin");
 	public static final Uri URI_EL_SCORE_UPDATE_SCORE = Uri.parse("content://" + AUTHORITY + "/el/score/update_score");
 	public static final Uri URI_EL_SYS_INFO = Uri.parse("content://" + AUTHORITY + "/el/sys_info");
-	
-	
+
 	private static final int MATCH_EL_ESL = 10;
 	private static final int MATCH_ITEM_EL_ESL = 11;
 	private static final int MATCH_ITEM_EL_ESL_RANDOM = 12;
@@ -62,27 +61,27 @@ public class ELContentProvider extends ContentProvider {
 	private static final int MATCH_LAC_BLOCK_INFO = 60;
 	private static final int MATCH_EL_NEW_PACKAGES = 70;
 	private static final int MATCH_EL_SCORE = 80;
-//	private static final int MATCH_ITEM_EL_SCORE = 81;
+	// private static final int MATCH_ITEM_EL_SCORE = 81;
 	private static final int MATCH_ITEM_EL_SCORE_RANDOM = 82;
 	private static final int MATCH_ITEM_EL_SCORE_NEXT = 83;
 	private static final int MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN = 84;
 	private static final int MATCH_ITEM_EL_SCORE_UPDATE_SCORE = 85;
 	private static final int MATCH_EL_SYS_INFO = 90;
 	private static final int MATCH_ITEM_EL_SYS_INFO = 91;
-	
 
 	private UriMatcher matcher = null;
-	private LACDBAccess lacDBAccess = null;//should be a subclass of SQLiteOpenHelper 
+	private LACDBAccess lacDBAccess = null;// should be a subclass of
+											// SQLiteOpenHelper
 	private ELDBAccess elDBAccess = null;
-	
+
 	private SQLiteDatabase db = null;
-	
+
 	@Override
 	public boolean onCreate() {
-		
+
 		initDatabases();
 		initMatcher();
-		
+
 		return true;
 	}
 
@@ -103,29 +102,29 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_EL_SCORE:
 		case MATCH_ITEM_EL_SCORE_RANDOM:
 		case MATCH_ITEM_EL_SCORE_NEXT:
-		case MATCH_EL_SYS_INFO:			
+		case MATCH_EL_SYS_INFO:
 			return CONTENT_TYPE;
 		case MATCH_ITEM_EL_ESL:
 		case MATCH_ITEM_LAC_WORD_INFO:
 		case MATCH_ITEM_EL_ESL_NEXT:
 		case MATCH_ITEM_EL_ESL_PREV:
 		case MATCH_ITEM_EL_ESL_PLAYFLAG:
-//		case MATCH_ITEM_EL_SCORE:
+			// case MATCH_ITEM_EL_SCORE:
 		case MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN:
-		case MATCH_ITEM_EL_SCORE_UPDATE_SCORE:			
+		case MATCH_ITEM_EL_SCORE_UPDATE_SCORE:
 		case MATCH_ITEM_EL_SYS_INFO:
 			return CONTENT_ITEM_TYPE;
 		default:
-			throw new IllegalArgumentException("Unknown uri: " + uri); 
+			throw new IllegalArgumentException("Unknown uri: " + uri);
 		}
 	}
-	
+
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		int res = matcher.match(uri);
-		
+
 		String table = null;
-		
+
 		switch (res) {
 		case MATCH_LAC_SYS_UPDATE:
 			db = lacDBAccess.getWritableDatabase();
@@ -145,21 +144,21 @@ public class ELContentProvider extends ContentProvider {
 			break;
 		case MATCH_EL_SYS_INFO:
 			db = elDBAccess.getWritableDatabase();
-			table = "sys_info";			
+			table = "sys_info";
 			break;
 		default:
 			throw new IllegalArgumentException("insert() Unknown uri: " + uri);
 		}
-		
+
 		long rowid = db.insert(table, null, values);
-		if (rowid != -1) {			
-			getContext().getContentResolver().notifyChange(uri, null);			
+		if (rowid != -1) {
+			getContext().getContentResolver().notifyChange(uri, null);
 			return ContentUris.withAppendedId(uri, rowid);
 		} else {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		int res = matcher.match(uri);
@@ -169,10 +168,10 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL:
 			db = elDBAccess.getReadableDatabase();
 			table = "esl";
-			
+
 			if (res == MATCH_ITEM_EL_ESL) {
-	            selection = "idx=?";  
-	            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};  				
+				selection = "idx=?";
+				selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
 			}
 			break;
 		case MATCH_ITEM_EL_ESL_RANDOM:
@@ -183,13 +182,13 @@ public class ELContentProvider extends ContentProvider {
 		case MATCH_ITEM_EL_ESL_NEXT:
 		case MATCH_ITEM_EL_ESL_PREV:
 		case MATCH_ITEM_EL_ESL_FIRST:
-		case MATCH_ITEM_EL_ESL_LAST:			
+		case MATCH_ITEM_EL_ESL_LAST:
 			if (res == MATCH_ITEM_EL_ESL_NEXT) {
 				selection = "idx>" + ContentUris.parseId(uri);
 				sortOrder = "idx asc";
 			} else if (res == MATCH_ITEM_EL_ESL_PREV) {
 				selection = "idx<" + ContentUris.parseId(uri);
-				sortOrder = "idx desc";				
+				sortOrder = "idx desc";
 			} else if (res == MATCH_ITEM_EL_ESL_FIRST) {
 				selection = null;
 				sortOrder = "idx asc";
@@ -197,19 +196,19 @@ public class ELContentProvider extends ContentProvider {
 				selection = null;
 				sortOrder = "idx desc";
 			}
-			
+
 			db = elDBAccess.getReadableDatabase();
-			
-			return db.query("esl", projection, selection, null, null, null, sortOrder, "1");			
+
+			return db.query("esl", projection, selection, null, null, null, sortOrder, "1");
 		case MATCH_LAC_WORD_INFO:
 		case MATCH_ITEM_LAC_WORD_INFO:
 			db = lacDBAccess.getReadableDatabase();
 			table = "word_info";
-			
+
 			if (res == MATCH_ITEM_LAC_WORD_INFO) {
-	            selection = "idx=?";  
-	            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};  				
-			}			
+				selection = "idx=?";
+				selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
+			}
 			break;
 		case MATCH_LAC_SYS_UPDATE:
 			db = lacDBAccess.getReadableDatabase();
@@ -249,10 +248,10 @@ public class ELContentProvider extends ContentProvider {
 			db = elDBAccess.getReadableDatabase();
 			table = "score";
 			break;
-		default:			
-			throw new IllegalArgumentException("query() Unknown uri: " + uri); 			
+		default:
+			throw new IllegalArgumentException("query() Unknown uri: " + uri);
 		}
-		
+
 		return db.query(table, projection, selection, selectionArgs, null, null, sortOrder);
 	}
 
@@ -274,14 +273,14 @@ public class ELContentProvider extends ContentProvider {
 			db = elDBAccess.getWritableDatabase();
 			db.execSQL("UPDATE esl SET flag = flag & ~" + ListItemFlag.LAST_PLAY + " WHERE idx!=" + ContentUris.parseId(uri));
 			db.execSQL("UPDATE esl SET flag = flag | " + ListItemFlag.LAST_PLAY + " WHERE idx=" + ContentUris.parseId(uri));
-			
-			getContext().getContentResolver().notifyChange(URI_EL_ESL, null);			
+
+			getContext().getContentResolver().notifyChange(URI_EL_ESL, null);
 			ret = 1;
 			break;
 		case MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN:
-			db = elDBAccess.getWritableDatabase();			
+			db = elDBAccess.getWritableDatabase();
 			db.execSQL("UPDATE score SET checkin_count=checkin_count+1 WHERE " + selection);
-			
+
 			getContext().getContentResolver().notifyChange(URI_EL_SCORE, null);
 			ret = 1;
 			break;
@@ -300,7 +299,7 @@ public class ELContentProvider extends ContentProvider {
 		}
 		return ret;
 	}
-	
+
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int res = matcher.match(uri);
@@ -327,17 +326,17 @@ public class ELContentProvider extends ContentProvider {
 		default:
 			throw new IllegalArgumentException("delete() Unknown uri: " + uri);
 		}
-		
+
 		int ret = db.delete(table, selection, selectionArgs);
 		if (ret > 0) {
 			getContext().getContentResolver().notifyChange(uri, null);
 		}
 		return ret;
 	}
-	
+
 	private void initMatcher() {
 		matcher = new UriMatcher(UriMatcher.NO_MATCH);
-		
+
 		matcher.addURI(AUTHORITY, "el/esl", MATCH_EL_ESL);
 		matcher.addURI(AUTHORITY, "el/esl/#", MATCH_ITEM_EL_ESL);
 		matcher.addURI(AUTHORITY, "lac/word_info", MATCH_LAC_WORD_INFO);
@@ -354,19 +353,19 @@ public class ELContentProvider extends ContentProvider {
 		matcher.addURI(AUTHORITY, "el/esl_playflag/#", MATCH_ITEM_EL_ESL_PLAYFLAG);
 		matcher.addURI(AUTHORITY, "el/new_packages", MATCH_EL_NEW_PACKAGES);
 		matcher.addURI(AUTHORITY, "el/score", MATCH_EL_SCORE);
-//		matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
+		// matcher.addURI(AUTHORITY, "el/score/#", MATCH_ITEM_EL_SCORE);
 		matcher.addURI(AUTHORITY, "el/score_random", MATCH_ITEM_EL_SCORE_RANDOM);
 		matcher.addURI(AUTHORITY, "el/score_next", MATCH_ITEM_EL_SCORE_NEXT);
 		matcher.addURI(AUTHORITY, "el/score/update_checkin", MATCH_ITEM_EL_SCORE_UPDATE_CHECKIN);
-		matcher.addURI(AUTHORITY, "el/score/update_score", MATCH_ITEM_EL_SCORE_UPDATE_SCORE);		
+		matcher.addURI(AUTHORITY, "el/score/update_score", MATCH_ITEM_EL_SCORE_UPDATE_SCORE);
 		matcher.addURI(AUTHORITY, "el/sys_info", MATCH_EL_SYS_INFO);
 		matcher.addURI(AUTHORITY, "el/sys_info/#", MATCH_ITEM_EL_SYS_INFO);
 	}
-	
+
 	private void initDatabases() {
-		
+
 		checkLACDatabase();
-		
+
 		String db = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + ELDBAccess.DBFILE;
 		elDBAccess = new ELDBAccess(this.getContext(), db);
 
@@ -382,14 +381,14 @@ public class ELContentProvider extends ContentProvider {
 			if (!parent.exists()) {
 				parent.mkdirs();
 			}
-			
+
 			InputStream input;
 			try {
 				input = getContext().getAssets().open("lac2.zip");
 				AssetsHelper.UnzipTo(input, parent.getAbsolutePath(), null);
 			} catch (IOException e) {
-				e.printStackTrace();			
-			}			
+				e.printStackTrace();
+			}
 		}
 	}
 }

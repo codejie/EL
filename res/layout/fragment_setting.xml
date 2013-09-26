@@ -79,25 +79,25 @@
 
 	    <CheckBox
 	        android:id="@+id/checkBox8"
-	        android:layout_width="wrap_content"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/el_setting_memory_random_load" />
 
 	    <CheckBox
 	        android:id="@+id/checkBox9"
-	        android:layout_width="wrap_content"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/el_setting_memory_show_result" />
 
 	    <CheckBox
 	        android:id="@+id/checkBox10"
-	        android:layout_width="wrap_content"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/el_setting_memory_double_check" />
 
 	    <CheckBox
 	        android:id="@+id/checkBox11"
-	        android:layout_width="wrap_content"
+	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:text="@string/el_setting_memory_auto_delete" />
 	    	    	

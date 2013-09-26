@@ -1,13 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/item1" android:showAsAction="always" android:title="123"></item>
-    <item android:id="@+id/item2" android:showAsAction="always" android:title="456"></item>
-    <item android:id="@+id/el_menu_overflow" android:showAsAction="always" android:icon="@drawable/el_menu_over">
+    <item
+        android:id="@+id/el_menu_memory"
+        android:icon="@drawable/el_menu_memory"
+        android:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/el_menu_overflow"
+        android:icon="@drawable/el_menu_over"
+        android:showAsAction="always"
+        android:title="Sys">
         <menu>
-            <item android:id="@+id/item4" android:title="666"/>
-            <item android:id="@+id/item5" android:title="555"/>
+            <item android:id="@+id/el_menu_vocab_edit" android:showAsAction="always" android:title="@string/el_menu_vocab_edit"/>
+            <item android:id="@+id/el_menu_vocab_sortbyalpha" android:title="@string/el_menu_vocab_sortbyalpha"/>
+            <item android:id="@+id/el_menu_vocab_sortbyscore" android:title="@string/el_menu_vocab_sortbyscore"/>
+            <item android:id="@+id/el_menu_vocab_groupbylesson" android:title="@string/el_menu_vocab_groupbylesson"/>
+            <item android:id="@+id/el_menu_vocab_groupbyscore" android:title="@string/abs__action_bar_home_description"/>
+            <item android:id="@+id/el_menu_vocab_groupbydate" android:title="@string/el_menu_vocab_groupbydate"/>
+            <item android:id="@+id/el_menu_vocab_groupbynone" android:title="@string/el_menu_vocab_groupbynone"/>
         </menu>
     </item>
-    
-
 </menu>

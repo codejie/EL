@@ -254,15 +254,15 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		return true;
 	}
 	
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		
-		BaseFragment fragment = fragmentSwitcher.getFragment();
-		if (fragment != null) {
-			fragment.onPrepareOptionsMenu(menu);
-		}
-		return super.onPrepareOptionsMenu(menu); 
-	}
+//	@Override
+//	public boolean onPrepareOptionsMenu(Menu menu) {
+//		
+//		BaseFragment fragment = fragmentSwitcher.getFragment();
+//		if (fragment != null) {
+//			fragment.onPrepareOptionsMenu(menu);
+//		}
+//		return super.onPrepareOptionsMenu(menu); 
+//	}
 
 	private void initSearchView(MenuItem menu) {
 		
@@ -313,6 +313,14 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
+		BaseFragment fragment = fragmentSwitcher.getFragment();
+		if (fragment != null) {
+			if (fragment.OnOptionsItemSelected(item)) {
+				return true;
+			}
+		}
+		
 		switch (item.getItemId()) {
 		case R.id.el_menu_download:
 			showFragment(FragmentSwitcher.Type.DOWNLOAD, null);

@@ -31,7 +31,7 @@
     <string name="el_menu_about">About</string>
     <string name="el_menu_download">Download</string>
     <string name="el_menu_setting">Settings</string>
-    <string name="el_toast_add_word_to_score">\'%s\' is added to vocab list</string>
+    <string name="el_toast_add_word_to_score">\'%s\' is added to vocab.</string>
     <string name="el_memory_level0">So easy !</string>
     <string name="el_memory_level1">I know it.</string>
     <string name="el_memory_level2">Maybe it is..</string>
@@ -43,5 +43,12 @@
     <string name="el_setting_memory_double_check">Double Check Result</string>
     <string name="el_setting_memory_show_result">Show Word Explanation</string>
     <string name="el_setting_memory_auto_delete">Auto Delete High Score Words</string>
+    <string name="el_menu_vocab_edit">Edit</string>
+    <string name="el_menu_vocab_sortbyalpha">Sort by Alpha</string>
+    <string name="el_menu_vocab_sortbyscore">Sort by Score</string>
+    <string name="el_menu_vocab_groupbylesson">Group by Lesson</string>
+    <string name="el_menu_vocab_groupbyscore">Group by Score</string>
+    <string name="el_menu_vocab_groupbydate">Group by Date</string>
+    <string name="el_menu_vocab_groupbynone">None Group</string>
 
 </resources>

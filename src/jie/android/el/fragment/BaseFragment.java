@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 
 public class BaseFragment extends SherlockFragment {
 
@@ -88,6 +89,10 @@ public class BaseFragment extends SherlockFragment {
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		return false;
+	}
+
+	public boolean OnOptionsItemSelected(MenuItem item) {
 		return false;
 	}
 }
