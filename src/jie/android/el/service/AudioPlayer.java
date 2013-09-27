@@ -146,7 +146,7 @@ public class AudioPlayer {
 					
 					SharedPreferences prefs = Utils.getSharedPreferences(this.context);
 										
-					if (!prefs.getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false)) {
+					if (prefs.getBoolean(Setting.PLAY_AUTO_PLAY, true)) {
 						play();
 					}
 				} else {

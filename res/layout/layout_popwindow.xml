@@ -47,12 +47,13 @@
 		    android:src="@drawable/el_close" />
 
 	</LinearLayout>
+
 	<WebView
-		android:id="@+id/webView2"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-		android:layout_gravity="fill"
-		android:layout_margin="3dp"
-		android:layout_weight="1" />
+	    android:id="@+id/webView2"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_gravity="fill"
+	    android:layout_weight="1"
+	    android:padding="4dp" />
 
 </LinearLayout>

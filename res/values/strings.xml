@@ -14,7 +14,7 @@
     <string name="el_menu_show_explanation">Explanations</string>
     <string name="el_menu_show_fastdialog">Fast Dialog</string>
     <string name="el_fragment_downloader_removeall">Remove all downloading records</string>
-    <string name="el_setting_play_auto">Don\'t Automatically Play</string>
+    <string name="el_setting_play_auto">Automatically Play</string>
     <string name="el_fragment_dict_inputquery">Input your keyword..</string>
     <string name="el_fragment_dict_pulltorefresh">Pull to refresh</string>
     <string name="el_fragment_dict_loading">Loading..</string>
@@ -42,7 +42,7 @@
     <string name="el_setting_memory_random_load">Random Load Words</string>
     <string name="el_setting_memory_double_check">Double Check Result</string>
     <string name="el_setting_memory_show_result">Show Word Explanation</string>
-    <string name="el_setting_memory_auto_delete">Auto Delete High Score Words</string>
+    <string name="el_setting_memory_auto_delete">Auto-Delete High Score Words</string>
     <string name="el_menu_vocab_edit">Edit</string>
     <string name="el_menu_vocab_sortbyalpha">Sort by Alpha</string>
     <string name="el_menu_vocab_sortbyscore">Sort by Score</string>
@@ -51,5 +51,6 @@
     <string name="el_menu_vocab_groupbydate">Group by Date</string>
     <string name="el_menu_vocab_groupbynone">Not Group</string>
     <string name="el_menu_vocab_edit_1">Done</string>
+    <string name="el_setting_memory_auto_speak">Automatically Speak Words</string>
 
 </resources>

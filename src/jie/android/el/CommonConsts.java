@@ -29,7 +29,7 @@ public interface CommonConsts {
 	public interface Setting {
 		public static final String PLAY_STOP_AFTER_CURRENT = "play_stop_after_current";
 		public static final String PLAY_RANDOM_ORDER = "play_random_order";
-		public static final String PLAY_DONT_AUTO_PLAY = "play_dont_auto_play";
+		public static final String PLAY_AUTO_PLAY = "play_auto_play";
 		public static final String CONTENT_MEDIUM_FONT_SIZE = "content_medium_font_size";
 		public static final String CONTENT_LARGE_FONT_SIZE = "content_large_font_size";
 		public static final String CONTENT_HIDE_TITLE = "content_hide_title";
@@ -42,6 +42,7 @@ public interface CommonConsts {
 		public static final String MEMORY_NEED_CHECK = "memory_need_check";
 		public static final String MEMORY_SHOW_RESULT = "memory_show_result";
 		public static final String MEMORY_AUTO_DELETE = "memory_auto_delete";
+		public static final String MEMORY_AUTO_SPEAK = "memory_auto_speak";
 		public static final String VOCAB_SORT_MODE = "vocab_sort_mode";
 		public static final String VOCAB_GROUP_MODE = "vocab_group_mode";
 	}

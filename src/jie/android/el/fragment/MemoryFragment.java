@@ -85,6 +85,7 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	private boolean needCheck = true;
 	private boolean needShowResult = true;
 	private boolean isAutoDelete = false;
+	private boolean isAutoSpeak = true;
 
 	private Handler handler = new Handler() {
 
@@ -124,6 +125,7 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 		needCheck = prefs.getBoolean(Setting.MEMORY_NEED_CHECK, true);
 		needShowResult = prefs.getBoolean(Setting.MEMORY_SHOW_RESULT, true);
 		isAutoDelete = prefs.getBoolean(Setting.MEMORY_AUTO_DELETE, false);
+		isAutoSpeak = prefs.getBoolean(Setting.MEMORY_AUTO_SPEAK, true);
 	}
 
 	@Override
@@ -208,8 +210,10 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 
 			textCounter.setText(String.format("%d/%d", ++tipCount, tipTotal));
 			textWord.setText(curData.word);
-
 			loadWordResult(curData.word);
+			if (isAutoSpeak) {
+				Speaker.speak(curData.word);
+			}
 
 		} else {
 			Toast.makeText(getELActivity(), "No more words in vocab", Toast.LENGTH_SHORT).show();
@@ -313,14 +317,14 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 	private void showResult(String word, String result) {
 		webView.loadDataWithBaseURL(null, result, "text/html", "utf-8", null);
 	}
-	
+
 	@Override
 	public boolean OnOptionsItemSelected(MenuItem item) {
 		if (item.getItemId() == R.id.el_menu_vocab) {
 			getELActivity().showFragment(FragmentSwitcher.Type.VOCAB, null);
 			return true;
 		}
-		
+
 		return super.OnOptionsItemSelected(item);
-	}	
+	}
 }

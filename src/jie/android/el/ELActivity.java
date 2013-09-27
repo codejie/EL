@@ -335,7 +335,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			showFragment(FragmentSwitcher.Type.DICTIONARY, null);
 			break;
 		case R.id.el_menu_vocab:
-			//showFragment(FragmentSwitcher.Type.VOCAB,null);
+			pausePlaying();
 			showFragment(FragmentSwitcher.Type.MEMORY,null);
 			break;
 		}
@@ -454,4 +454,13 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		}
 	}
 
+	protected void pausePlaying() {
+		if (serviceAccess != null) {
+			try {
+				serviceAccess.pauseAudio();
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 }

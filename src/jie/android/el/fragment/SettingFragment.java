@@ -22,6 +22,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 	private CheckBox checkMemoryShowExplanation = null;
 	private CheckBox checkMemoryDoubleCheck = null;
 	private CheckBox checkMemoryAutoDelte = null;
+	private CheckBox checkMemoryAutoSpeak = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,11 +44,12 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkContentHideTitle = (CheckBox) view.findViewById(R.id.checkBox6);
 
 		checkDictionaryNotExtension = (CheckBox) view.findViewById(R.id.checkBox7);
-		
+
 		checkMemoryRandomLoad = (CheckBox) view.findViewById(R.id.checkBox8);
 		checkMemoryShowExplanation = (CheckBox) view.findViewById(R.id.checkBox9);
 		checkMemoryDoubleCheck = (CheckBox) view.findViewById(R.id.checkBox10);
-		checkMemoryAutoDelte = (CheckBox) view.findViewById(R.id.checkBox11);		
+		checkMemoryAutoDelte = (CheckBox) view.findViewById(R.id.checkBox11);
+		checkMemoryAutoSpeak = (CheckBox) view.findViewById(R.id.checkBox12);
 
 		updateSetting();
 
@@ -62,6 +64,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 		checkMemoryShowExplanation.setOnCheckedChangeListener(this);
 		checkMemoryDoubleCheck.setOnCheckedChangeListener(this);
 		checkMemoryAutoDelte.setOnCheckedChangeListener(this);
+		checkMemoryAutoSpeak.setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -82,16 +85,17 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 		checkPlayStopAfterCurrent.setChecked(prefs.getBoolean(Setting.PLAY_STOP_AFTER_CURRENT, false));
 		checkPlayRandomOrder.setChecked(prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false));
-		checkPlayDontAutoPlay.setChecked(prefs.getBoolean(Setting.PLAY_DONT_AUTO_PLAY, false));
+		checkPlayDontAutoPlay.setChecked(prefs.getBoolean(Setting.PLAY_AUTO_PLAY, true));
 		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, false));
 		checkContentFontLarge.setChecked(prefs.getBoolean(Setting.CONTENT_LARGE_FONT_SIZE, false));
 		checkContentHideTitle.setChecked(prefs.getBoolean(Setting.CONTENT_HIDE_TITLE, false));
 		checkDictionaryNotExtension.setChecked(prefs.getBoolean(Setting.DICTIONARY_LIST_NOT_EXTENSION, false));
-		
+
 		checkMemoryRandomLoad.setChecked(prefs.getBoolean(Setting.MEMORY_MODE_RANDOM, false));
 		checkMemoryShowExplanation.setChecked(prefs.getBoolean(Setting.MEMORY_SHOW_RESULT, true));
 		checkMemoryDoubleCheck.setChecked(prefs.getBoolean(Setting.MEMORY_NEED_CHECK, true));
 		checkMemoryAutoDelte.setChecked(prefs.getBoolean(Setting.MEMORY_AUTO_DELETE, false));
+		checkMemoryAutoSpeak.setChecked(prefs.getBoolean(Setting.MEMORY_AUTO_SPEAK, true));
 	}
 
 	private void saveSetting() {
@@ -100,19 +104,20 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 		editor.putBoolean(Setting.PLAY_STOP_AFTER_CURRENT, checkPlayStopAfterCurrent.isChecked());
 		editor.putBoolean(Setting.PLAY_RANDOM_ORDER, checkPlayRandomOrder.isChecked());
-		editor.putBoolean(Setting.PLAY_DONT_AUTO_PLAY, checkPlayDontAutoPlay.isChecked());
+		editor.putBoolean(Setting.PLAY_AUTO_PLAY, checkPlayDontAutoPlay.isChecked());
 
 		editor.putBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, checkContentFontMedium.isChecked());
 		editor.putBoolean(Setting.CONTENT_LARGE_FONT_SIZE, checkContentFontLarge.isChecked());
 		editor.putBoolean(Setting.CONTENT_HIDE_TITLE, checkContentHideTitle.isChecked());
-		
+
 		editor.putBoolean(Setting.DICTIONARY_LIST_NOT_EXTENSION, checkDictionaryNotExtension.isChecked());
 
 		editor.putBoolean(Setting.MEMORY_MODE_RANDOM, checkMemoryRandomLoad.isChecked());
 		editor.putBoolean(Setting.MEMORY_SHOW_RESULT, checkMemoryShowExplanation.isChecked());
 		editor.putBoolean(Setting.MEMORY_NEED_CHECK, checkMemoryDoubleCheck.isChecked());
 		editor.putBoolean(Setting.MEMORY_AUTO_DELETE, checkMemoryAutoDelte.isChecked());
-		
+		editor.putBoolean(Setting.MEMORY_AUTO_SPEAK, checkMemoryAutoSpeak.isChecked());
+
 		editor.commit();
 	}
 }

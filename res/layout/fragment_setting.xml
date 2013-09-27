@@ -78,6 +78,12 @@
 	    <View style="@style/Divider" />
 
 	    <CheckBox
+	        android:id="@+id/checkBox12"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/el_setting_memory_auto_speak" />
+
+	    <CheckBox
 	        android:id="@+id/checkBox8"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
