@@ -7,7 +7,7 @@
     <string name="el_setting_content_display">Content Display Preference</string>
     <string name="el_setting_content_font_medium">Medium Font Size</string>
     <string name="el_setting_content_font_large">Large Font Size</string>
-    <string name="app_version">1.3.0</string>
+    <string name="app_version">1.4.0</string>
     <string name="app_author">codejie</string>
     <string name="app_email">codejie@gmail.com</string>
     <string name="el_menu_show_slowdialog">Slow Dialog</string>
@@ -49,6 +49,7 @@
     <string name="el_menu_vocab_groupbylesson">Group by Lesson</string>
     <string name="el_menu_vocab_groupbyscore">Group by Score</string>
     <string name="el_menu_vocab_groupbydate">Group by Date</string>
-    <string name="el_menu_vocab_groupbynone">None Group</string>
+    <string name="el_menu_vocab_groupbynone">Not Group</string>
+    <string name="el_menu_vocab_edit_1">Done</string>
 
 </resources>

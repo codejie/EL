@@ -9,6 +9,8 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import jie.android.el.FragmentSwitcher;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.Setting;
+import jie.android.el.fragment.adapter.VocabFragmentFlatListAdapter;
+import jie.android.el.fragment.adapter.VocabFragmentListAdapter;
 import jie.android.el.utils.WordLoader;
 import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.OnPopupWindowDefaultListener;
@@ -23,8 +25,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.TextView;
 
-public class VocabFragment extends BaseFragment implements OnItemClickListener, OnRefreshListener<ListView>, VocabFragmentListAdapter.OnRefreshListener {
+public class VocabFragment extends BaseFragment implements OnItemClickListener, OnRefreshListener<ListView>, VocabFragmentListAdapter.OnAdapterListener {
 
 	private WordLoader.OnPostExecuteCallback wordLoaderCallback = new WordLoader.OnPostExecuteCallback() {
 
@@ -36,25 +39,25 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 
 	private static final int SORT_BY_ALPHA = 1;
 	private static final int SORT_BY_SCORE = 2;
-	
+
 	private static final int GROUP_BY_NONE = 0;
 	private static final int GROUP_BY_LESSON = 1;
 	private static final int GROUP_BY_SCORE = 2;
 	private static final int GROUP_BY_DATE = 3;
-	
+
 	// private LinearLayout footLayout = null;
 	// private TextView footText = null;
 
 	private PullToRefreshListView pullList = null;
-	private VocabFragmentListAdapter.FlatListAdapter adapter = null;
+	private VocabFragmentFlatListAdapter adapter = null;
 
 	private Animation animShow = null;
 	private Animation animHide = null;
 
 	private ELPopupWindow popWindow;
 
-	private int sortMode = SORT_BY_SCORE;
-	private int groupMode = GROUP_BY_NONE;
+	// private int sortMode = SORT_BY_SCORE;
+	// private int groupMode = GROUP_BY_NONE;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -62,21 +65,19 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 		this.setLayoutRes(R.layout.fragment_vocab);
 		this.setMenuRes(R.menu.fragment_vocab);
 
-		loadPreferences();
-		
 		initAnimation();
 	}
 
 	private void loadPreferences() {
 		SharedPreferences prefs = getELActivity().getSharedPreferences();
-		prefs.getInt(Setting.VOCAB_SORT_MODE, SORT_BY_SCORE);
-		prefs.getInt(Setting.VOCAB_GROUP_MODE, GROUP_BY_NONE);
+		adapter.setSortMode(prefs.getInt(Setting.VOCAB_SORT_MODE, SORT_BY_SCORE));
+		adapter.setGroupMode(prefs.getInt(Setting.VOCAB_GROUP_MODE, GROUP_BY_NONE));
 	}
-	
+
 	private void savePreferences() {
 		SharedPreferences.Editor editor = getELActivity().getSharedPreferences().edit();
-		editor.putInt(Setting.VOCAB_SORT_MODE, sortMode);
-		editor.putInt(Setting.VOCAB_GROUP_MODE, groupMode);
+		editor.putInt(Setting.VOCAB_SORT_MODE, adapter.getSortMode());
+		editor.putInt(Setting.VOCAB_GROUP_MODE, adapter.getGroupMode());
 		editor.commit();
 	}
 
@@ -88,7 +89,9 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 
 		initPopWindow(view);
 
-		adapter.load(null, null);
+		loadPreferences();
+
+		adapter.load(null);
 	}
 
 	private void initAnimation() {
@@ -108,18 +111,16 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 		pullList.setOnRefreshListener(this);
 		pullList.setOnItemClickListener(this);
 
-		// View v =
-		// getELActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot,
-		// null);
+		View v = getELActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
 		// footLayout = (LinearLayout) v.findViewById(R.id.footLayout);
-		// footText = (TextView) v.findViewById(R.id.textFoot);
-		// pullList.getRefreshableView().addFooterView(v);
-		// pullList.getRefreshableView().setFooterDividersEnabled(false);
+		TextView footText = (TextView) v.findViewById(R.id.textFoot);
+		footText.setText("No Words in Vocab");
+		pullList.getRefreshableView().setEmptyView(v);
 
-		adapter = new VocabFragmentListAdapter.FlatListAdapter(getELActivity());
+		adapter = new VocabFragmentFlatListAdapter(getELActivity());
 		pullList.setAdapter(adapter);
 
-		adapter.setOnRefreshListener(this);
+		adapter.setOnAdapterListener(this);
 
 		final int maxRecord = getELActivity().getSharedPreferences().getInt(Setting.DICTIONARY_LIST_MAXPERPAGE, 15);
 		adapter.setMaxPerPage(maxRecord);
@@ -162,6 +163,11 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 	}
 
 	@Override
+	public void onItemRemoved(VocabFragmentListAdapter.ItemType type, String text) {
+		//
+	}
+
+	@Override
 	public void onRefresh(PullToRefreshBase<ListView> refreshView) {
 		adapter.refresh();
 	}
@@ -190,45 +196,72 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 		switch (item.getItemId()) {
 		case R.id.el_menu_memory:
 			getELActivity().showFragment(FragmentSwitcher.Type.MEMORY, null);
-			return true;
-		case R.id.el_menu_vocab_sortbyalpha:
-			sortMode = SORT_BY_ALPHA;
-			savePreferences();
-			return true;
-		case R.id.el_menu_vocab_sortbyscore:
-			sortMode = SORT_BY_SCORE;
-			savePreferences();
-			return true;
-		case R.id.el_menu_vocab_groupbynone:
-			sortMode = GROUP_BY_NONE;
-			savePreferences();
-			return true;
-		case R.id.el_menu_vocab_groupbylesson:
-			sortMode = GROUP_BY_LESSON;
-			savePreferences();
-			return true;
-		case R.id.el_menu_vocab_groupbyscore:
-			sortMode = GROUP_BY_SCORE;
-			savePreferences();
-			return true;
-		case R.id.el_menu_vocab_groupbydate:
-			sortMode = GROUP_BY_DATE;
-			savePreferences();
-			return true;
-		default:
 			break;
+		case R.id.el_menu_vocab_edit:
+			if (!adapter.isEditable()) {
+				adapter.setEditable(true);
+
+				if (popWindow.isShowing()) {
+					showPopWindow(false);
+				}
+				pullList.setOnItemClickListener(null);
+
+				item.setTitle(R.string.el_menu_vocab_edit_1);
+			} else {
+				adapter.setEditable(false);
+				pullList.setOnItemClickListener(this);
+				item.setTitle(R.string.el_menu_vocab_edit);
+			}
+			break;
+		case R.id.el_menu_vocab_sortbyalpha:
+			adapter.setSortMode(SORT_BY_ALPHA);
+			savePreferences();
+			reloadList();
+			break;
+		case R.id.el_menu_vocab_sortbyscore:
+			adapter.setSortMode(SORT_BY_SCORE);
+			savePreferences();
+			reloadList();
+			break;
+		case R.id.el_menu_vocab_groupbynone:
+			adapter.setGroupMode(GROUP_BY_NONE);
+			savePreferences();
+			reloadList();
+			break;
+		case R.id.el_menu_vocab_groupbylesson:
+			adapter.setGroupMode(GROUP_BY_LESSON);
+			savePreferences();
+			reloadList();
+			break;
+		case R.id.el_menu_vocab_groupbyscore:
+			adapter.setGroupMode(GROUP_BY_SCORE);
+			savePreferences();
+			reloadList();
+			break;
+		case R.id.el_menu_vocab_groupbydate:
+			adapter.setGroupMode(GROUP_BY_DATE);
+			savePreferences();
+			reloadList();
+			break;
+		default:
+			return super.OnOptionsItemSelected(item);
 		}
 
-		return super.OnOptionsItemSelected(item);
+		return true;
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			getELActivity().showFragment(FragmentSwitcher.Type.MEMORY, null);
-			return true;
+			if (!adapter.isEmpty()) {
+				getELActivity().showFragment(FragmentSwitcher.Type.MEMORY, null);
+				return true;
+			}
 		}
 		return super.onKeyDown(keyCode, event);
 	}
 
+	public void reloadList() {
+		adapter.load(null);
+	}
 }

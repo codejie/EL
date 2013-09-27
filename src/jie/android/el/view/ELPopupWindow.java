@@ -5,6 +5,7 @@ import jie.android.el.utils.Utils;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -128,12 +129,16 @@ public class ELPopupWindow extends LinearLayout {
 	
 	public void show(boolean show) {
 		if (show) {
-			setVisibility(View.VISIBLE);
-			requestFocus();
-			startAnimation(animShow);			
+			if (getVisibility() != View.VISIBLE) {
+				setVisibility(View.VISIBLE);
+				requestFocus();
+				startAnimation(animShow);
+			}
 		} else {
-			startAnimation(animHide);
-			setVisibility(View.GONE);			
+			if (getVisibility() != View.GONE) {
+				startAnimation(animHide);
+				setVisibility(View.GONE);
+			}
 		}
 	}
 

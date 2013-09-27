@@ -25,6 +25,7 @@ import android.widget.TextView;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.database.Word;
+import jie.android.el.fragment.adapter.DictionaryFragmentListAdapter;
 import jie.android.el.utils.ScoreHelper;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;

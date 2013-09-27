@@ -14,10 +14,10 @@
             <item android:id="@+id/el_menu_vocab_edit" android:showAsAction="always" android:title="@string/el_menu_vocab_edit"/>
             <item android:id="@+id/el_menu_vocab_sortbyalpha" android:title="@string/el_menu_vocab_sortbyalpha"/>
             <item android:id="@+id/el_menu_vocab_sortbyscore" android:title="@string/el_menu_vocab_sortbyscore"/>
-            <item android:id="@+id/el_menu_vocab_groupbylesson" android:title="@string/el_menu_vocab_groupbylesson"/>
-            <item android:id="@+id/el_menu_vocab_groupbyscore" android:title="@string/abs__action_bar_home_description"/>
-            <item android:id="@+id/el_menu_vocab_groupbydate" android:title="@string/el_menu_vocab_groupbydate"/>
-            <item android:id="@+id/el_menu_vocab_groupbynone" android:title="@string/el_menu_vocab_groupbynone"/>
+            <item android:id="@+id/el_menu_vocab_groupbylesson" android:title="@string/el_menu_vocab_groupbylesson" android:enabled="false"/>
+            <item android:id="@+id/el_menu_vocab_groupbyscore" android:title="@string/el_menu_vocab_groupbyscore" android:enabled="false"/>
+            <item android:id="@+id/el_menu_vocab_groupbydate" android:title="@string/el_menu_vocab_groupbydate" android:enabled="false"/>
+            <item android:id="@+id/el_menu_vocab_groupbynone" android:title="@string/el_menu_vocab_groupbynone" android:enabled="false"/>
         </menu>
     </item>
 </menu>

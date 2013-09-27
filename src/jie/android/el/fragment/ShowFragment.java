@@ -10,8 +10,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.RemoteException;
 import android.view.KeyEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.webkit.WebView;
@@ -231,6 +233,19 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 		});
 		webView.setWebViewClient(client);
+		webView.setOnTouchListener(new OnTouchListener() {
+
+			@Override
+			public boolean onTouch(View v, MotionEvent event) {
+				if (event.getAction() == MotionEvent.ACTION_DOWN) {
+					if (popWindow.isShowing()) {
+						showPopWindow(false);
+					}
+				}
+				return false;
+			}
+
+		});
 
 		popWindow = (ELPopupWindow) view.findViewById(R.id.eLPopupWindow1);
 		popWindow.setOnPopupWindowListener(new OnPopupWindowDefaultListener(popWindow) {

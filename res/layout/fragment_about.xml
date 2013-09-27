@@ -32,6 +32,7 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:layout_marginTop="10dp"
+        android:clickable="true"
         android:gravity="center_horizontal"
         android:text="For more information, please visit http://www.cppblog.com/codejie" />
 

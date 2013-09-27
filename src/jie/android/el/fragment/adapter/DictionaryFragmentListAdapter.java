@@ -1,4 +1,4 @@
-package jie.android.el.fragment;
+package jie.android.el.fragment.adapter;
 
 import java.util.ArrayList;
 import java.util.List;

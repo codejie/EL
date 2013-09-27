@@ -27,11 +27,13 @@ public class AboutFragment extends BaseFragment {
 
 	private static final String PACKAGE_URL = "http://item.taobao.com/item.htm?id=19680021933";
 	private static final String EL_DOWNLOAD_URL = "http://www.cppblog.com/codejie/archive/2010/07/23/108996.html";
-	
+	private static final String EL_HOMESITE_URL = "http://www.cppblog.com/codejie";
+
 	private class PackageAdapter extends SimpleCursorAdapter {
-		
+
 		public PackageAdapter(Context context, Cursor c) {
-			super(context, R.layout.layout_newpackage_item, c, new String[] { "_id", "title", "updated", "desc" }, new int[] { R.id.textView1, R.id.textView2, R.id.textView3, R.id.textView4 }, 0);
+			super(context, R.layout.layout_newpackage_item, c, new String[] { "_id", "title", "updated", "desc" }, new int[] { R.id.textView1, R.id.textView2,
+					R.id.textView3, R.id.textView4 }, 0);
 		}
 	}
 
@@ -39,11 +41,11 @@ public class AboutFragment extends BaseFragment {
 	private TextView latest;
 	private Cursor cursor;
 	private ContentObserver observer;
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		this.setLayoutRes(R.layout.fragment_about);
 	}
 
@@ -52,7 +54,7 @@ public class AboutFragment extends BaseFragment {
 		if (observer != null) {
 			getELActivity().getContentResolver().unregisterContentObserver(observer);
 		}
-		
+
 		if (cursor != null) {
 			cursor.close();
 		}
@@ -62,9 +64,9 @@ public class AboutFragment extends BaseFragment {
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		
+
 		loadPackageList(view);
-		
+
 		Button check = (Button) view.findViewById(R.id.button1);
 		check.setOnClickListener(new OnClickListener() {
 
@@ -72,9 +74,20 @@ public class AboutFragment extends BaseFragment {
 			public void onClick(View v) {
 				onCheckNewPackages();
 			}
-			
+
 		});
-		
+
+		TextView site = (TextView) view.findViewById(R.id.textView6);
+		site.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(EL_HOMESITE_URL));
+				startActivity(intent);
+			}
+
+		});
+
 		TextView ver = (TextView) view.findViewById(R.id.textView2);
 		ver.setText("version " + getELActivity().getResources().getText(R.string.app_version).toString());
 	}
@@ -88,37 +101,37 @@ public class AboutFragment extends BaseFragment {
 			public void onChange(boolean selfChange) {
 				loadLatest(v);
 				loadList();
-			}			
+			}
 		};
-		
+
 		getELActivity().getContentResolver().registerContentObserver(ELContentProvider.URI_EL_NEW_PACKAGES, true, observer);
-		
+
 		loadLatest(v);
 		loadList();
 	}
-	
+
 	protected void loadLatest(View v) {
 		TextView tv = (TextView) v.findViewById(R.id.textView7);
 		tv.setVisibility(View.GONE);
-		
+
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_SYS_INFO, ELDBAccess.SYSINFO_LATESTVERSION);
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "value" }, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
-				String ver = cursor.getString(0); 
+				String ver = cursor.getString(0);
 				if (!ver.equals(getELActivity().getResources().getText(R.string.app_version).toString())) {
 					tv.setText("(latest version is " + ver + ")");
 					tv.setVisibility(View.VISIBLE);
 					tv.setClickable(true);
 					tv.setFocusable(true);
 					tv.setOnClickListener(new OnClickListener() {
-	
+
 						@Override
 						public void onClick(View v) {
 							Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(EL_DOWNLOAD_URL));
 							startActivity(intent);
 						}
-						
+
 					});
 				}
 			}
@@ -126,27 +139,28 @@ public class AboutFragment extends BaseFragment {
 			cursor.close();
 		}
 	}
-	
+
 	protected void loadList() {
 		if (cursor != null) {
 			cursor.close();
 		}
-		
-		cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_NEW_PACKAGES, new String[] { "idx as _id", "title", "updated", "desc" }, null, null, "idx desc");		
+
+		cursor = getELActivity().getContentResolver().query(ELContentProvider.URI_EL_NEW_PACKAGES, new String[] { "idx as _id", "title", "updated", "desc" },
+				null, null, "idx desc");
 		list.setAdapter(new PackageAdapter(getELActivity(), cursor));
-		
+
 		list.setOnItemClickListener(new OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				onPackageItemClick(position, id);
-			}			
-		});		
+			}
+		});
 	}
 
 	protected void onPackageItemClick(int position, long id) {
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(PACKAGE_URL));
-		startActivity(intent);		
+		startActivity(intent);
 	}
 
 	protected void onCheckNewPackages() {
@@ -160,5 +174,5 @@ public class AboutFragment extends BaseFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}	
+	}
 }
