@@ -109,7 +109,7 @@ public class AudioPlayer {
 				player = null;
 			}
 		}		
-		showNotification(false, null);
+		showNotification(false);
 		
 		changePlayState(PlayState.NONE);
 	}
@@ -131,6 +131,11 @@ public class AudioPlayer {
 				new Thread(new TickCounterRunnable()).start();
 			}
 			
+			showNotification(false);
+		} else {
+			if (isPlaying() || isPause()) {
+				showNotification(true);
+			}
 		}
 	}
 	
@@ -222,9 +227,9 @@ public class AudioPlayer {
 		
 		if (listener != null) {
 			new Thread(new TickCounterRunnable()).start();
+		} else {
+			showNotification(true);
 		}
-		
-		showNotification(true, context.getResources().getString(R.string.el_play_el_is_playing));		
 	}
 	
 	public void pause() {
@@ -232,8 +237,9 @@ public class AudioPlayer {
 			player.pause();
 			
 			changePlayState(PlayState.PAUSED);
-			
-			showNotification(true, context.getResources().getString(R.string.el_play_el_pause_playback));			
+			if (listener == null) {
+				showNotification(true);
+			}
 		}
 	}
 	
@@ -307,15 +313,22 @@ public class AudioPlayer {
 		}		
 	}
 	
-	private void showNotification(boolean show, final String title) {
+	private void showNotification(boolean show) {
 		
 		Intent intent = null;
 		
 		if (show) {
-			intent = new Intent(NotificationAction.ACTION_SHOW);
-			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
-			intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
-			intent.putExtra(NotificationAction.DATA_TEXT, title);
+			if (listener == null) {				
+				intent = new Intent(NotificationAction.ACTION_SHOW);
+				intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
+				intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
+				if (playState == PlayState.PLAYING) {
+					intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_is_playing));
+				} else {
+					intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_pause_playback));
+				}
+				//intent.putExtra(NotificationAction.DATA_TEXT, title);
+			}
 		} else {
 			intent = new Intent(NotificationAction.ACTION_REMOVE);
 			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());

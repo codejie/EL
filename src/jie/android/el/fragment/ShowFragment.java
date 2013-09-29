@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import android.content.ContentUris;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
@@ -24,6 +25,8 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.CommonConsts.FragmentArgument;
+import jie.android.el.CommonConsts.NotificationAction;
+import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.Setting;
@@ -541,8 +544,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			if (popWindow.isShowing()) {
 				showPopWindow(false);
 			} else {
-				setAudioPlayListener(false);
 				stopAudio();
+				setAudioPlayListener(false);				
 				return false;
 			}
 			return true;

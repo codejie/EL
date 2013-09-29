@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.widget.RemoteViews;
 
 public class NotificationSetter {
 	
@@ -32,12 +33,8 @@ public class NotificationSetter {
 	
 	public int show(NotificationType type, final String title, final String text) {
 		
-		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
-		
 		Intent result = new Intent(context, ELActivity.class);
 		PendingIntent intent = PendingIntent.getActivity(context, 0, result, 0);
-
-		builder.setContentIntent(intent);
 		
 		Notification nt = null;
 		int id = -1;
@@ -46,13 +43,13 @@ public class NotificationSetter {
 			
 			manager.cancel(playId);
 			
-			nt = buildPlayNotification(builder, title, text);
+			nt = buildPlayNotification(intent, title, text);
 			id = playId;
 		} else if (type == NotificationType.IMPORT) {
-			nt = buildImportNotification(builder, title, text);
+			nt = buildImportNotification(intent, title, text);
 			id = importId;
 		} else if (type == NotificationType.WARNING) {
-			nt = buildWarningNotification(builder, title, text);
+			nt = buildWarningNotification(intent, title, text);
 			id = ++ otherId;
 		} else {
 			return -1;
@@ -63,29 +60,44 @@ public class NotificationSetter {
 		return id;
 	}
 	
-	private Notification buildPlayNotification(Builder builder, String title, String text) {
-		builder.setSmallIcon(R.drawable.el_nt_play);
-//		BitmapFactory.Options opts = new BitmapFactory.Options();
-////		opts.inScaled = true;
-//		opts.outHeight = 64;
-//		opts.outWidth = 64;
-//		builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.el_nt_play, opts));
-		builder.setContentText(text);
-		builder.setContentTitle(title);
-		builder.setTicker(title);
+	private Notification buildPlayNotification(PendingIntent intent, String title, String text) {
 		
-		Notification nt = builder.build();
+		RemoteViews rv = new RemoteViews(context.getPackageName(),R.layout.layout_notification_play);
+		
+		Notification nt = new Notification();
+		nt.icon = R.drawable.el_nt_play;
+		nt.tickerText = title;
+		//nt.tickerView = rv;
+		//nt.bigContentView = rv;
+		nt.contentView = rv;
+		nt.contentIntent = intent;
+//		
+//		builder.setSmallIcon(R.drawable.el_nt_play);
+//		builder.setContentText(text);
+//		builder.setContentTitle(title);
+//		builder.setTicker(title);
+//		
+//		Notification nt = builder.build();
+//		
+//		RemoteViews rv = new RemoteViews(context.getPackageName(),R.layout.layout_notification_play);
+
+		
+		
 		nt.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT; 
 		
 		return nt;
 	}
 
-	private Notification buildImportNotification(Builder builder, String title,	String text) {
+	private Notification buildImportNotification(PendingIntent intent, String title,	String text) {
+		
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+		
 		builder.setSmallIcon(R.drawable.el_nt_import);
 //		builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.el_nt_import));
 		builder.setContentText(text);
 		builder.setContentTitle(title);
 		builder.setTicker(title);
+		builder.setContentIntent(intent);
 
 		Notification nt = builder.build();
 		nt.flags = Notification.FLAG_AUTO_CANCEL;//FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT; 
@@ -93,12 +105,17 @@ public class NotificationSetter {
 		return nt;
 	}
 
-	private Notification buildWarningNotification(Builder builder, String title, String text) {
+	private Notification buildWarningNotification(PendingIntent intent, String title, String text) {
+		
+		NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+		
 		builder.setSmallIcon(R.drawable.el_nt_warning);
 //		builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.el_nt_warning));
 		builder.setContentText(text);
 		builder.setContentTitle(title);
 		builder.setTicker(title);	
+		builder.setContentIntent(intent);
+		
 		Notification nt = builder.build();
 		nt.flags = Notification.FLAG_AUTO_CANCEL; 
 
