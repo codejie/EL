@@ -18,7 +18,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_above="@+id/imageView3"
+        android:layout_toLeftOf="@+id/imageView5"
         android:layout_toRightOf="@+id/imageView1"
+        android:layout_marginTop="4dp"        
         android:paddingLeft="8dp"
         android:text="Medium Text"
         android:textAppearance="?android:attr/textAppearanceMedium" />
@@ -30,6 +32,7 @@
         android:layout_alignLeft="@+id/textView1"
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="46dp"
+        android:background="@drawable/el_player_bg"
         android:clickable="true"
         android:src="@drawable/el_audio_prev" />
 
@@ -40,6 +43,7 @@
         android:layout_below="@+id/textView1"
         android:layout_marginLeft="24dp"
         android:layout_toRightOf="@+id/imageView2"
+        android:background="@drawable/el_player_bg"
         android:clickable="true"
         android:src="@drawable/el_audio_play" />
 
@@ -50,7 +54,19 @@
         android:layout_alignParentBottom="true"
         android:layout_marginLeft="24dp"
         android:layout_toRightOf="@+id/imageView4"
+        android:background="@drawable/el_player_bg"
         android:clickable="true"
         android:src="@drawable/el_audio_next" />
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginRight="4dp"
+        android:background="@drawable/el_player_bg"
+        android:clickable="true"
+        android:src="@drawable/el_close" />
 
 </RelativeLayout>

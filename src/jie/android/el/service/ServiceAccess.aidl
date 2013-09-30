@@ -24,7 +24,4 @@ interface ServiceAccess {
 	boolean checkNewPackages();
 	
 	void setUIState(in int state);
-
-	int setNotification(in int type, in String title, in String text);
-	void removeNotification(in int type, in int id);
 }

@@ -141,7 +141,7 @@ public class AudioPlayer {
 	
 	public void setData(int index) {
 
-		releasePlayer();
+//		releasePlayer();
 		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);			
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
@@ -243,6 +243,25 @@ public class AudioPlayer {
 		}
 	}
 	
+	protected void togglePlay() {
+		if (isPlaying()) {
+			player.pause();
+			changePlayState(PlayState.PAUSED);
+			if (listener == null) {
+				showNotification(true);
+			}			
+		} else {
+			player.start();
+			changePlayState(PlayState.PLAYING);
+			
+			if (listener != null) {
+				new Thread(new TickCounterRunnable()).start();
+			} else {
+				showNotification(true);
+			}			
+		}
+	}
+	
 	public void stop() {
 		if (isPlaying() || isPause()) {
 			player.stop();
@@ -292,10 +311,10 @@ public class AudioPlayer {
 		return player.getCurrentPosition();
 	}
 
-	private void getNextAudio() {	
+	private void getNextAudio(boolean next) {	
 		boolean random = Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
-		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx" }, random, true);
+		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx" }, random, next);
 		
 		try {
 			if (cursor.moveToFirst()) {
@@ -324,8 +343,10 @@ public class AudioPlayer {
 				intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
 				if (playState == PlayState.PLAYING) {
 					intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_is_playing));
+					intent.putExtra(NotificationAction.DATA_STATE, true);
 				} else {
 					intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_pause_playback));
+					intent.putExtra(NotificationAction.DATA_STATE, false);
 				}
 				//intent.putExtra(NotificationAction.DATA_TEXT, title);
 			}
@@ -392,7 +413,7 @@ public class AudioPlayer {
 		}
 		
 		if (!Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
-			getNextAudio();
+			getNextAudio(true);
 		}
 	}
 	
@@ -423,6 +444,21 @@ public class AudioPlayer {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		}
+	}
+
+	public void onNotificationClick(final String action) {
+		if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
+			this.togglePlay();
+		}
+		else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
+			this.getNextAudio(true);
+		}
+		else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
+			this.getNextAudio(false);
+		}
+		else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
+			this.stop();
 		}
 	}
 	

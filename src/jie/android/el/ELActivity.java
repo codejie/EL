@@ -404,29 +404,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		}
 	}
 
-	public int showNotification(NotificationType type, final String title, final String text) {
-		if (serviceAccess != null) {
-			try {
-				return serviceAccess.setNotification(type.getId(), title, text);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		return -1;
-	}
-	
-	public void removeNotification(NotificationType type, int id) {
-		if (serviceAccess != null) {
-			try {
-				serviceAccess.removeNotification(type.getId(), id);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		fragmentSwitcher.saveInstanceState(outState);

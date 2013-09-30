@@ -97,11 +97,18 @@ public interface CommonConsts {
 	public interface NotificationAction {
 		public static final String ACTION_SHOW = "jie.android.el.action.show";
 		public static final String ACTION_REMOVE = "jie.android.el.action.remove";
+		public static final String ACTION_CLICK = "jie.android.el.action.click";
+		public static final String ACTION_CLICK_PREV = "jie.android.el.action.click_prev";
+		public static final String ACTION_CLICK_NEXT = "jie.android.el.action.click_next";
+		public static final String ACTION_CLICK_PLAY = "jie.android.el.action.click_play";
+		public static final String ACTION_CLICK_CLOSE = "jie.android.el.action.click_close";
+		
 
 		public static final String DATA_TYPE = "jie.android.el.data.type";
 		public static final String DATA_TITLE = "jie.android.el.data.title";
 		public static final String DATA_TEXT = "jie.android.el.data.text";
 		public static final String DATA_ID = "jie.android.el.data.id";
+		public static final String DATA_STATE = "jie.android.el.data.state";
 	}
 
 	public interface ListItemFlag {

@@ -99,19 +99,9 @@ public class ELService extends Service {
 			onUIStateChanged(state);
 		}
 
-		@Override
-		public int setNotification(int type, String title, String text) throws RemoteException {
-			return onShowNotification(type, title, text);
-		}
-
-		@Override
-		public void removeNotification(int type, int id) throws RemoteException {
-			onRemoveNotification(type, id);
-		}
-
 	}
 	
-	private class NotificationReceiver extends BroadcastReceiver {
+	public class NotificationReceiver extends BroadcastReceiver {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
@@ -121,12 +111,15 @@ public class ELService extends Service {
 				final int type = intent.getExtras().getInt(NotificationAction.DATA_TYPE);
 				final String title = intent.getExtras().getString(NotificationAction.DATA_TITLE);
 				final String text = intent.getExtras().getString(NotificationAction.DATA_TEXT);
+				final boolean play = intent.getExtras().getBoolean(NotificationAction.DATA_STATE, false);
 				if (title != null && text != null) {
-					onShowNotification(type, title, text);
+					onShowNotification(type, play, title, text);
 				}
 			} else if (action.equals(NotificationAction.ACTION_REMOVE)) {
 				onRemoveNotification(intent.getExtras().getInt(NotificationAction.DATA_TYPE), intent.getExtras().getInt(NotificationAction.DATA_ID));
-			}			
+			} else if (action.startsWith(NotificationAction.ACTION_CLICK)) {
+				onNotificationClick(action);
+			}
 		}
 	}
 
@@ -236,6 +229,10 @@ public class ELService extends Service {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(NotificationAction.ACTION_SHOW);
 		filter.addAction(NotificationAction.ACTION_REMOVE);
+		filter.addAction(NotificationAction.ACTION_CLICK_PREV);
+		filter.addAction(NotificationAction.ACTION_CLICK_NEXT);
+		filter.addAction(NotificationAction.ACTION_CLICK_PLAY);
+		filter.addAction(NotificationAction.ACTION_CLICK_CLOSE);
 		
 		registerReceiver(notificationReceiver, filter);
 	}
@@ -306,11 +303,11 @@ public class ELService extends Service {
 		}
 	}
 
-	public int onShowNotification(int level, String title, String text) {
+	public int onShowNotification(int level, boolean play, String title, String text) {
 		if (notificationSetter != null) {
 			NotificationType type = NotificationType.getLevel(level);
 			if (type != null) {
-				notificationSetter.show(type, title, text);
+				notificationSetter.show(type, play, title, text);
 			}
 		}
 		return 0;
@@ -323,5 +320,12 @@ public class ELService extends Service {
 				notificationSetter.remove(type, id);
 			}
 		}
-	}	
+	}
+	
+	public void onNotificationClick(final String action) {
+		if (player != null) {
+			player.onNotificationClick(action);
+		}
+	}
+	
 }
