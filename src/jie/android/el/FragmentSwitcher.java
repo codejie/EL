@@ -21,7 +21,7 @@ public class FragmentSwitcher {
 	
 	public enum Type {
 		
-		LIST("list", false), SHOW("show", true), ABOUT("about", true), SETTING("setting", true),
+		LIST("list", false), SHOW("show", false), ABOUT("about", true), SETTING("setting", true),
 		DOWNLOAD("download", true), DICTIONARY("dictionary", true), VOCAB("vocab", true), MEMORY("memory", true);
 		
 		private final String title;
@@ -196,5 +196,10 @@ public class FragmentSwitcher {
 	public void setOnSwitchListener(OnSwitchListener listener) {
 		onSwitchListener = listener;
 	}
-	
+
+	public void remvoeAll() {
+		while (fragmentManager.getBackStackEntryCount() > 0) {
+			fragmentManager.popBackStackImmediate();
+		}
+	}
 }

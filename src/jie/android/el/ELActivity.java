@@ -45,7 +45,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	private static final String Tag = ELActivity.class.getSimpleName();
 
 	private ServiceAccess serviceAccess = null;
-//	private PackageImporter packageImporter = null;
+	private boolean isServiceNotificationRegisted = false;
 	
 	private FragmentSwitcher fragmentSwitcher = null;
 	
@@ -90,24 +90,27 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 		@Override
 		public void onServiceConnected(ComponentName name, IBinder binder) {
-			serviceAccess = ServiceAccess.Stub.asInterface(binder);
+			serviceAccess = ServiceAccess.Stub.asInterface(binder);			
+			registServiceNotification(true);
 			
-			try {
-				serviceAccess.regServiceNotification(0, serviceNotification);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			
+//			try {
+//				serviceAccess.regServiceNotification(0, serviceNotification);
+//			} catch (RemoteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
-			try {
-				serviceAccess.unregServiceNotification(0);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			registServiceNotification(false);
+//			try {
+//				serviceAccess.unregServiceNotification(0);
+//			} catch (RemoteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			serviceAccess = null;
 		}
 		
@@ -126,24 +129,19 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		
 		this.setContentView(R.layout.activity_el);
 
-//		initService();
-//		initSpeaker();
-//		initTranslator();
+		initService();
+		initSpeaker();
+		initTranslator();
 ////		initPackageImporter();
 //	
-//		handler.sendEmptyMessage(UIMsg.UI_CREATED);
+		handler.sendEmptyMessage(UIMsg.UI_CREATED);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		initService();
-		initSpeaker();
-		initTranslator();
-//		initPackageImporter();
-	
-		handler.sendEmptyMessage(UIMsg.UI_CREATED);		
+
+		registServiceNotification(true);
 	}
 
 	private boolean checkPath() {
@@ -180,15 +178,18 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	protected void onPause() {
 		super.onPause();
 		
-		if (fragmentSwitcher.isRemovedType()) {
-			fragmentSwitcher.showPrevFragment();
-		}		
+		fragmentSwitcher.remvoeAll();
+		
+		registServiceNotification(false);
+//		if (fragmentSwitcher.isRemovedType()) {
+//			fragmentSwitcher.showPrevFragment();
+//		}		
 	}
 
 	@Override
 	protected void onStop() {
-		releaseSpeasker();
-		releaseService(false);
+//		releaseSpeasker();
+//		releaseService(false);
 
 		super.onStop();
 	}
@@ -197,8 +198,8 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	protected void onDestroy() {
 		Log.d(Tag, "onDestroy");
 		
-//		releaseSpeasker();
-//		releaseService(false);
+		releaseSpeasker();
+		releaseService(false);
 		
 		super.onDestroy();
 	}
@@ -398,8 +399,8 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	protected void onServiceNotification(int state) {
 		if (state == ServiceState.READY.getId()) {
-			showProgressDialog(false, null);
-			fragmentSwitcher.show(FragmentSwitcher.Type.LIST);
+			showFragment(FragmentSwitcher.Type.LIST, null);
+			showProgressDialog(false, null);			
 		} else if (state == ServiceState.PLAYING.getId()) {
 			Bundle args = new Bundle();
 			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
@@ -460,4 +461,25 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			}
 		}
 	}
+	
+	private void registServiceNotification(boolean reg) {
+		if (serviceAccess == null || isServiceNotificationRegisted == reg) {
+			return;
+		}
+
+		try {
+			if (reg) {
+				serviceAccess.regServiceNotification(0, serviceNotification);
+			} else {
+				serviceAccess.unregServiceNotification(0);
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		isServiceNotificationRegisted = reg;
+	}
+	
+	
 }

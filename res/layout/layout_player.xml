@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#EE666666"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -27,7 +28,8 @@
             android:clickable="true"
             android:gravity="center_horizontal"
             android:text="00:00/00:00"
-            android:textAlignment="textEnd" />
+            android:textAlignment="textEnd"
+            android:textColor="#ff00aaff" />
 
     </LinearLayout>
 

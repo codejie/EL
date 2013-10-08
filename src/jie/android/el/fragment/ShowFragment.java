@@ -202,7 +202,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		this.setLayoutRes(R.layout.fragment_show);
+		this.setLayoutRes(R.layout.fragment_show1);
 	}
 
 	@Override
