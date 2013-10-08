@@ -25,7 +25,7 @@ import android.os.Message;
 import android.util.Log;
 
 public class PackageImporter {
-	
+
 	private static final String Tag = PackageImporter.class.getSimpleName();
 
 	private class ImportRunnable implements Runnable {
@@ -33,106 +33,110 @@ public class PackageImporter {
 		private String zipfile = null;
 		private String local = null;
 		private String dbfile = null;
-		private String output = null;		
-		
+		private String output = null;
+
 		public ImportRunnable(String... args) {
 			local = args[0];
 			zipfile = args[1] + args[0];
-			output = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL;			
+			output = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL;
 		}
-		
+
 		@Override
 		public void run() {
 			if (taskRunning) {
 				return;
 			}
-			
+
 			taskRunning = false;
-			//unzip
+			// unzip
 			dbfile = unzipPackage(zipfile, output);
 			if (dbfile == null) {
 				Log.w(Tag, "cannot find db file in package - " + local);
-				showNotification(false, local, "EL imports package failed.");				
+				showNotification(false, local, "EL imports package failed.");
 				return;
 			}
 			dbfile = output + File.separator + dbfile;
-			
-			//import db			
+
+			// import db
 			if (!importPackage(dbfile)) {
 				Log.w(Tag, "import package failed - " + dbfile);
-				showNotification(false, local, "EL imports package failed.");				
+				showNotification(false, local, "EL imports package failed.");
 				return;
 			}
-			
-			showNotification(true, local, "EL imports package successfully");				
+
+			showNotification(true, local, "EL imports package successfully");
 
 			Utils.removeFile(dbfile);
-			
-			packageList.remove(local);			
-			
+
+			packageList.remove(local);
+
 			startImport();
 		}
-		
+
 	}
-	
-//	private class ImportTask extends AsyncTask<String, Void, Boolean> {
-//
-//		private String zipfile = null;
-//		private String local = null;
-//		private String dbfile = null;
-//		private String output = null;
-//		
-//		@Override
-//		protected Boolean doInBackground(String... args) {
-//			local = args[0];
-//			zipfile = args[1] + args[0];
-//			output = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL;
-//			
-//			//unzip
-//			dbfile = unzipPackage(zipfile, output);
-//			if (dbfile == null) {
-//				Log.w(Tag, "cannot find db file in package - " + local);
-//				return Boolean.FALSE;
-//			}
-//			dbfile = output + File.separator + dbfile;
-//			
-//			//import db			
-//			if (importPackage(dbfile)) {
-//				return Boolean.TRUE;
-//			} else {
-//				Log.w(Tag, "import package failed - " + dbfile);				
-//				return Boolean.FALSE;
-//			}
-//		}
-//
-//		@Override
-//		protected void onPostExecute(Boolean result) {
-//					
-//			if (result != Boolean.FALSE) {
-//				showNotification(true, local, "EL imports package successfully");				
-//			} else {
-//				Log.e(Tag, "import failed - zipfile : " + zipfile);				
-//				showNotification(false, local, "EL imports package failed.");
-//			}
-//
-//			Utils.removeFile(dbfile);
-//			Utils.removeFile(zipfile);
-//			
-//			packageList.remove(local);			
-//			
-//			taskRunning = false;
-//			
-//			startImport();
-//		}
-//	}
-	
+
+	// private class ImportTask extends AsyncTask<String, Void, Boolean> {
+	//
+	// private String zipfile = null;
+	// private String local = null;
+	// private String dbfile = null;
+	// private String output = null;
+	//
+	// @Override
+	// protected Boolean doInBackground(String... args) {
+	// local = args[0];
+	// zipfile = args[1] + args[0];
+	// output = Utils.getExtenalSDCardDirectory() +
+	// CommonConsts.AppArgument.PATH_EL;
+	//
+	// //unzip
+	// dbfile = unzipPackage(zipfile, output);
+	// if (dbfile == null) {
+	// Log.w(Tag, "cannot find db file in package - " + local);
+	// return Boolean.FALSE;
+	// }
+	// dbfile = output + File.separator + dbfile;
+	//
+	// //import db
+	// if (importPackage(dbfile)) {
+	// return Boolean.TRUE;
+	// } else {
+	// Log.w(Tag, "import package failed - " + dbfile);
+	// return Boolean.FALSE;
+	// }
+	// }
+	//
+	// @Override
+	// protected void onPostExecute(Boolean result) {
+	//
+	// if (result != Boolean.FALSE) {
+	// showNotification(true, local, "EL imports package successfully");
+	// } else {
+	// Log.e(Tag, "import failed - zipfile : " + zipfile);
+	// showNotification(false, local, "EL imports package failed.");
+	// }
+	//
+	// Utils.removeFile(dbfile);
+	// Utils.removeFile(zipfile);
+	//
+	// packageList.remove(local);
+	//
+	// taskRunning = false;
+	//
+	// startImport();
+	// }
+	// }
+
 	private Context context = null;
 	private ArrayList<String> packageList = new ArrayList<String>();
-		
+
 	private boolean taskRunning = false;
 
 	public PackageImporter(Context context, String[] packageList) {
 		this.context = context;
+		if (packageList == null) {
+			packageList = PackageImporter.check();
+		}
 		if (packageList != null) {
 			for (final String str : packageList) {
 				this.packageList.add(str);
@@ -141,13 +145,13 @@ public class PackageImporter {
 	}
 
 	public void release() {
-		
+
 	}
-	
+
 	public static String[] check() {
 		String path = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE;
 		File p = new File(path);
-		
+
 		return p.list(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String file) {
@@ -164,27 +168,30 @@ public class PackageImporter {
 				this.packageList.add(str);
 			}
 		}
-		
+
 		startImport();
 	}
-	
+
 	public void startImport() {
 		if (packageList.size() > 0) {
 			new Thread(new ImportRunnable(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE)).start();
 			Log.d(Tag, "start to import " + packageList.get(0));
 			showNotification(true, packageList.get(0), "EL is importing package..");
-//				new ImportTask().execute(packageList.get(0), Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
+			// new ImportTask().execute(packageList.get(0),
+			// Utils.getExtenalSDCardDirectory() +
+			// CommonConsts.AppArgument.PATH_CACHE);
 		}
 	}
-	
+
 	private String unzipPackage(String file, String output) {
 
-//		String output = Environment.getExternalStorageDirectory() + "/jie/el";
-		
+		// String output = Environment.getExternalStorageDirectory() +
+		// "/jie/el";
+
 		String[] ret = Utils.unzipFile(file, output);
-		
+
 		Utils.removeFile(file);
-				
+
 		if (ret.length > 0) {
 			for (String f : ret) {
 				if (f.startsWith("package") && f.endsWith(".db")) {
@@ -194,16 +201,18 @@ public class PackageImporter {
 		} else {
 			Log.w(Tag, "No file is found in zip package.");
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean importPackage(String dbfile) {
 		try {
-			SQLiteDatabase src = SQLiteDatabase.openDatabase(dbfile, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS |  SQLiteDatabase.OPEN_READONLY);
-			//check info table (skip)
-			//check esl table
-			Cursor cursor = src.query("esl", new String[] {"idx", "title", "script", "audio", "duration", "slowdialog", "explanations", "fastdialog", "flag"}, null, null, null, null, null);
+			SQLiteDatabase src = SQLiteDatabase.openDatabase(dbfile, null, SQLiteDatabase.NO_LOCALIZED_COLLATORS | SQLiteDatabase.OPEN_READONLY);
+			// check info table (skip)
+			// check esl table
+			Cursor cursor = src.query("esl",
+					new String[] { "idx", "title", "script", "audio", "duration", "slowdialog", "explanations", "fastdialog", "flag" }, null, null, null, null,
+					null);
 			try {
 				if (cursor.moveToFirst()) {
 					do {
@@ -223,18 +232,18 @@ public class PackageImporter {
 						} else {
 							context.getContentResolver().update(ELContentProvider.URI_EL_ESL, values, "idx=" + cursor.getInt(0), null);
 						}
-								
+
 					} while (cursor.moveToNext());
-				}				
+				}
 			} finally {
 				cursor.close();
 				src.close();
-			}			
-			
+			}
+
 		} catch (SQLiteException e) {
 			return false;
 		}
-		
+
 		return true;
 	}
 
@@ -247,7 +256,7 @@ public class PackageImporter {
 		} finally {
 			cursor.close();
 		}
-		
+
 		return false;
 	}
 
@@ -262,7 +271,7 @@ public class PackageImporter {
 				byte[] buf = new byte[64 * 1024];
 				try {
 					int size = -1;
-					while((size = is.read(buf)) > 0) {
+					while ((size = is.read(buf)) > 0) {
 						out.write(buf, 0, size);
 					}
 				} finally {
@@ -275,13 +284,17 @@ public class PackageImporter {
 		}
 
 		refresh();
-//		taskRunning = true;
-//		new Thread(new ImportRunnable("package_1.zip", Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE)).start();
-		//new ImportTask().execute("package_1.zip", Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_CACHE);
+		// taskRunning = true;
+		// new Thread(new ImportRunnable("package_1.zip",
+		// Utils.getExtenalSDCardDirectory() +
+		// CommonConsts.AppArgument.PATH_CACHE)).start();
+		// new ImportTask().execute("package_1.zip",
+		// Utils.getExtenalSDCardDirectory() +
+		// CommonConsts.AppArgument.PATH_CACHE);
 	}
 
 	private void showNotification(boolean succ, final String title, final String text) {
-		
+
 		Intent intent = new Intent(NotificationAction.ACTION_SHOW);
 		if (succ) {
 			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.IMPORT.getId());
@@ -290,7 +303,7 @@ public class PackageImporter {
 		}
 		intent.putExtra(NotificationAction.DATA_TITLE, title);
 		intent.putExtra(NotificationAction.DATA_TEXT, text);
-		
-		context.sendBroadcast(intent);		
+
+		context.sendBroadcast(intent);
 	}
 }

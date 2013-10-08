@@ -21,7 +21,6 @@ interface ServiceAccess {
 	Word.XmlResult queryWordResult(in String word);
 	
 	boolean addDownloadRequest(in String request, in String check);
-	boolean checkNewPackages();
 	
 	void setUIState(in int state);
 }

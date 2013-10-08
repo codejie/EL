@@ -1,5 +1,6 @@
 package jie.android.el.service;
 
+import jie.android.el.CommonConsts.DownloadRequest;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.PlayState;
@@ -12,10 +13,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 public class ELService extends Service {
 	
@@ -88,12 +91,7 @@ public class ELService extends Service {
 		public boolean addDownloadRequest(String request, String check) throws RemoteException {
 			return onDownloadRequest(request, check);
 		}
-		
-		@Override
-		public boolean checkNewPackages() throws RemoteException {
-			return onCheckNewPackages();
-		}
-		
+				
 		@Override
 		public void setUIState(int state) throws RemoteException {
 			onUIStateChanged(state);
@@ -151,7 +149,7 @@ public class ELService extends Service {
 		
 		final String[] res = PackageImporter.check();
 		if (res != null && res.length > 0) {
-			onPackageReady();			
+			onPackageReady(res);
 		}
 		
 		loadBundledPackage();
@@ -169,8 +167,9 @@ public class ELService extends Service {
 		
 		final String[] res = PackageImporter.check();
 		if (res != null && res.length > 0) {
-			packageImporter = new PackageImporter(this, res);
-			packageImporter.startImport();
+			onPackageReady(res);
+//			packageImporter = new PackageImporter(this, res);
+//			packageImporter.startImport();
 		}
 	}
 
@@ -269,12 +268,12 @@ public class ELService extends Service {
 	}
 	
 	public boolean onCheckNewPackages() {
-		return onDownloadRequest("checknewpackages", null);
+		return onDownloadRequest(DownloadRequest.CHECK_NEW_PACKAGES, null);
 	}
 	
-	public void onPackageReady() {
+	public void onPackageReady(final String[] res) {
 		if (packageImporter == null) {
-			packageImporter = new PackageImporter(this, null);
+			packageImporter = new PackageImporter(this, res);
 			packageImporter.startImport();			
 		} else {
 			packageImporter.refresh();
@@ -305,7 +304,7 @@ public class ELService extends Service {
 
 	public int onShowNotification(int level, boolean play, String title, String text) {
 		if (notificationSetter != null) {
-			NotificationType type = NotificationType.getLevel(level);
+			NotificationType type = NotificationType.getType(level);
 			if (type != null) {
 				notificationSetter.show(type, play, title, text);
 			}
@@ -315,7 +314,7 @@ public class ELService extends Service {
 
 	public void onRemoveNotification(int level, int id) {
 		if (notificationSetter != null) {
-			NotificationType type = NotificationType.getLevel(level);
+			NotificationType type = NotificationType.getType(level);
 			if (type != null) {
 				notificationSetter.remove(type, id);
 			}
@@ -326,6 +325,16 @@ public class ELService extends Service {
 		if (player != null) {
 			player.onNotificationClick(action);
 		}
+	}
+
+	public void onLatestVersionReady(final String file) {
+		Log.d(Tag, "latest version file = " + file);
+		Toast.makeText(this, "ready to install the latest of EL..", Toast.LENGTH_LONG).show();
+		//
+		Intent intent = new Intent(Intent.ACTION_VIEW);
+		intent.setDataAndType(Uri.parse("file://" + file), "application/vnd.android.package-archive");
+		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(intent); 
 	}
 	
 }

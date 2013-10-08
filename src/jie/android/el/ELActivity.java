@@ -126,14 +126,26 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		
 		this.setContentView(R.layout.activity_el);
 
+//		initService();
+//		initSpeaker();
+//		initTranslator();
+////		initPackageImporter();
+//	
+//		handler.sendEmptyMessage(UIMsg.UI_CREATED);
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
 		initService();
 		initSpeaker();
 		initTranslator();
 //		initPackageImporter();
 	
-		handler.sendEmptyMessage(UIMsg.UI_CREATED);
+		handler.sendEmptyMessage(UIMsg.UI_CREATED);		
 	}
-	
+
 	private boolean checkPath() {
 		String sdcard = Utils.getExtenalSDCardDirectory();
 		File f = new File(sdcard + AppArgument.PATH_ROOT);
@@ -174,11 +186,19 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	@Override
+	protected void onStop() {
+		releaseSpeasker();
+		releaseService(false);
+
+		super.onStop();
+	}
+
+	@Override
 	protected void onDestroy() {
 		Log.d(Tag, "onDestroy");
 		
-		releaseSpeasker();
-		releaseService(false);
+//		releaseSpeasker();
+//		releaseService(false);
 		
 		super.onDestroy();
 	}

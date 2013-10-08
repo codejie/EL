@@ -1,10 +1,14 @@
 package jie.android.el.fragment;
 
+import jie.android.el.CommonConsts.DownloadRequest;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.ELDBAccess;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ContentUris;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -13,6 +17,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -24,6 +29,40 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class AboutFragment extends BaseFragment {
+
+	private class DownloadAlertDialog extends DialogFragment {
+
+		private Context context;
+
+		public DownloadAlertDialog(Context context) {
+			super();
+			this.context = context;
+		}
+
+		@Override
+		public Dialog onCreateDialog(Bundle savedInstanceState) {
+			final AlertDialog dlg = new AlertDialog.Builder(context).create();
+			dlg.setIcon(R.drawable.ic_launcher);
+			dlg.setTitle(R.string.el_about_download_dialog_title);
+			dlg.setButton(DialogInterface.BUTTON_POSITIVE, getText(android.R.string.yes), new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					downloadLatestVersion();
+				}
+			});
+
+			dlg.setButton(DialogInterface.BUTTON_NEGATIVE, getText(android.R.string.no), new DialogInterface.OnClickListener() {
+
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dlg.dismiss();
+				}
+			});
+
+			return dlg;
+		}
+	}
 
 	private static final String PACKAGE_URL = "http://item.taobao.com/item.htm?id=19680021933";
 	private static final String EL_DOWNLOAD_URL = "http://www.cppblog.com/codejie/archive/2010/07/23/108996.html";
@@ -38,9 +77,11 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	private ListView list;
-	private TextView latest;
+	// private TextView latest;
 	private Cursor cursor;
 	private ContentObserver observer;
+
+	private boolean loadedCheck = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -73,6 +114,7 @@ public class AboutFragment extends BaseFragment {
 			@Override
 			public void onClick(View v) {
 				onCheckNewPackages();
+				// showDialog();
 			}
 
 		});
@@ -111,6 +153,11 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	protected void loadLatest(View v) {
+		if (loadedCheck) {
+			return;
+		}
+		loadedCheck = true;
+
 		TextView tv = (TextView) v.findViewById(R.id.textView7);
 		tv.setVisibility(View.GONE);
 
@@ -133,11 +180,17 @@ public class AboutFragment extends BaseFragment {
 						}
 
 					});
+					showDialog();
 				}
 			}
 		} finally {
 			cursor.close();
 		}
+	}
+
+	private void showDialog() {
+		DownloadAlertDialog dlg = new DownloadAlertDialog(getELActivity());
+		dlg.show(getFragmentManager(), "download");
 	}
 
 	protected void loadList() {
@@ -165,7 +218,7 @@ public class AboutFragment extends BaseFragment {
 
 	protected void onCheckNewPackages() {
 		try {
-			if (getELActivity().getServiceAccess().checkNewPackages()) {
+			if (getELActivity().getServiceAccess().addDownloadRequest(DownloadRequest.CHECK_NEW_PACKAGES, null)) {
 				Toast.makeText(getELActivity(), "retrieving the info of new packages..", Toast.LENGTH_SHORT).show();
 			} else {
 				Toast.makeText(getELActivity(), "check for new packages failed.", Toast.LENGTH_SHORT).show();
@@ -174,5 +227,26 @@ public class AboutFragment extends BaseFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+
+	protected void downloadLatestVersion() {
+		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_SYS_INFO, ELDBAccess.SYSINFO_LATESTPACKAGE);
+		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "value" }, null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				String link = cursor.getString(0);
+				if (getELActivity().getServiceAccess().addDownloadRequest(DownloadRequest.DOWNLOAD_LATEST_VERSION, link)) {
+					Toast.makeText(getELActivity(), "downloading latest version of EL..", Toast.LENGTH_SHORT).show();
+				} else {
+					Toast.makeText(getELActivity(), "try to download latest version failed.", Toast.LENGTH_SHORT).show();
+				}
+			}
+		} catch (RemoteException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			cursor.close();
+		}
+
 	}
 }

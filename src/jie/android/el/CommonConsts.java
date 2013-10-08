@@ -80,7 +80,7 @@ public interface CommonConsts {
 			return this.ordinal();
 		}
 
-		public static NotificationType getLevel(int id) {
+		public static NotificationType getType(int id) {
 
 			if (id == PLAY.getId()) {
 				return PLAY;
@@ -141,5 +141,11 @@ public interface CommonConsts {
 				return null;
 			}
 		}
+	}
+	
+	public interface DownloadRequest {
+		public static final String SKYDRIVE_AUTHORIZATION_KEY = "3BAF6CAC74F7919";
+		public static final String CHECK_NEW_PACKAGES = "checknewpackages";
+		public static final String DOWNLOAD_LATEST_VERSION = "downloadlatestversion";
 	}
 }
