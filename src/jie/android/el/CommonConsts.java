@@ -45,6 +45,8 @@ public interface CommonConsts {
 		public static final String MEMORY_AUTO_SPEAK = "memory_auto_speak";
 		public static final String VOCAB_SORT_MODE = "vocab_sort_mode";
 		public static final String VOCAB_GROUP_MODE = "vocab_group_mode";
+		
+		public static final String ABOUT_DIALOG_SHOWN = "about_dialog_shown"; 
 	}
 
 	public interface UIMsg {

@@ -7,7 +7,7 @@
     <string name="el_setting_content_display">Content Display Preference</string>
     <string name="el_setting_content_font_medium">Medium Font Size</string>
     <string name="el_setting_content_font_large">Large Font Size</string>
-    <string name="app_version">1.5.0</string>
+    <string name="app_version">1.4.1</string>
     <string name="app_author">codejie</string>
     <string name="app_email">codejie@gmail.com</string>
     <string name="el_menu_show_slowdialog">Slow Dialog</string>
@@ -26,7 +26,7 @@
     <string name="el_setting_dictionary_notextension">Don\'t Load Extension Words</string>
     <string name="el_fragment_about_checkpackage">Check for new packages</string>
     <string name="el_play_el_is_playing">EL is playing..</string>
-    <string name="el_play_el_pause_playback">EL pause playbase..</string>
+    <string name="el_play_el_pause_playback">EL pause playback..</string>
     <string name="el_menu_vocab">My Vocab</string>
     <string name="el_menu_about">About</string>
     <string name="el_menu_download">Download</string>

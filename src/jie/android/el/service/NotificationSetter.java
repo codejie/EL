@@ -87,7 +87,7 @@ public class NotificationSetter {
 		} else {
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
 
-			builder.setSmallIcon(R.drawable.el_nt_import);
+			builder.setSmallIcon(R.drawable.el_nt_play);
 			// builder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
 			// R.drawable.el_nt_import));
 			builder.setContentText(text);

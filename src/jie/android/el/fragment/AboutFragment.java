@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import jie.android.el.CommonConsts.DownloadRequest;
+import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.ELDBAccess;
@@ -81,7 +82,7 @@ public class AboutFragment extends BaseFragment {
 	private Cursor cursor;
 	private ContentObserver observer;
 
-	private boolean loadedCheck = false;
+//	private boolean loadedCheck = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -153,10 +154,6 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	protected void loadLatest(View v) {
-		if (loadedCheck) {
-			return;
-		}
-		loadedCheck = true;
 
 		TextView tv = (TextView) v.findViewById(R.id.textView7);
 		tv.setVisibility(View.GONE);
@@ -189,6 +186,11 @@ public class AboutFragment extends BaseFragment {
 	}
 
 	private void showDialog() {
+		if (hasShowDialog()) {
+			return;
+		}
+		hasShowDialog(true);
+		
 		DownloadAlertDialog dlg = new DownloadAlertDialog(getELActivity());
 		dlg.show(getFragmentManager(), "download");
 	}
@@ -227,6 +229,8 @@ public class AboutFragment extends BaseFragment {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
+		hasShowDialog(false);
 	}
 
 	protected void downloadLatestVersion() {
@@ -247,6 +251,14 @@ public class AboutFragment extends BaseFragment {
 		} finally {
 			cursor.close();
 		}
-
 	}
+	
+	private boolean hasShowDialog() {
+		return getELActivity().getSharedPreferences().getBoolean(Setting.ABOUT_DIALOG_SHOWN, false);
+	}
+	
+	private void hasShowDialog(boolean shown) {
+		getELActivity().getSharedPreferences().edit().putBoolean(Setting.ABOUT_DIALOG_SHOWN, shown).apply();
+	}
+	
 }
