@@ -29,6 +29,12 @@
             </intent-filter>
         </service>
         <provider android:multiprocess="true" android:name=".database.ELContentProvider" android:process=":el_service" android:exported="false" android:authorities="jie.android.el"></provider>
+        <receiver android:name=".widget.ELWidgetProvider" android:process=":el_service">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider_info"/>
+        </receiver>
     </application>
 
 </manifest>
