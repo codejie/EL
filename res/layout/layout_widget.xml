@@ -100,7 +100,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/linearLayout1"
         android:layout_marginLeft="14dp"
-        android:background="#DD222222"
+        android:background="#cc222222"
         android:orientation="vertical"
         android:visibility="gone" >
 

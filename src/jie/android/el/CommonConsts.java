@@ -98,6 +98,7 @@ public interface CommonConsts {
 	
 	public interface BroadcastAction {
 		public static final String ACTION_SERVICE_INIT = "jie.android.el.action.service_init";
+		public static final String ACTION_SERVICE_END = "jie.android.el.action.service_end";
 		
 		public static final String ACTION_UPDATE_DATA = "jie.android.el.action.update_data";
 		

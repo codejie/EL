@@ -453,16 +453,16 @@ public class AudioPlayer {
 	}
 
 	public void onNotificationClick(final String action) {
-		if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
-			this.togglePlay();
-		} else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
-			this.getNextAudio(true);
-		} else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
-			this.getNextAudio(false);
-		} else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
-			this.stop();
-			showNotification(false);
-		}
+//		if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
+//			this.togglePlay();
+//		} else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
+//			this.getNextAudio(true);
+//		} else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
+//			this.getNextAudio(false);
+//		} else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
+//			this.stop();
+//			showNotification(false);
+//		}
 	}
 
 }

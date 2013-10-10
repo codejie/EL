@@ -1,4 +1,4 @@
-package jie.android.el.widget;
+package jie.android.el.service.receiver;
 
 import jie.android.el.R;
 import android.appwidget.AppWidgetManager;
@@ -29,7 +29,6 @@ public class ELWidgetProvider extends AppWidgetProvider {
 	private void bindRemoteView(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		RemoteViews view = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 		view.setTextViewText(R.id.textView1, "null");
-		view.setp
 		
 		appWidgetManager.updateAppWidget(appWidgetIds[0], view);
 	}

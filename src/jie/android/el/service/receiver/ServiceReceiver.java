@@ -13,7 +13,7 @@ public class ServiceReceiver extends BroadcastReceiver {
 
 	private static final String Tag = ServiceReceiver.class.getSimpleName();
 	
-	private ServiceAccess service;
+	private static ServiceAccess service;
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
@@ -23,6 +23,7 @@ public class ServiceReceiver extends BroadcastReceiver {
 			IBinder binder = this.peekService(context, si);
 			if (binder != null) {
 				service = ServiceAccess.Stub.asInterface(binder);
+				Log.d(Tag, "server init succ.");
 			} else {
 				Log.e(Tag, "cannot get service interface.");
 			}

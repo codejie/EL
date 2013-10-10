@@ -68,10 +68,10 @@ public class NotificationSetter {
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {		
 			RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.layout_notification_play);
 	
-			setPendingIntent(rv, R.id.imageView2, NotificationAction.ACTION_CLICK_PREV);
-			setPendingIntent(rv, R.id.imageView3, NotificationAction.ACTION_CLICK_NEXT);
-			setPendingIntent(rv, R.id.imageView4, NotificationAction.ACTION_CLICK_PLAY);
-			setPendingIntent(rv, R.id.imageView5, NotificationAction.ACTION_CLICK_CLOSE);
+//			setPendingIntent(rv, R.id.imageView2, NotificationAction.ACTION_CLICK_PREV);
+//			setPendingIntent(rv, R.id.imageView3, NotificationAction.ACTION_CLICK_NEXT);
+//			setPendingIntent(rv, R.id.imageView4, NotificationAction.ACTION_CLICK_PLAY);
+//			setPendingIntent(rv, R.id.imageView5, NotificationAction.ACTION_CLICK_CLOSE);
 	
 			rv.setImageViewResource(R.id.imageView4, play ? R.drawable.el_audio_pause : R.drawable.el_audio_play);
 	

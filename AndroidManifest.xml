@@ -6,34 +6,78 @@
     <uses-sdk
         android:minSdkVersion="9"
         android:targetSdkVersion="17" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.INSTALL_PACKAGES"/>
-    <uses-permission android:name="android.permission.DELETE_PACKAGES"/>
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.DELETE_PACKAGES" />
 
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" android:logo="@drawable/ic_launcher">
-        <activity android:name="ELActivity" android:screenOrientation="portrait" android:launchMode="singleTask">
+        android:logo="@drawable/ic_launcher"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name="ELActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <service android:name=".service.ELService" android:process=":el_service">
+
+        <service
+            android:name=".service.ELService" android:process=":el_service" >
             <intent-filter>
-                <action android:name="elService"/>
+                <action android:name="elService" />
             </intent-filter>
         </service>
-        <provider android:multiprocess="true" android:name=".database.ELContentProvider" android:process=":el_service" android:exported="false" android:authorities="jie.android.el"></provider>
-        <receiver android:name=".widget.ELWidgetProvider" android:process=":el_service">
+
+        <provider
+            android:name=".database.ELContentProvider"
+            android:authorities="jie.android.el"
+            android:exported="false"
+            android:multiprocess="true"
+            android:process=":el_service" >
+        </provider>
+
+        <receiver
+            android:name=".service.receiver.ELWidgetProvider"
+            android:process=":el_service" >
             <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="jie.android.el.action.service_init" />
+                <action android:name="jie.android.el.action.service_end" />                
+                <action android:name="jie.android.el.action.navigate"/>
+                <action android:name="jie.android.el.action.update_data"/>
             </intent-filter>
-            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_provider_info"/>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_provider_info" />
+        </receiver>
+        <receiver
+            android:name=".service.receiver.ServiceReceiver" android:process=":el_service" >
+            <intent-filter>
+                <action android:name="jie.android.el.action.service_init" />
+                <action android:name="jie.android.el.action.service_end" />
+                <action android:name="jie.android.el.action.click_prev"/>
+                <action android:name="jie.android.el.action.click_next"/>
+                <action android:name="jie.android.el.action.click_play"/>
+                <action android:name="jie.android.el.action.click_close"/>
+                <action android:name="jie.android.el.action.click_navigate"/>
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".service.receiver.NotificationReceiver" android:process=":el_service">
+            <intent-filter>
+                <action android:name="jie.android.el.action.service_init" />
+                <action android:name="jie.android.el.action.service_end" />
+                <action android:name="jie.android.el.action.show"/>
+                <action android:name="jie.android.el.action.remove"/>
+            </intent-filter>
         </receiver>
     </application>
 

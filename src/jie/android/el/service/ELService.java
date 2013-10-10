@@ -1,5 +1,6 @@
 package jie.android.el.service;
 
+import jie.android.el.CommonConsts.BroadcastAction;
 import jie.android.el.CommonConsts.DownloadRequest;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
@@ -105,19 +106,19 @@ public class ELService extends Service {
 		public void onReceive(Context context, Intent intent) {
 			final String action = intent.getAction();
 			
-			if (action.equals(NotificationAction.ACTION_SHOW)) {
-				final int type = intent.getExtras().getInt(NotificationAction.DATA_TYPE);
-				final String title = intent.getExtras().getString(NotificationAction.DATA_TITLE);
-				final String text = intent.getExtras().getString(NotificationAction.DATA_TEXT);
-				final boolean play = intent.getExtras().getBoolean(NotificationAction.DATA_STATE, false);
-				if (title != null && text != null) {
-					onShowNotification(type, play, title, text);
-				}
-			} else if (action.equals(NotificationAction.ACTION_REMOVE)) {
-				onRemoveNotification(intent.getExtras().getInt(NotificationAction.DATA_TYPE), intent.getExtras().getInt(NotificationAction.DATA_ID));
-			} else if (action.startsWith(NotificationAction.ACTION_CLICK)) {
-				onNotificationClick(action);
-			}
+//			if (action.equals(NotificationAction.ACTION_SHOW)) {
+//				final int type = intent.getExtras().getInt(NotificationAction.DATA_TYPE);
+//				final String title = intent.getExtras().getString(NotificationAction.DATA_TITLE);
+//				final String text = intent.getExtras().getString(NotificationAction.DATA_TEXT);
+//				final boolean play = intent.getExtras().getBoolean(NotificationAction.DATA_STATE, false);
+//				if (title != null && text != null) {
+//					onShowNotification(type, play, title, text);
+//				}
+//			} else if (action.equals(NotificationAction.ACTION_REMOVE)) {
+//				onRemoveNotification(intent.getExtras().getInt(NotificationAction.DATA_TYPE), intent.getExtras().getInt(NotificationAction.DATA_ID));
+//			} else if (action.startsWith(NotificationAction.ACTION_CLICK)) {
+//				onNotificationClick(action);
+//			}
 		}
 	}
 
@@ -137,6 +138,9 @@ public class ELService extends Service {
 
 	public void onUIConnected() {
 		postServiceState(ServiceState.READY);
+		
+//		Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
+//		this.sendBroadcast(intent);		
 		
 		if (player.isPlaying() || player.isPause()) {
 			postServiceState(ServiceState.PLAYING);
@@ -161,25 +165,29 @@ public class ELService extends Service {
 		
 		//android.os.Debug.waitForDebugger();
 		
-		initNotification();		
+//		initNotification();		
 		initDictionary();		
 		initPlayer();
 		
-		final String[] res = PackageImporter.check();
-		if (res != null && res.length > 0) {
-			onPackageReady(res);
-//			packageImporter = new PackageImporter(this, res);
-//			packageImporter.startImport();
-		}
+//		final String[] res = PackageImporter.check();
+//		if (res != null && res.length > 0) {
+//			onPackageReady(res);
+//		}
+		
+		Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
+		this.sendBroadcast(intent);
 	}
 
 	@Override
 	public void onDestroy() {
+
+		Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_END);
+		this.sendBroadcast(intent);
 		
 		releaseDownloader();
 		releasePlayer();
 		releaseDictionary();
-		releaseNotification();
+//		releaseNotification();
 
 		super.onDestroy();
 	}	
@@ -220,31 +228,31 @@ public class ELService extends Service {
 		}
 	}
 	
-	private void initNotification() {
-		notificationSetter = new NotificationSetter(this);
-		
-		notificationReceiver = new NotificationReceiver();
-		
-		IntentFilter filter = new IntentFilter();
-		filter.addAction(NotificationAction.ACTION_SHOW);
-		filter.addAction(NotificationAction.ACTION_REMOVE);
-		filter.addAction(NotificationAction.ACTION_CLICK_PREV);
-		filter.addAction(NotificationAction.ACTION_CLICK_NEXT);
-		filter.addAction(NotificationAction.ACTION_CLICK_PLAY);
-		filter.addAction(NotificationAction.ACTION_CLICK_CLOSE);
-		
-		registerReceiver(notificationReceiver, filter);
-	}
+//	private void initNotification() {
+//		notificationSetter = new NotificationSetter(this);
+//		
+//		notificationReceiver = new NotificationReceiver();
+//		
+//		IntentFilter filter = new IntentFilter();
+//		filter.addAction(NotificationAction.ACTION_SHOW);
+//		filter.addAction(NotificationAction.ACTION_REMOVE);
+////		filter.addAction(NotificationAction.ACTION_CLICK_PREV);
+////		filter.addAction(NotificationAction.ACTION_CLICK_NEXT);
+////		filter.addAction(NotificationAction.ACTION_CLICK_PLAY);
+////		filter.addAction(NotificationAction.ACTION_CLICK_CLOSE);
+//		
+//		registerReceiver(notificationReceiver, filter);
+//	}
 	
-	private void releaseNotification() {
-		if (notificationReceiver != null) {
-			unregisterReceiver(notificationReceiver);
-		}
-		
-		if (notificationSetter != null) {
-			notificationSetter.release();
-		}
-	}
+//	private void releaseNotification() {
+//		if (notificationReceiver != null) {
+//			unregisterReceiver(notificationReceiver);
+//		}
+//		
+//		if (notificationSetter != null) {
+//			notificationSetter.release();
+//		}
+//	}
 
 	private void postServiceState(ServiceState state) {
 		if (serviceNotification != null) {
@@ -302,24 +310,24 @@ public class ELService extends Service {
 		}
 	}
 
-	public int onShowNotification(int level, boolean play, String title, String text) {
-		if (notificationSetter != null) {
-			NotificationType type = NotificationType.getType(level);
-			if (type != null) {
-				notificationSetter.show(type, play, title, text);
-			}
-		}
-		return 0;
-	}
-
-	public void onRemoveNotification(int level, int id) {
-		if (notificationSetter != null) {
-			NotificationType type = NotificationType.getType(level);
-			if (type != null) {
-				notificationSetter.remove(type, id);
-			}
-		}
-	}
+//	public int onShowNotification(int level, boolean play, String title, String text) {
+//		if (notificationSetter != null) {
+//			NotificationType type = NotificationType.getType(level);
+//			if (type != null) {
+//				notificationSetter.show(type, play, title, text);
+//			}
+//		}
+//		return 0;
+//	}
+//
+//	public void onRemoveNotification(int level, int id) {
+//		if (notificationSetter != null) {
+//			NotificationType type = NotificationType.getType(level);
+//			if (type != null) {
+//				notificationSetter.remove(type, id);
+//			}
+//		}
+//	}
 	
 	public void onNotificationClick(final String action) {
 		if (player != null) {
