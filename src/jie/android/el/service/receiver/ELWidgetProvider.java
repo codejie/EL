@@ -22,7 +22,7 @@ public class ELWidgetProvider extends AppWidgetProvider {
 	}
 
 	private void startService(Context context) {
-		Intent intent = new Intent("elService");		
+		Intent intent = new Intent("jie.android.el.elservice");		
 		context.startService(intent);
 	}
 

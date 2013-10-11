@@ -2,6 +2,8 @@ package jie.android.el.fragment;
 
 import jie.android.el.ELActivity;
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -94,5 +96,15 @@ public class BaseFragment extends SherlockFragment {
 
 	public boolean OnOptionsItemSelected(MenuItem item) {
 		return false;
+	}
+	
+	protected void sendBroadcast(Intent intent) {
+		Context context = getELActivity();
+		if (context != null) {
+			context.sendBroadcast(intent);
+		}
+	}
+	
+	public void onIntent(Intent intent) {		
 	}
 }

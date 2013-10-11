@@ -98,9 +98,11 @@ public interface CommonConsts {
 	
 	public interface BroadcastAction {
 		public static final String ACTION_SERVICE_INIT = "jie.android.el.action.service_init";
+		public static final String ACTION_SERVICE_BINDED = "jie.android.el.action.service_binded";
 		public static final String ACTION_SERVICE_END = "jie.android.el.action.service_end";
 		
-		public static final String ACTION_UPDATE_DATA = "jie.android.el.action.update_data";
+		public static final String ACTION_UPDATE_AUDIO = "jie.android.el.action.update_audio";
+		public static final String ACTION_UPDATE_UI = "jie.android.el.action.update_ui";
 		
 		public static final String DATA_TYPE = "jie.android.el.data.type";
 		public static final String DATA_TITLE = "jie.android.el.data.title";
@@ -108,23 +110,28 @@ public interface CommonConsts {
 		public static final String DATA_ID = "jie.android.el.data.id";
 		public static final String DATA_STATE = "jie.android.el.data.state";
 		public static final String DATA_NAVIGATE = "jie.android.el.data.navigate";
+		public static final String DATA_DURATION = "jie.android.el.data.duration";
+		public static final String DATA_POSITION = "jie.android.el.data.position";
 	}
 	
-	public interface ServiceAction extends BroadcastAction {
-		public static final String ACTION_CLICK_PREV = "jie.android.el.action.click_prev";
-		public static final String ACTION_CLICK_NEXT = "jie.android.el.action.click_next";
-		public static final String ACTION_CLICK_PLAY = "jie.android.el.action.click_play";
-		public static final String ACTION_CLICK_CLOSE = "jie.android.el.action.click_close";
-		public static final String ACTION_CLICK_NAVIGATE = "jie.android.el.action.click_navigate";
+	public interface AudioAction extends BroadcastAction {
+		public static final String ACTION_AUDIO = "jie.android.el.action.audio";
+		public static final String ACTION_AUDIO_SET = "jie.android.el.action.audio_set";
+		public static final String ACTION_AUDIO_PREV = "jie.android.el.action.audio_prev";
+		public static final String ACTION_AUDIO_NEXT = "jie.android.el.action.audio_next";
+		public static final String ACTION_AUDIO_PLAY = "jie.android.el.action.audio_play";
+		public static final String ACTION_AUDIO_STOP = "jie.android.el.action.audio_stop";
+//		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
+		public static final String ACTION_AUDIO_NAVIGATE = "jie.android.el.action.audio_navigate";
 	}
 	
 	public interface NotificationAction extends BroadcastAction {
-		public static final String ACTION_SHOW = "jie.android.el.action.show";
-		public static final String ACTION_REMOVE = "jie.android.el.action.remove";
+		public static final String ACTION_SHOW = "jie.android.el.action.notification_show";
+		public static final String ACTION_REMOVE = "jie.android.el.action.notification_remove";
 	}
 	
 	public interface WidgetAction extends BroadcastAction {
-		public static final String ACTION_NAVIGATE = "jie.android.el.action.navigate";
+		public static final String ACTION_NAVIGATE = "jie.android.el.action.widget_navigate";
 	}
 	
 //	public interface NotificationAction {

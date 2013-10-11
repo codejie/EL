@@ -1,6 +1,7 @@
 package jie.android.el.fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
+import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.FragmentSwitcher;
@@ -111,10 +113,15 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-		Bundle args = new Bundle();
-		args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
-		args.putInt(FragmentArgument.INDEX, (int) id);
-		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
+
+		Intent intent = new Intent(AudioAction.ACTION_AUDIO_SET);
+		intent.putExtra(AudioAction.DATA_ID, (int)id);
+		this.sendBroadcast(intent);
+//		
+//		Bundle args = new Bundle();
+//		args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
+//		args.putInt(FragmentArgument.INDEX, (int) id);
+//		getELActivity().showFragment(FragmentSwitcher.Type.SHOW, args);
 	}
 
 	@Override

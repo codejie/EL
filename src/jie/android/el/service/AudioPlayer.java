@@ -8,6 +8,7 @@ import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.AppArgument;
+import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
@@ -27,6 +28,7 @@ import android.media.MediaPlayer.OnErrorListener;
 import android.media.MediaPlayer.OnSeekCompleteListener;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.RemoteException;
 
@@ -159,7 +161,6 @@ public class AudioPlayer {
 					showWarningNotification("Can't play audio file - " + cursor.getString(0));
 					onPlayError(-1, -1);
 				}
-
 			}
 		} finally {
 			cursor.close();
@@ -186,11 +187,15 @@ public class AudioPlayer {
 			// player.prepareAsync();
 			player.prepare();
 
-			if (listener != null) {
-				listener.onPrepared(player.getDuration());
-			}
+//			if (listener != null) {
+//				listener.onPrepared(player.getDuration());
+//			}
 
-			changePlayState(PlayState.PREPARED);
+			Bundle bundle = new Bundle();
+			bundle.putInt(AudioAction.DATA_ID, audioIndex);
+			bundle.putString(AudioAction.DATA_TITLE, audioTitle);
+			bundle.putInt(AudioAction.DATA_DURATION, player.getDuration());
+			changePlayState(PlayState.PREPARED, bundle);
 
 			setAudioPlayFlag(audioIndex, true);
 
@@ -206,14 +211,15 @@ public class AudioPlayer {
 		} catch (IOException e) {
 			e.printStackTrace();
 			return false;
-		} catch (DeadObjectException e) {
-			listener = null;
-			e.printStackTrace();
-			return false;
-		} catch (RemoteException e) {
-			e.printStackTrace();
-			return false;
 		}
+//		catch (DeadObjectException e) {
+//			listener = null;
+//			e.printStackTrace();
+//			return false;
+//		} catch (RemoteException e) {
+//			e.printStackTrace();
+//			return false;
+//		}
 
 		return true;
 	}
@@ -223,7 +229,7 @@ public class AudioPlayer {
 			return;
 
 		player.start();
-
+		
 		changePlayState(PlayState.PLAYING);
 
 		if (listener != null) {
@@ -357,7 +363,7 @@ public class AudioPlayer {
 			intent.putExtra(NotificationAction.DATA_ID, 0);
 		}
 
-		context.sendBroadcast(intent);
+		sendBroadcast(intent);
 	}
 
 	private void showWarningNotification(final String text) {
@@ -366,7 +372,7 @@ public class AudioPlayer {
 		intent.putExtra(NotificationAction.DATA_TITLE, text);
 		intent.putExtra(NotificationAction.DATA_TEXT, "EL Warning");
 
-		context.sendBroadcast(intent);
+		sendBroadcast(intent);
 	}
 
 	private void setAudioPlayFlag(int index, boolean play) {
@@ -437,19 +443,31 @@ public class AudioPlayer {
 	}
 
 	private void changePlayState(PlayState state) {
+		changePlayState(state, null);
+	}
+	
+	private void changePlayState(PlayState state, Bundle bundle) {
 		playState = state;
-		if (listener != null) {
-			try {
-				listener.onStateChanged(playState.getId());
-			} catch (DeadObjectException e) {
-				listener = null;
-			} catch (RemoteException e) {
-				listener = null;
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+		
+		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+		intent.putExtra(AudioAction.DATA_STATE, state.getId());
+		if (bundle != null) {
+			intent.putExtras(bundle);
 		}
+//		
+//		
+//		if (listener != null) {
+//			try {
+//				listener.onStateChanged(playState.getId());
+//			} catch (DeadObjectException e) {
+//				listener = null;
+//			} catch (RemoteException e) {
+//				listener = null;
+//				e.printStackTrace();
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	public void onNotificationClick(final String action) {
@@ -463,6 +481,31 @@ public class AudioPlayer {
 //			this.stop();
 //			showNotification(false);
 //		}
+	}
+
+	public void onAction(Intent intent) {
+		final String action = intent.getAction();
+		if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
+			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
+			if (index != -1) {
+				setData(index);
+			}
+		} else if (action.equals(AudioAction.ACTION_AUDIO_PLAY)) {
+			togglePlay();
+		} else if (action.equals(AudioAction.ACTION_AUDIO_NEXT)) {
+			this.getNextAudio(true);
+		} else if (action.equals(AudioAction.ACTION_AUDIO_PREV)) {
+			this.getNextAudio(false);
+		} else if (action.equals(AudioAction.ACTION_AUDIO_STOP)) {
+			this.stop();
+			showNotification(false);
+		}
+	}
+	
+	public void sendBroadcast(Intent intent) {
+		if (context != null) {
+			context.sendBroadcast(intent);
+		}
 	}
 
 }

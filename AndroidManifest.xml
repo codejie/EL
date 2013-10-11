@@ -32,7 +32,7 @@
         <service
             android:name=".service.ELService" android:process=":el_service" >
             <intent-filter>
-                <action android:name="elService" />
+                <action android:name="jie.android.el.elservice" />
             </intent-filter>
         </service>
 
@@ -45,13 +45,12 @@
         </provider>
 
         <receiver
-            android:name=".service.receiver.ELWidgetProvider"
-            android:process=":el_service" >
+            android:name=".service.receiver.ELWidgetProvider" android:process=":el_service" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="jie.android.el.action.service_init" />
                 <action android:name="jie.android.el.action.service_end" />                
-                <action android:name="jie.android.el.action.navigate"/>
+                <action android:name="jie.android.el.action.widget_navigate"/>
                 <action android:name="jie.android.el.action.update_data"/>
             </intent-filter>
 
@@ -60,23 +59,26 @@
                 android:resource="@xml/widget_provider_info" />
         </receiver>
         <receiver
-            android:name=".service.receiver.ServiceReceiver" android:process=":el_service" >
+            android:name=".service.receiver.ServiceReceiver">
             <intent-filter>
                 <action android:name="jie.android.el.action.service_init" />
+                <action android:name="jie.android.el.action.service_binded" />
                 <action android:name="jie.android.el.action.service_end" />
-                <action android:name="jie.android.el.action.click_prev"/>
-                <action android:name="jie.android.el.action.click_next"/>
-                <action android:name="jie.android.el.action.click_play"/>
-                <action android:name="jie.android.el.action.click_close"/>
-                <action android:name="jie.android.el.action.click_navigate"/>
+                <action android:name="jie.android.el.action.audio"/>
+                <action android:name="jie.android.el.action.audio_prev"/>
+                <action android:name="jie.android.el.action.audio_next"/>
+                <action android:name="jie.android.el.action.audio_play"/>
+                <action android:name="jie.android.el.action.audio_stop"/>
+                <action android:name="jie.android.el.action.audio_set"/>
+                <action android:name="jie.android.el.action.audio_navigate"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.receiver.NotificationReceiver" android:process=":el_service">
+        <receiver android:name=".service.receiver.NotificationReceiver">
             <intent-filter>
                 <action android:name="jie.android.el.action.service_init" />
                 <action android:name="jie.android.el.action.service_end" />
-                <action android:name="jie.android.el.action.show"/>
-                <action android:name="jie.android.el.action.remove"/>
+                <action android:name="jie.android.el.action.notification_show"/>
+                <action android:name="jie.android.el.action.notification_remove"/>
             </intent-filter>
         </receiver>
     </application>

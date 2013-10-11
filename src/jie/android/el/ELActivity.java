@@ -10,6 +10,7 @@ import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.CommonConsts.AppArgument;
+import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.ServiceState;
@@ -83,6 +84,24 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		public void onServiceState(int state) throws RemoteException {
 			Message msg = Message.obtain(handler, UIMsg.SERVICE_NOTIFICATION, state, -1);
 			msg.sendToTarget();
+		}
+
+		@Override
+		public void onAudioAction(Intent intent) throws RemoteException {
+			final String action = intent.getAction();
+			if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
+				int id = intent.getIntExtra(AudioAction.DATA_ID, -1);
+				if (id != -1) {
+					Bundle args = new Bundle();
+					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
+					args.putInt(FragmentArgument.INDEX, (int) id);
+					showFragment(FragmentSwitcher.Type.SHOW, args);					
+				}
+			} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
+				if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
+					fragmentSwitcher.getFragment().onIntent(intent);
+				}
+			}
 		}
 	};
 	
@@ -222,10 +241,10 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	private void initService() {
-		Intent intent = new Intent("elService");		
+		Intent intent = new Intent("jie.android.el.elservice");		
 		this.startService(intent);
 		
-		intent = new Intent("elService");
+		intent = new Intent("jie.android.el.elservice");
 		this.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -233,7 +252,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		if (serviceAccess != null) {
 			this.unbindService(serviceConnection);
 			if (stop) {
-				this.stopService(new Intent("elService"));
+				this.stopService(new Intent("jie.android.el.elservice"));
 			}
 			serviceAccess = null;
 		}
@@ -453,13 +472,13 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	protected void pausePlaying() {
-		if (serviceAccess != null) {
-			try {
-				serviceAccess.pauseAudio();
-			} catch (RemoteException e) {
-				e.printStackTrace();
-			}
-		}
+//		if (serviceAccess != null) {
+//			try {
+//				serviceAccess.pauseAudio();
+//			} catch (RemoteException e) {
+//				e.printStackTrace();
+//			}
+//		}
 	}
 	
 	private void registServiceNotification(boolean reg) {

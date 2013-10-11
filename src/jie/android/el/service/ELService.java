@@ -1,5 +1,6 @@
 package jie.android.el.service;
 
+import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.BroadcastAction;
 import jie.android.el.CommonConsts.DownloadRequest;
 import jie.android.el.CommonConsts.NotificationAction;
@@ -16,7 +17,9 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.DeadObjectException;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
@@ -44,43 +47,43 @@ public class ELService extends Service {
 			return  dictionary.getWordXmlResult(word);// null;//dictionary.getWordXmlResult(word);
 		}
 
-		@Override
-		public void setAudio(int index) throws RemoteException {
-			player.setData(index);
-		}
+//		@Override
+//		public void setAudio(int index) throws RemoteException {
+//			player.setData(index);
+//		}
 
 		@Override
 		public void setAudioListener(OnPlayAudioListener listener) throws RemoteException {
 			player.setOnPlayAudioListener(listener);			
 		}
 
-		@Override
-		public void playAudio() throws RemoteException {
-			player.play();			
-		}
-
-		@Override
-		public void stopAudio() throws RemoteException {
-			player.stop();			
-		}
-
-		@Override
-		public void pauseAudio() throws RemoteException {
-			player.pause();			
-		}
+//		@Override
+//		public void playAudio() throws RemoteException {
+//			player.play();			
+//		}
+//
+//		@Override
+//		public void stopAudio() throws RemoteException {
+//			player.stop();			
+//		}
+//
+//		@Override
+//		public void pauseAudio() throws RemoteException {
+//			player.pause();			
+//		}
 
 		@Override
 		public void seekAudio(int poistion) throws RemoteException {
 			player.seekTo(poistion);
 		}
 		
-		@Override
-		public int getPlayState() throws RemoteException {
-			if (player == null) {
-				return PlayState.INVALID.getId();
-			}
-			return player.getPlayState().getId();
-		}		
+//		@Override
+//		public int getPlayState() throws RemoteException {
+//			if (player == null) {
+//				return PlayState.INVALID.getId();
+//			}
+//			return player.getPlayState().getId();
+//		}		
 
 		@Override
 		public boolean canExit() throws RemoteException {
@@ -96,6 +99,11 @@ public class ELService extends Service {
 		@Override
 		public void setUIState(int state) throws RemoteException {
 			onUIStateChanged(state);
+		}
+
+		@Override
+		public void setAudioAction(Intent intent) throws RemoteException {
+			onAudioAction(intent);			
 		}
 
 	}
@@ -121,18 +129,22 @@ public class ELService extends Service {
 //			}
 		}
 	}
-
-	private NotificationReceiver notificationReceiver = null;
+	
+//	private NotificationReceiver notificationReceiver = null;
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
 	private Downloader downloader = null;
 	private PackageImporter packageImporter = null;
-	private NotificationSetter notificationSetter = null;
+//	private NotificationSetter notificationSetter = null;
 	
 	private ServiceNotification serviceNotification = null;
 	
 	@Override
-	public IBinder onBind(Intent arg0) {
+	public IBinder onBind(Intent intent) {
+		Log.d(Tag, "onBind:" + intent.getAction());
+		
+		sendBroadcast(new Intent(BroadcastAction.ACTION_SERVICE_BINDED));
+		
 		return new AccessStub();
 	}
 
@@ -140,7 +152,7 @@ public class ELService extends Service {
 		postServiceState(ServiceState.READY);
 		
 //		Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
-//		this.sendBroadcast(intent);		
+//		ELService.this.sendBroadcast(intent);		
 		
 		if (player.isPlaying() || player.isPause()) {
 			postServiceState(ServiceState.PLAYING);
@@ -174,8 +186,13 @@ public class ELService extends Service {
 //			onPackageReady(res);
 //		}
 		
-		Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
-		this.sendBroadcast(intent);
+		sendBroadcast(new Intent(BroadcastAction.ACTION_SERVICE_INIT));
+		
+//		Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
+//		this.sendBroadcast(intent);
+//		Message msg = Message.obtain(handler, ServiceState.READY.getId());
+//		handler.sendMessageDelayed(msg, 100);
+//		msg.send .sendToTarget();
 	}
 
 	@Override
@@ -343,6 +360,23 @@ public class ELService extends Service {
 		intent.setDataAndType(Uri.parse("file://" + file), "application/vnd.android.package-archive");
 		intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(intent); 
+	}
+
+	public void onAudioAction(Intent intent) {
+		if (player != null) {
+			player.onAction(intent);
+		}
+		
+		if (intent.getAction().endsWith(AudioAction.ACTION_AUDIO_SET)) {
+			if (serviceNotification != null) {
+				try {
+					serviceNotification.onAudioAction(intent);
+				} catch (RemoteException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 }
