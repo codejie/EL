@@ -16,41 +16,80 @@ public class ServiceReceiver extends BroadcastReceiver {
 
 	private static final String Tag = ServiceReceiver.class.getSimpleName();
 	
-	private static ServiceAccess serviceAccess;
+	public interface OnServiceIntentListener {
+		void onAudioAction(Intent intent);
+		void onAudioUpdate(Intent intent);
+		void onUIUpdate(Intent intent);
+	}
+	
+	private OnServiceIntentListener listener;
+	
+//	private static ServiceAccess serviceAccess;
+	
+	public ServiceReceiver(OnServiceIntentListener l) {
+		listener = l;
+	}
 	
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		final String action = intent.getAction();
-		if (action.equals(AudioAction.ACTION_SERVICE_INIT) || action.equals(AudioAction.ACTION_SERVICE_BINDED)) {
-			initService(context);
-		} else if (action.startsWith(AudioAction.ACTION_AUDIO)) {
+//		if (action.equals(AudioAction.ACTION_SERVICE_INIT) || action.equals(AudioAction.ACTION_SERVICE_BINDED)) {
+//			initService(context);
+//		} 
+		if (action.startsWith(AudioAction.ACTION_AUDIO)) {
 			onAudioAction(intent);
+		} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
+			onUpdateAudio(intent);
+		} else if (action.equals(AudioAction.ACTION_UPDATE_UI)) {
+			onUIUpdate(intent);
 		} else {
 			
 		}
 	}
 
 	private void initService(Context context) {
-		Intent si = new Intent("jie.android.el.elservice");
-		IBinder binder = this.peekService(context, si);
-		if (binder != null) {
-			serviceAccess = ServiceAccess.Stub.asInterface(binder);
-			Log.d(Tag, "server init succ.");
-		} else {
-			Log.e(Tag, "cannot get service interface.");
-		}
+//		Intent si = new Intent("jie.android.el.elservice");
+//		IBinder binder = this.peekService(context, si);
+//		if (binder != null) {
+//			serviceAccess = ServiceAccess.Stub.asInterface(binder);
+//			Log.d(Tag, "server init succ.");
+//		} else {
+//			Log.e(Tag, "cannot get service interface.");
+//		}
 	}
 	
 	private void onAudioAction(Intent intent) {
-		if (serviceAccess != null) {
-			try {
-				serviceAccess.setAudioAction(intent);
-			} catch (RemoteException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}		
+		if (listener != null) {
+			listener.onAudioAction(intent);
+		}
+//		if (serviceAccess != null) {
+//			try {
+//				serviceAccess.setAudioAction(intent);
+//			} catch (RemoteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}		
 	}
 
+	private void onUpdateAudio(Intent intent) {
+		if (listener != null) {
+			listener.onAudioUpdate(intent);
+		}
+//		if (serviceAccess != null) {
+//			try {
+//				serviceAccess.setAudioAction(intent);
+//			} catch (RemoteException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//		}		
+	}
 
+	private void onUIUpdate(Intent intent) {
+		if (listener != null) {
+			listener.onUIUpdate(intent);
+		}
+	}
+	
 }

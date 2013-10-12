@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.Setting;
+import jie.android.el.CommonConsts.UIState;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.AudioAction;
@@ -31,6 +32,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.DeadObjectException;
 import android.os.RemoteException;
+import android.view.View;
 
 public class AudioPlayer {
 
@@ -38,7 +40,8 @@ public class AudioPlayer {
 
 		@Override
 		public void run() {
-			while (listener != null && isPlaying()) {
+			//while (listener != null && isPlaying()) {
+			while (isAudioWindowShow && isPlaying()) {
 				try {
 					onPlayPlaying(player.getCurrentPosition());
 
@@ -53,12 +56,17 @@ public class AudioPlayer {
 	private Context context = null;
 
 	private MediaPlayer player = null;
-	private OnPlayAudioListener listener = null;
+//	private OnPlayAudioListener listener = null;
 
 	private int audioIndex = -1;
-	private String audioTitle = null;
+	private String audioTitle;
+	private int audioSlowDialog = -1;
+	private int audioExplanation = -1;
+	private int audioFastDialog = -1;	
 
 	private PlayState playState = PlayState.NONE;
+
+	private boolean isAudioWindowShow = false;
 
 	public AudioPlayer(Context context) {
 		this.context = context;
@@ -114,43 +122,51 @@ public class AudioPlayer {
 
 		// showNotification(false);
 
-		changePlayState(PlayState.NONE);
+//		changePlayState(PlayState.NONE);
 	}
 
-	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
-		this.listener = listener;
-
-		if (this.listener != null) {
-			if (isPlaying() || isPause()) {
-				try {
-					this.listener.onIsPlaying(audioIndex, playState.getId(), player.getDuration(), player.getCurrentPosition());
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-
-			if (isPlaying()) {
-				new Thread(new TickCounterRunnable()).start();
-			}
-
-			showNotification(false);
-		} else {
-			if (isPlaying() || isPause()) {
-				showNotification(true);
-			}
-		}
-	}
+//	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
+//		this.listener = listener;
+//
+//		if (this.listener != null) {
+////			if (isPlaying() || isPause()) {
+////				try {
+////					this.listener.onIsPlaying(audioIndex, playState.getId(), player.getDuration(), player.getCurrentPosition());
+////				} catch (RemoteException e) {
+////					// TODO Auto-generated catch block
+////					e.printStackTrace();
+////				}
+////			}
+//
+//			if (isPlaying()) {
+//				new Thread(new TickCounterRunnable()).start();
+//			}
+//
+//			showNotification(false);
+//		} else {
+//			if (isPlaying() || isPause()) {
+//				showNotification(true);
+//			}
+//		}
+//	}
 
 	public void setData(int index) {
 
 		releasePlayer();
+		
+		if (index == -1) {
+			return;
+		}
 
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);
-		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio" }, null, null, null);
+		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio", "slowdialog", "explanations", "fastdialog" }, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
 				if (prepareData(index, cursor.getString(0), cursor.getString(1))) {
+					
+					audioSlowDialog = cursor.getInt(2);
+					audioExplanation = cursor.getInt(3);
+					audioFastDialog = cursor.getInt(4);					
 
 					SharedPreferences prefs = Utils.getSharedPreferences(this.context);
 
@@ -194,6 +210,7 @@ public class AudioPlayer {
 			Bundle bundle = new Bundle();
 			bundle.putInt(AudioAction.DATA_ID, audioIndex);
 			bundle.putString(AudioAction.DATA_TITLE, audioTitle);
+			bundle.putInt(AudioAction.DATA_POSITION, 0);
 			bundle.putInt(AudioAction.DATA_DURATION, player.getDuration());
 			changePlayState(PlayState.PREPARED, bundle);
 
@@ -230,13 +247,14 @@ public class AudioPlayer {
 
 		player.start();
 		
-		changePlayState(PlayState.PLAYING);
+		changePlayState(PlayState.PLAY);
 
-		if (listener != null) {
+//		if (listener != null) {
+		if (isAudioWindowShow) {
 			new Thread(new TickCounterRunnable()).start();
-		} else {
-			showNotification(true);
 		}
+		
+		showNotification(true);
 	}
 
 	public void pause() {
@@ -244,9 +262,8 @@ public class AudioPlayer {
 			player.pause();
 
 			changePlayState(PlayState.PAUSED);
-			if (listener == null) {
-				showNotification(true);
-			}
+			//if (listener == null) {
+			showNotification(true);
 		}
 	}
 
@@ -254,19 +271,17 @@ public class AudioPlayer {
 		if (isPlaying()) {
 			player.pause();
 			changePlayState(PlayState.PAUSED);
-			if (listener == null) {
-				showNotification(true);
-			}
+			//if (listener == null) {
 		} else {
 			player.start();
-			changePlayState(PlayState.PLAYING);
+			changePlayState(PlayState.PLAY);
 
-			if (listener != null) {
+			//if (listener != null) {
+			if (isAudioWindowShow) {			
 				new Thread(new TickCounterRunnable()).start();
-			} else {
-				showNotification(true);
 			}
 		}
+		showNotification(true);		
 	}
 
 	public void stop() {
@@ -284,10 +299,32 @@ public class AudioPlayer {
 		}
 	}
 
+	private void navigateTo(int nv) {
+		switch (nv) {
+		case 0://slowdialog
+			if (audioSlowDialog != -1) {
+				seekTo(audioSlowDialog);
+			}
+			break;
+		case 1://explanation
+			if (audioExplanation != -1) {
+				seekTo(audioExplanation);
+			}
+			break;
+		case 2://fastdialog
+			if (audioFastDialog != -1) {
+				seekTo(audioFastDialog);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	
 	public boolean isPlaying() {
 		if (player != null) {
 			synchronized (player) {
-				return (player != null && playState == PlayState.PLAYING);
+				return (player != null && playState == PlayState.PLAY);
 			}
 		}
 		return false;
@@ -319,19 +356,24 @@ public class AudioPlayer {
 	}
 
 	private void getNextAudio(boolean next) {
+		
+		if (audioIndex == -1) {
+			return;
+		}
+		
 		boolean random = Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
 		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx" }, random, next);
 
 		try {
 			if (cursor.moveToFirst()) {
-				if (listener != null) {
-					try {
-						listener.onAudioChanged(cursor.getInt(0));
-					} catch (RemoteException e) {
-						e.printStackTrace();
-					}
-				}
+//				if (listener != null) {
+//					try {
+//						listener.onAudioChanged(cursor.getInt(0));
+//					} catch (RemoteException e) {
+//						e.printStackTrace();
+//					}
+//				}
 				setData(cursor.getInt(0));
 			}
 		} finally {
@@ -343,19 +385,16 @@ public class AudioPlayer {
 
 		Intent intent = null;
 
-		if (show) {
-			if (listener == null) {
-				intent = new Intent(NotificationAction.ACTION_SHOW);
-				intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
-				intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
-				if (playState == PlayState.PLAYING) {
-					intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_is_playing));
-					intent.putExtra(NotificationAction.DATA_STATE, true);
-				} else {
-					intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_pause_playback));
-					intent.putExtra(NotificationAction.DATA_STATE, false);
-				}
-				// intent.putExtra(NotificationAction.DATA_TEXT, title);
+		if (!isAudioWindowShow && show) {
+			intent = new Intent(NotificationAction.ACTION_SHOW);
+			intent.putExtra(NotificationAction.DATA_TYPE, NotificationType.PLAY.getId());
+			intent.putExtra(NotificationAction.DATA_TITLE, String.format("%s.%s", audioIndex, audioTitle));
+			if (playState == PlayState.PLAY) {
+				intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_is_playing));
+				intent.putExtra(NotificationAction.DATA_STATE, true);
+			} else {
+				intent.putExtra(NotificationAction.DATA_TEXT, context.getResources().getString(R.string.el_play_el_pause_playback));
+				intent.putExtra(NotificationAction.DATA_STATE, false);
 			}
 		} else {
 			intent = new Intent(NotificationAction.ACTION_REMOVE);
@@ -385,43 +424,54 @@ public class AudioPlayer {
 	}
 
 	protected void onPlayPlaying(int position) {
-		if (listener != null) {
-			try {
-				listener.onPlaying(position);
-			} catch (RemoteException e) {
-				listener = null;
-				e.printStackTrace();
-			}
-		}
+		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+		intent.putExtra(AudioAction.DATA_STATE, PlayState.PLAYING.getId());
+		intent.putExtra(AudioAction.DATA_POSITION, position);
+		sendBroadcast(intent);
+//		
+//		if (listener != null) {
+//			try {
+//				listener.onPlaying(position);
+//			} catch (RemoteException e) {
+//				listener = null;
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	protected void onPlaySeekComplete(int msec) {
-		if (listener != null) {
-			try {
-				listener.onSeekTo(msec);
-			} catch (RemoteException e) {
-				listener = null;
-				e.printStackTrace();
-			}
-		}
+//		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+//		intent.putExtra(AudioAction.DATA_STATE, PlayState.PLAYING.getId());
+//		intent.putExtra(AudioAction.DATA_POSITION, msec);
+		
+//		if (listener != null) {
+//			try {
+//				listener.onSeekTo(msec);
+//			} catch (RemoteException e) {
+//				listener = null;
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	protected void onPlayCompletion() {
 
 		releasePlayer();
+		
+		changePlayState(PlayState.COMPLETED);
 
-		if (listener != null) {
-			try {
-				listener.onCompleted();
-			} catch (RemoteException e) {
-				listener = null;
-				e.printStackTrace();
-			}
-		}
+//		if (listener != null) {
+//			try {
+//				listener.onCompleted();
+//			} catch (RemoteException e) {
+//				listener = null;
+//				e.printStackTrace();
+//			}
+//		}
 
 		if (!Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
 			getNextAudio(true);
-		} else {
+		} else {			
 			showNotification(false);
 		}
 	}
@@ -430,16 +480,18 @@ public class AudioPlayer {
 
 		releasePlayer();
 
+		changePlayState(PlayState.ERROR);
+		
 		showNotification(false);
 
-		if (listener != null) {
-			try {
-				listener.onError(what, extra);
-			} catch (RemoteException e) {
-				listener = null;
-				e.printStackTrace();
-			}
-		}
+//		if (listener != null) {
+//			try {
+//				listener.onError(what, extra);
+//			} catch (RemoteException e) {
+//				listener = null;
+//				e.printStackTrace();
+//			}
+//		}
 	}
 
 	private void changePlayState(PlayState state) {
@@ -454,6 +506,7 @@ public class AudioPlayer {
 		if (bundle != null) {
 			intent.putExtras(bundle);
 		}
+		sendBroadcast(intent);
 //		
 //		
 //		if (listener != null) {
@@ -470,35 +523,105 @@ public class AudioPlayer {
 //		}
 	}
 
-	public void onNotificationClick(final String action) {
-//		if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
-//			this.togglePlay();
-//		} else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
-//			this.getNextAudio(true);
-//		} else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
-//			this.getNextAudio(false);
-//		} else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
-//			this.stop();
-//			showNotification(false);
-//		}
-	}
+//	public void onNotificationClick(final String action) {
+////		if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
+////			this.togglePlay();
+////		} else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
+////			this.getNextAudio(true);
+////		} else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
+////			this.getNextAudio(false);
+////		} else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
+////			this.stop();
+////			showNotification(false);
+////		}
+//	}
+	
+	private int getLastPlayAudio() {
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL_PLAYFLAG, null, null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				return cursor.getInt(0);
+			}
+		} finally {
+			cursor.close();
+		}
+		
+		cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL_RANDOM, null, null, null, null);
+		try {
+			if (cursor.moveToFirst()) {
+				return cursor.getInt(0);
+			}
+		} finally {
+			cursor.close();
+		}
+
+		return -1;
+	}	
 
 	public void onAction(Intent intent) {
 		final String action = intent.getAction();
 		if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
 			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
-			if (index != -1) {
-				setData(index);
+			if (index == -1) {
+				index = getLastPlayAudio();				
 			}
+			setData(index);
 		} else if (action.equals(AudioAction.ACTION_AUDIO_PLAY)) {
 			togglePlay();
 		} else if (action.equals(AudioAction.ACTION_AUDIO_NEXT)) {
-			this.getNextAudio(true);
+			if (audioIndex == -1) {
+				audioIndex = getLastPlayAudio();
+			}
+			getNextAudio(true);
 		} else if (action.equals(AudioAction.ACTION_AUDIO_PREV)) {
-			this.getNextAudio(false);
+			if (audioIndex == -1) {
+				audioIndex = getLastPlayAudio();
+			}			
+			getNextAudio(false);
 		} else if (action.equals(AudioAction.ACTION_AUDIO_STOP)) {
-			this.stop();
+			stop();
 			showNotification(false);
+		} else if (action.equals(AudioAction.ACTION_AUDIO_SEEK)) {
+			int pos = intent.getIntExtra(AudioAction.DATA_POSITION, -1);
+			if (pos != -1) {
+				seekTo(pos);
+			}
+		} else if (action.equals(AudioAction.ACTION_AUDIO_NAVIGATE)) {
+			int nv = intent.getIntExtra(AudioAction.DATA_NAVIGATE, -1);
+			if (nv != -1) {
+				navigateTo(nv);
+			}				
+		}
+	}
+
+	public void onUIUpdate(Intent intent) {
+		int state = intent.getIntExtra(AudioAction.DATA_STATE, -1);
+		if (state == UIState.AUDIO_WINDOW_SHOW.getId()) {
+			isAudioWindowShow  = true;
+			
+			if (isPlaying() || isPause()) {
+				Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+				pp.putExtra(AudioAction.DATA_ID, audioIndex);
+				pp.putExtra(AudioAction.DATA_POSITION, player.getCurrentPosition());
+				pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+				pp.putExtra(AudioAction.DATA_STATE, PlayState.PREPARED.getId());				
+				sendBroadcast(pp);
+				
+				Intent st = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+				st.putExtra(AudioAction.DATA_STATE, playState.getId());
+				sendBroadcast(st);
+			}
+			
+			new Thread(new TickCounterRunnable()).start();			
+			
+			showNotification(false);
+			
+		} else {
+			isAudioWindowShow = false;
+			
+			if (isPlaying() || isPause()) {
+				showNotification(true);				
+			}
 		}
 	}
 	

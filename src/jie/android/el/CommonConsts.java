@@ -53,6 +53,8 @@ public interface CommonConsts {
 		public static final int SERVICE_NOTIFICATION = 1;
 		// public static final int SERVICE_AUDIOPLAYING = 2;
 		public static final int SERVICE_PACKAGE_READY = 3;
+		public static final int SERVICE_AUDIO_ACTION = 4;
+		public static final int SERVICE_UPDATE_AUDIO = 5;
 
 		public static final int UI_CREATED = 100;
 		public static final int UI_PACKAGE_CHANGED = 101;
@@ -61,14 +63,6 @@ public interface CommonConsts {
 
 	public enum ServiceState {
 		READY, UNZIP, ERROR, PLAYING;
-
-		public int getId() {
-			return this.ordinal();
-		}
-	}
-
-	public enum UIState {
-		START, STOP;
 
 		public int getId() {
 			return this.ordinal();
@@ -121,8 +115,9 @@ public interface CommonConsts {
 		public static final String ACTION_AUDIO_NEXT = "jie.android.el.action.audio_next";
 		public static final String ACTION_AUDIO_PLAY = "jie.android.el.action.audio_play";
 		public static final String ACTION_AUDIO_STOP = "jie.android.el.action.audio_stop";
-//		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
+		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
 		public static final String ACTION_AUDIO_NAVIGATE = "jie.android.el.action.audio_navigate";
+//		public static final String ACTION_AUDIO_CHANGE = "jie.android.el.action.audio_change";
 	}
 	
 	public interface NotificationAction extends BroadcastAction {
@@ -156,30 +151,18 @@ public interface CommonConsts {
 	}
 
 	public enum PlayState {
-		INVALID, NONE, PREPARED, PLAYING, PAUSED, COMPLETED, ERROR;
+		INVALID, NONE, PREPARED, PLAY, PLAYING, PAUSED, STOP, COMPLETED, ERROR;
 
 		public int getId() {
 			return this.ordinal();
 		}
-
-		public static PlayState getState(int id) {
-			if (id == PLAYING.getId()) {
-				return PLAYING;
-			} else if (id == PAUSED.getId()) {
-				return PAUSED;
-			} else if (id == NONE.getId()) {
-				return NONE;
-			} else if (id == PREPARED.getId()) {
-				return PREPARED;
-			} else if (id == ERROR.getId()) {
-				return ERROR;
-			} else if (id == COMPLETED.getId()) {
-				return COMPLETED;
-			} else if (id == INVALID.getId()) {
-				return INVALID;
-			} else {
-				return null;
-			}
+	}
+	
+	public enum UIState {
+		AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE;
+		
+		public int getId() {
+			return ordinal();
 		}
 	}
 	

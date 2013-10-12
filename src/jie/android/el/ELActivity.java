@@ -72,7 +72,12 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 //			case UIMsg.SERVICE_AUDIOPLAYING:
 //				onServiceAudioPlaying((Bundle)msg.obj);
 //				break;
-
+			case UIMsg.SERVICE_AUDIO_ACTION:
+				onServiceAudioAction((Intent)msg.obj);
+				break;
+			case UIMsg.SERVICE_UPDATE_AUDIO:
+				onServiceUpdateAutio((Intent)msg.obj);
+				break;
 			default:;
 			}
 		}		
@@ -90,18 +95,17 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		public void onAudioAction(Intent intent) throws RemoteException {
 			final String action = intent.getAction();
 			if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
-				int id = intent.getIntExtra(AudioAction.DATA_ID, -1);
-				if (id != -1) {
-					Bundle args = new Bundle();
-					args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.PLAY.getId());
-					args.putInt(FragmentArgument.INDEX, (int) id);
-					showFragment(FragmentSwitcher.Type.SHOW, args);					
-				}
-			} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
-				if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
-					fragmentSwitcher.getFragment().onIntent(intent);
-				}
+				showFragment(FragmentSwitcher.Type.SHOW, null);
 			}
+			
+			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIO_ACTION, intent);
+			msg.sendToTarget();
+		}
+
+		@Override
+		public void onUpdateAudio(Intent intent) throws RemoteException {
+			Message msg = Message.obtain(handler, UIMsg.SERVICE_UPDATE_AUDIO, intent);
+			msg.sendToTarget();
 		}
 	};
 	
@@ -138,7 +142,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+				
 		checkPath();
 		
 		sharedPreferences = Utils.getSharedPreferences(this);// getSharedPreferences(AppArgument.NAME, Context.MODE_MULTI_PROCESS);
@@ -155,7 +159,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 //	
 		handler.sendEmptyMessage(UIMsg.UI_CREATED);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
@@ -421,9 +425,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			showFragment(FragmentSwitcher.Type.LIST, null);
 			showProgressDialog(false, null);			
 		} else if (state == ServiceState.PLAYING.getId()) {
-			Bundle args = new Bundle();
-			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
-			showFragment(FragmentSwitcher.Type.SHOW, args);			
+//			Bundle args = new Bundle();
+//			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+			showFragment(FragmentSwitcher.Type.SHOW, null);			
 		}
 	}
 
@@ -499,6 +503,17 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		
 		isServiceNotificationRegisted = reg;
 	}
+
 	
-	
+	protected void onServiceAudioAction(Intent intent) {
+		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
+			fragmentSwitcher.getFragment().onIntent(intent);
+		}
+	}	
+
+	protected void onServiceUpdateAutio(Intent intent) {
+		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
+			fragmentSwitcher.getFragment().onIntent(intent);
+		}
+	}	
 }

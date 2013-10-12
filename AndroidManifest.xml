@@ -45,7 +45,7 @@
         </provider>
 
         <receiver
-            android:name=".service.receiver.ELWidgetProvider" android:process=":el_service" android:exported="true">
+            android:name=".service.receiver.ELWidgetProvider" android:process=":el_service">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="jie.android.el.action.service_init" />
@@ -58,6 +58,7 @@
                 android:name="android.appwidget.provider"
                 android:resource="@xml/widget_provider_info" />
         </receiver>
+<!--         
         <receiver
             android:name=".service.receiver.ServiceReceiver">
             <intent-filter>
@@ -71,9 +72,11 @@
                 <action android:name="jie.android.el.action.audio_stop"/>
                 <action android:name="jie.android.el.action.audio_set"/>
                 <action android:name="jie.android.el.action.audio_navigate"/>
+                <action android:name="jie.android.el.action.update_data"/>
             </intent-filter>
         </receiver>
-        <receiver android:name=".service.receiver.NotificationReceiver">
+-->        
+        <receiver android:name=".service.receiver.NotificationReceiver" android:process=":el_service">
             <intent-filter>
                 <action android:name="jie.android.el.action.service_init" />
                 <action android:name="jie.android.el.action.service_end" />
