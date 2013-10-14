@@ -200,11 +200,11 @@ public class ELContentProvider extends ContentProvider {
 			db = elDBAccess.getReadableDatabase();
 
 			return db.query("esl", projection, selection, null, null, null, sortOrder, "1");
-		case MATCH_ITEM_EL_ESL_PLAYFLAG:
-			selection = "flag & " + ListItemFlag.LAST_PLAY + "=" + ListItemFlag.LAST_PLAY;
-			db = elDBAccess.getReadableDatabase();
-			table = "esl";
-			break;
+//		case MATCH_ITEM_EL_ESL_PLAYFLAG:
+//			selection = "flag & " + ListItemFlag.LAST_PLAY + "=" + ListItemFlag.LAST_PLAY;
+//			db = elDBAccess.getReadableDatabase();
+//			table = "esl";
+//			break;
 		case MATCH_LAC_WORD_INFO:
 		case MATCH_ITEM_LAC_WORD_INFO:
 			db = lacDBAccess.getReadableDatabase();

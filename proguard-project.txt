@@ -24,3 +24,9 @@
 
 #-dontwarn com.handmark.pulltorefresh.library.**
 -keep class com.handmark.pulltorefresh.library.** {*;}
+
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}

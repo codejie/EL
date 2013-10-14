@@ -95,6 +95,7 @@
         android:src="@drawable/el_widget_ic" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -102,28 +103,39 @@
         android:layout_marginLeft="14dp"
         android:background="#cc222222"
         android:orientation="vertical"
+        android:padding="2dp"
         android:visibility="gone" >
 
         <TextView
             android:id="@+id/textView2"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:background="@drawable/el_player_bg"
+            android:clickable="true"
+            android:padding="2dp"
+            android:text="@string/el_menu_show_slowdialog"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:background="@drawable/el_player_bg"
+            android:clickable="true"
+            android:padding="2dp"
+            android:text="@string/el_menu_show_explanation"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <TextView
             android:id="@+id/textView4"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Medium Text"
+            android:background="@drawable/el_player_bg"
+            android:clickable="true"
+            android:padding="2dp"
+            android:text="@string/el_menu_show_fastdialog"
             android:textAppearance="?android:attr/textAppearanceMedium" />
+
     </LinearLayout>
 
 </RelativeLayout>

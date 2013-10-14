@@ -30,7 +30,8 @@ import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts;
 import jie.android.el.CommonConsts.Setting;
-import jie.android.el.CommonConsts.UIState;
+import jie.android.el.CommonConsts.UpdateAudioType;
+import jie.android.el.CommonConsts.UpdateUIType;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.service.OnPlayAudioListener;
@@ -49,73 +50,73 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	private static final String Tag = ShowFragment.class.getSimpleName();
 
-	private class OnPlayListener extends OnPlayAudioListener.Stub {
-
-		private boolean attached = false;
-
-		public boolean isAttached() {
-			return attached;
-		}
-
-		public void setAttached(boolean attached) {
-			this.attached = attached;
-		}
-
-//		@Override
-//		public void onPrepared(int duration) throws RemoteException {
-//			//handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
-//		}
-
-		@Override
-		public void onPlaying(int msec) throws RemoteException {
-//			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPLAYING, msec, -1));
-		}
-
-		@Override
-		public void onCompleted() throws RemoteException {
-//			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONCOMPLETED));
-		}
-
-		@Override
-		public void onError(int what, int extra) throws RemoteException {
-//			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONERROR, what, extra));
-		}
-
-		@Override
-		public void onSeekTo(int msec) throws RemoteException {
-//			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONSEEKTO, msec, -1));
-		}
-
-//		@Override
-//		public void onAudioChanged(int index) throws RemoteException {
-//			Bundle args = new Bundle();
-//			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
-//			args.putInt(FragmentArgument.INDEX, index);
-//			args.putInt(FragmentArgument.STATE, PlayState.PLAYING.getId());
-//			args.putInt(FragmentArgument.DURATION, 0);
-//			args.putInt(FragmentArgument.POSITION, 0);
+//	private class OnPlayListener extends OnPlayAudioListener.Stub {
 //
-//			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
-//		}
-
-//		@Override
-//		public void onIsPlaying(int index, int state, int duration, int msec) throws RemoteException {
-//			Bundle args = new Bundle();
-//			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
-//			args.putInt(FragmentArgument.INDEX, index);
-//			args.putInt(FragmentArgument.STATE, state);
-//			args.putInt(FragmentArgument.DURATION, duration);
-//			args.putInt(FragmentArgument.POSITION, msec);
+//		private boolean attached = false;
 //
-//			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
+//		public boolean isAttached() {
+//			return attached;
 //		}
-
-//		@Override
-//		public void onStateChanged(int state) throws RemoteException {
-//			handler.sendMessage(Message.obtain(handler, MSG_PLAY_STATE_CHANGED, state, -1));
 //
+//		public void setAttached(boolean attached) {
+//			this.attached = attached;
 //		}
-	}
+//
+////		@Override
+////		public void onPrepared(int duration) throws RemoteException {
+////			//handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPREPARED, duration, -1));
+////		}
+//
+//		@Override
+//		public void onPlaying(int msec) throws RemoteException {
+////			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONPLAYING, msec, -1));
+//		}
+//
+//		@Override
+//		public void onCompleted() throws RemoteException {
+////			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONCOMPLETED));
+//		}
+//
+//		@Override
+//		public void onError(int what, int extra) throws RemoteException {
+////			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONERROR, what, extra));
+//		}
+//
+//		@Override
+//		public void onSeekTo(int msec) throws RemoteException {
+////			handler.sendMessage(Message.obtain(handler, MSG_PLAY_ONSEEKTO, msec, -1));
+//		}
+//
+////		@Override
+////		public void onAudioChanged(int index) throws RemoteException {
+////			Bundle args = new Bundle();
+////			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+////			args.putInt(FragmentArgument.INDEX, index);
+////			args.putInt(FragmentArgument.STATE, PlayState.PLAYING.getId());
+////			args.putInt(FragmentArgument.DURATION, 0);
+////			args.putInt(FragmentArgument.POSITION, 0);
+////
+////			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
+////		}
+//
+////		@Override
+////		public void onIsPlaying(int index, int state, int duration, int msec) throws RemoteException {
+////			Bundle args = new Bundle();
+////			args.putInt(FragmentArgument.ACTION, FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
+////			args.putInt(FragmentArgument.INDEX, index);
+////			args.putInt(FragmentArgument.STATE, state);
+////			args.putInt(FragmentArgument.DURATION, duration);
+////			args.putInt(FragmentArgument.POSITION, msec);
+////
+////			handler.sendMessage(Message.obtain(handler, MSG_INDEX, args));
+////		}
+//
+////		@Override
+////		public void onStateChanged(int state) throws RemoteException {
+////			handler.sendMessage(Message.obtain(handler, MSG_PLAY_STATE_CHANGED, state, -1));
+////
+////		}
+//	}
 	
 //	private final class UpdateHandler extends Handler {
 //
@@ -204,7 +205,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private int audioExplanation = -1;
 	private int audioFastDialog = -1;
 
-	private OnPlayListener onPlayListener = new OnPlayListener();
+//	private OnPlayListener onPlayListener = new OnPlayListener();
 //	private HandlerThread handlerThread;
 //	private UpdateHandler handler;
 //
@@ -331,9 +332,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playNext = (ImageView) view.findViewById(R.id.playImageView5);
 		playNext.setOnClickListener(this);
 
-//		Intent intent = new Intent(AudioAction.ACTION_UPDATE_UI);
-//		intent.putExtra(AudioAction.DATA_STATE, UIState.AUDIO_WINDOW_SHOW.getId());
-//		sendBroadcast(intent);
+		Intent intent = new Intent(AudioAction.ACTION_AUDIO_QUERY);
+		sendBroadcast(intent);
 	}
 
 	@Override
@@ -780,22 +780,22 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 		playTime.setText(audioDuration);
 	}
-
-	protected void onPlayStateChanged(int state) {
-		if (state == PlayState.PREPARED.getId()) {
-			playPlay.setEnabled(true);
-			// playNavigate.setEnabled(true);
-		} else if (state == PlayState.PLAYING.getId()) {
-			playPlay.setSelected(true);
-			// playNavigate.setEnabled(true);
-		} else if (state == PlayState.PAUSED.getId()) {
-			playPlay.setSelected(false);
-			// playNavigate.setEnabled(false);
-		} else if (state == PlayState.NONE.getId()) {
-			playPlay.setSelected(false);
-			// playNavigate.setEnabled(false);
-		}
-	}
+//
+//	protected void onPlayStateChanged(int state) {
+//		if (state == PlayState.PREPARED.getId()) {
+//			playPlay.setEnabled(true);
+//			// playNavigate.setEnabled(true);
+//		} else if (state == PlayState.PLAYING.getId()) {
+//			playPlay.setSelected(true);
+//			// playNavigate.setEnabled(true);
+//		} else if (state == PlayState.PAUSED.getId()) {
+//			playPlay.setSelected(false);
+//			// playNavigate.setEnabled(false);
+//		} else if (state == PlayState.NONE.getId()) {
+//			playPlay.setSelected(false);
+//			// playNavigate.setEnabled(false);
+//		}
+//	}
 
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -866,7 +866,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		super.onPause();
 		
 		Intent intent = new Intent(AudioAction.ACTION_UPDATE_UI);
-		intent.putExtra(AudioAction.DATA_STATE, UIState.AUDIO_WINDOW_CLOSE.getId());
+		intent.putExtra(AudioAction.DATA_TYPE, UpdateUIType.AUDIO_WINDOW_CLOSE.getId());
 		sendBroadcast(intent);
 		
 //		setAudioPlayListener(false);
@@ -876,8 +876,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	public void onResume() {
 		super.onResume();
 		
+//		Intent intent = new Intent(AudioAction.ACTION_AUDIO_QUERY);
+//		sendBroadcast(intent);
+		
 		Intent intent = new Intent(AudioAction.ACTION_UPDATE_UI);
-		intent.putExtra(AudioAction.DATA_STATE, UIState.AUDIO_WINDOW_SHOW.getId());
+		intent.putExtra(AudioAction.DATA_TYPE, UpdateUIType.AUDIO_WINDOW_SHOW.getId());
 		sendBroadcast(intent);
 		
 		
@@ -896,22 +899,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	public void onIntent(Intent intent) {
 		final String action = intent.getAction();
 		if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
-			int state = intent.getIntExtra(AudioAction.DATA_STATE, -1);
-			if (state == PlayState.PLAYING.getId()) {
-				onPlayPlaying(intent.getIntExtra(AudioAction.DATA_POSITION, 0));
-			} else if (state == PlayState.PREPARED.getId()) {
-				int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
-				if (index != audioIndex) {
-					onIndex(index);
+			int type = intent.getIntExtra(AudioAction.DATA_TYPE, -1);
+			if (type != -1) {
+				if (type == UpdateAudioType.STATE_CHANGED.getId()) {
+					onStateChanged(intent);
+				} else if (type == UpdateAudioType.AUDIO_CHANGED.getId()) {
+					onAudioChanged(intent);
 				}
-				onPlayPrepared(intent.getIntExtra(AudioAction.DATA_DURATION, 0), intent.getIntExtra(AudioAction.DATA_POSITION, 0));
-				playPlay.setEnabled(true);
-			} else if (state == PlayState.PLAY.getId()) {
-				playPlay.setSelected(true);
-			} else if (state == PlayState.PAUSED.getId()) {
-				playPlay.setSelected(false);
-			} else if (state == PlayState.NONE.getId()) {
-				playPlay.setSelected(false);
 			}
 		} else if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
 			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
@@ -919,6 +913,50 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				onIndex(index);
 			}
 		}
+	}
+
+	private void onStateChanged(Intent intent) {
+		int state = intent.getIntExtra(AudioAction.DATA_STATE, -1);
+		
+		if (state == PlayState.PLAYING.getId()) {
+			onPlayPlaying(intent.getIntExtra(AudioAction.DATA_POSITION, 0));
+			if (!playPlay.isSelected()) {
+				playPlay.setSelected(true);
+			}
+		} else if (state == PlayState.PREPARED.getId()) {
+//			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
+//			if (index != audioIndex) {
+//				onIndex(index);
+//			}
+			//onPlayPrepared(intent.getIntExtra(AudioAction.DATA_DURATION, 0), intent.getIntExtra(AudioAction.DATA_POSITION, 0));
+			playPlay.setEnabled(true);
+			if (playPlay.isSelected()) {
+				playPlay.setSelected(false);
+			}
+			
+		} else if (state == PlayState.PLAY.getId()) {
+			if (!playPlay.isSelected()) {
+				playPlay.setSelected(true);
+			}
+		} else if (state == PlayState.PAUSED.getId()) {
+			if (playPlay.isSelected()) {
+				playPlay.setSelected(false);
+			}
+
+		} else if (state == PlayState.NONE.getId()) {
+			if (playPlay.isSelected()) {
+				playPlay.setSelected(false);
+			}
+		}		
+	}
+
+	private void onAudioChanged(Intent intent) {
+		int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
+		if (index != audioIndex) {
+			onIndex(index);
+		}
+		onPlayPrepared(intent.getIntExtra(AudioAction.DATA_DURATION, 0), intent.getIntExtra(AudioAction.DATA_POSITION, 0));
+		onStateChanged(intent);
 	}
 	
 }

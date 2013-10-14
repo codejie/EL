@@ -136,7 +136,7 @@ public class ELPopupMenu {
 			}			
 		};		
 		
-		AttributeSet attrs = Utils.getAttributeSet(context, R.layout.layout_popmenu_window_template, "LinearLayout", R.id.linearLayout1);
+		AttributeSet attrs = Utils.getAttributeSet(context, R.layout.layout_popmenu_window_template, "LinearLayout", R.id.linearLayout2);
 		LinearLayout ll = new LinearLayout(context, attrs);
 		
 		int pos = 0;

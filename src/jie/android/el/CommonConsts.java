@@ -89,6 +89,22 @@ public interface CommonConsts {
 			}
 		}
 	}
+
+	public enum UpdateAudioType {
+		STATE_CHANGED, AUDIO_CHANGED;
+		
+		public int getId() {
+			return ordinal();
+		}		
+	}
+	
+	public enum UpdateUIType {
+		AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE;
+		
+		public int getId() {
+			return ordinal();
+		}
+	}	
 	
 	public interface BroadcastAction {
 		public static final String ACTION_SERVICE_INIT = "jie.android.el.action.service_init";
@@ -117,6 +133,7 @@ public interface CommonConsts {
 		public static final String ACTION_AUDIO_STOP = "jie.android.el.action.audio_stop";
 		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
 		public static final String ACTION_AUDIO_NAVIGATE = "jie.android.el.action.audio_navigate";
+		public static final String ACTION_AUDIO_QUERY = "jie.android.el.action.audio_query";
 //		public static final String ACTION_AUDIO_CHANGE = "jie.android.el.action.audio_change";
 	}
 	
@@ -127,6 +144,7 @@ public interface CommonConsts {
 	
 	public interface WidgetAction extends BroadcastAction {
 		public static final String ACTION_NAVIGATE = "jie.android.el.action.widget_navigate";
+		public static final String ACTION_RANDOMMODE = "jie.android.el.action.widget_randmommode";
 	}
 	
 //	public interface NotificationAction {
@@ -158,13 +176,7 @@ public interface CommonConsts {
 		}
 	}
 	
-	public enum UIState {
-		AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE;
-		
-		public int getId() {
-			return ordinal();
-		}
-	}
+
 	
 	public interface DownloadRequest {
 		public static final String SKYDRIVE_AUTHORIZATION_KEY = "3BAF6CAC74F7919";

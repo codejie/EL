@@ -52,6 +52,7 @@
                 <action android:name="jie.android.el.action.service_end" />                
                 <action android:name="jie.android.el.action.widget_navigate"/>
                 <action android:name="jie.android.el.action.update_data"/>
+                <action android:name="jie.android.el.action.audio_navigate"/>
             </intent-filter>
 
             <meta-data

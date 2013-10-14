@@ -35,7 +35,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 		} else if (action.equals(NotificationAction.ACTION_REMOVE)) {
 			onRemoveNotification(intent.getExtras().getInt(NotificationAction.DATA_TYPE), intent.getExtras().getInt(NotificationAction.DATA_ID));
 		} else {
-			
+			Log.w(Tag, "unknown intent action - " + action);
 		}
 	}
 
@@ -56,7 +56,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 	}
 
 	private int onShowNotification(int level, boolean play, String title, String text) {
-		Log.d(Tag, "code = "  + this.hashCode() + " - " + this.toString());
+//		Log.d(Tag, "code = "  + this.hashCode() + " - " + this.toString());
 		if (notificationSetter != null) {
 			NotificationType type = NotificationType.getType(level);
 			if (type != null) {
@@ -67,7 +67,7 @@ public class NotificationReceiver extends BroadcastReceiver {
 	}
 	
 	private void onRemoveNotification(int level, int id) {
-		Log.d(Tag, "code = "  + this.hashCode() + " - " + this.toString());
+//		Log.d(Tag, "code = "  + this.hashCode() + " - " + this.toString());
 		if (notificationSetter != null) {
 			NotificationType type = NotificationType.getType(level);
 			if (type != null) {
