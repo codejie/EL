@@ -592,8 +592,13 @@ public class AudioPlayer {
 			intent.putExtra(AudioAction.DATA_DURATION, player.getDuration());
 		} else {
 			intent.putExtra(AudioAction.DATA_POSITION, 0);
-			intent.putExtra(AudioAction.DATA_DURATION, 0);				
+			intent.putExtra(AudioAction.DATA_DURATION, 0);
 		}
+		int n = 0;
+		n |= (audioSlowDialog != -1 ? 1 : 0);
+		n |= (audioExplanation != -1 ? 2 : 0);
+		n |= (audioFastDialog != -1 ? 4 : 0);
+		intent.putExtra(AudioAction.DATA_NAVIGATE, n);
 		intent.putExtra(AudioAction.DATA_STATE, playState.getId());				
 		sendBroadcast(intent);		
 	}

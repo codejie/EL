@@ -26,6 +26,7 @@ import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import jie.android.el.CommonConsts.AudioAction;
+import jie.android.el.CommonConsts.AudioNavigateData;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts;
@@ -201,9 +202,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	private String audioDuration = null;
 
 	private int audioIndex = -1;
-	private int audioSlowDialog = -1;
-	private int audioExplanation = -1;
-	private int audioFastDialog = -1;
+	private int audioNavigate = AudioNavigateData.DISABLE;
+//	private int audioSlowDialog = -1;
+//	private int audioExplanation = -1;
+//	private int audioFastDialog = -1;
 
 //	private OnPlayListener onPlayListener = new OnPlayListener();
 //	private HandlerThread handlerThread;
@@ -417,9 +419,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 					audioIndex = index;
 
-					audioSlowDialog = cursor.getInt(2);
-					audioExplanation = cursor.getInt(3);
-					audioFastDialog = cursor.getInt(4);
+//					audioSlowDialog = cursor.getInt(2);
+//					audioExplanation = cursor.getInt(3);
+//					audioFastDialog = cursor.getInt(4);
 
 					loadData(audioIndex, title, script);
 
@@ -458,7 +460,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playPlay.setEnabled(true);
 		playPlay.setSelected(false);
 
-		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
+//		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
+		if (audioNavigate == AudioNavigateData.DISABLE) {
 			playNavigate.setEnabled(false);
 		} else {
 			playNavigate.setEnabled(true);
@@ -700,9 +703,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			}
 		});
 
-		pm.setItemEnabled(R.id.el_menu_show_slowdialog, audioSlowDialog != -1);
-		pm.setItemEnabled(R.id.el_menu_show_explanation, audioExplanation != -1);
-		pm.setItemEnabled(R.id.el_menu_show_fastdialog, audioFastDialog != -1);
+		pm.setItemEnabled(R.id.el_menu_show_slowdialog, ((audioNavigate & AudioNavigateData.SLOWDIALOG) == AudioNavigateData.SLOWDIALOG));
+		pm.setItemEnabled(R.id.el_menu_show_explanation, ((audioNavigate & AudioNavigateData.EXPLANATION) == AudioNavigateData.EXPLANATION));
+		pm.setItemEnabled(R.id.el_menu_show_fastdialog, ((audioNavigate & AudioNavigateData.FASTDIALOG) == AudioNavigateData.FASTDIALOG));
 
 		pm.show();
 	}

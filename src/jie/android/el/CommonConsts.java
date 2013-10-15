@@ -104,7 +104,14 @@ public interface CommonConsts {
 		public int getId() {
 			return ordinal();
 		}
-	}	
+	}
+	
+	public interface AudioNavigateData {
+		public static final int DISABLE = 0;
+		public static final int SLOWDIALOG = 1;
+		public static final int EXPLANATION = 2;
+		public static final int FASTDIALOG = 4;
+	}
 	
 	public interface BroadcastAction {
 		public static final String ACTION_SERVICE_INIT = "jie.android.el.action.service_init";

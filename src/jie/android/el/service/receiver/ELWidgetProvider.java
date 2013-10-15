@@ -1,5 +1,6 @@
 package jie.android.el.service.receiver;
 
+import jie.android.el.CommonConsts.UpdateAudioType;
 import jie.android.el.CommonConsts.WidgetAction;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.AudioAction;
@@ -23,6 +24,8 @@ public class ELWidgetProvider extends AppWidgetProvider {
 	private static boolean showNavigator = false; 
 	private static boolean isPlaying = false;
 
+	private static String audioTitle = "<no audio>";
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
 		Log.d(Tag, "onUpate()");
@@ -106,7 +109,24 @@ public class ELWidgetProvider extends AppWidgetProvider {
  		} else if (action.equals(AudioAction.ACTION_AUDIO_NAVIGATE)) {
  			showNavigator = false;
  			updateRemoteView(context);
- 		}		
+ 		} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
+ 			int type = intent.getIntExtra(AudioAction.DATA_TYPE, -1);
+ 			if (type == UpdateAudioType.STATE_CHANGED.getId()) {
+ 				onStateChange(intent);
+ 			} else if (type == UpdateAudioType.AUDIO_CHANGED.getId()) {
+ 				onAudioChanged(intent);
+ 			}
+ 		}
+	}
+
+	private void onAudioChanged(Intent intent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void onStateChange(Intent intent) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private void queryPlayState(Context context) {
