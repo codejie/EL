@@ -457,16 +457,16 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		String html = assembleHtmlScript(data);
 		webView.loadDataWithBaseURL(null, html, "text/html", "utf-8", null);
 
-		playPlay.setEnabled(true);
-		playPlay.setSelected(false);
-
-//		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
-		if (audioNavigate == AudioNavigateData.DISABLE) {
-			playNavigate.setEnabled(false);
-		} else {
-			playNavigate.setEnabled(true);
-		}
-
+//		playPlay.setEnabled(true);
+//		playPlay.setSelected(false);
+//
+////		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
+//		if (audioNavigate == AudioNavigateData.DISABLE) {
+//			playNavigate.setEnabled(false);
+//		} else {
+//			playNavigate.setEnabled(true);
+//		}
+//
 		textView.setVisibility(View.VISIBLE);
 		textView.setText(String.format("%d. %s", index, title));
 
@@ -591,10 +591,12 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 //		}
 	}
 
-	private void seekAudio(int position) {
+	private void seekAudio(int type) {
 		
-		Intent intent = new Intent(AudioAction.ACTION_AUDIO_SEEK);
-		intent.putExtra(AudioAction.DATA_POSITION, position * 1000);
+//		Intent intent = new Intent(AudioAction.ACTION_AUDIO_SEEK);
+//		intent.putExtra(AudioAction.DATA_POSITION, position * 1000);
+		Intent intent = new Intent(AudioAction.ACTION_AUDIO_NAVIGATE);
+		intent.putExtra(AudioAction.DATA_NAVIGATE, type);
 		
 		sendBroadcast(intent);
 		
@@ -712,11 +714,11 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	protected void onNavigate(int id) {
 		if (id == R.id.el_menu_show_slowdialog) {
-			seekAudio(audioSlowDialog);
+			seekAudio(AudioNavigateData.SLOWDIALOG);
 		} else if (id == R.id.el_menu_show_explanation) {
-			seekAudio(audioExplanation);
+			seekAudio(AudioNavigateData.EXPLANATION);
 		} else if (id == R.id.el_menu_show_fastdialog) {
-			seekAudio(audioFastDialog);
+			seekAudio(AudioNavigateData.FASTDIALOG);
 		}
 	}
 
@@ -774,6 +776,17 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	protected void onPlayPrepared(int duration, int position) {
+		
+		playPlay.setEnabled(true);
+		playPlay.setSelected(false);
+
+//		if (audioSlowDialog == -1 && audioExplanation == -1 && audioFastDialog == -1) {
+		if (audioNavigate == AudioNavigateData.DISABLE) {
+			playNavigate.setEnabled(false);
+		} else {
+			playNavigate.setEnabled(true);
+		}
+		
 		audioDuration = Utils.formatMSec(duration);
 
 		playBar.setMax(duration / 1000 - 1);
@@ -911,10 +924,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				}
 			}
 		} else if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
-			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
-			if (index != -1) {
-				onIndex(index);
-			}
+//			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
+//			if (index != -1) {
+//				onIndex(index);
+//			}
 		}
 	}
 
@@ -958,6 +971,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		if (index != audioIndex) {
 			onIndex(index);
 		}
+		audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
 		onPlayPrepared(intent.getIntExtra(AudioAction.DATA_DURATION, 0), intent.getIntExtra(AudioAction.DATA_POSITION, 0));
 		onStateChanged(intent);
 	}

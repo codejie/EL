@@ -167,11 +167,19 @@ public class AudioPlayer {
 		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio", "slowdialog", "explanations", "fastdialog" }, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
-				if (prepareData(index, cursor.getString(0), cursor.getString(1))) {
+				
+				audioIndex = index;
+				audioTitle = cursor.getString(0);
+				
+				audioSlowDialog = cursor.getInt(2);
+				audioExplanation = cursor.getInt(3);
+				audioFastDialog = cursor.getInt(4);					
+				
+				if (prepareData(cursor.getString(1))) {
 					
-					audioSlowDialog = cursor.getInt(2);
-					audioExplanation = cursor.getInt(3);
-					audioFastDialog = cursor.getInt(4);					
+//					audioSlowDialog = cursor.getInt(2);
+//					audioExplanation = cursor.getInt(3);
+//					audioFastDialog = cursor.getInt(4);					
 
 					SharedPreferences prefs = Utils.getSharedPreferences(this.context);
 
@@ -188,10 +196,10 @@ public class AudioPlayer {
 		}
 	}
 
-	private boolean prepareData(int index, String title, String audio) {
+	private boolean prepareData(String audio) {
 
-		audioIndex = index;
-		audioTitle = title;
+//		audioIndex = index;
+//		audioTitle = title;
 
 		// check audio
 		audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
