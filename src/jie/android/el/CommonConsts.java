@@ -59,6 +59,7 @@ public interface CommonConsts {
 		public static final int UI_CREATED = 100;
 		public static final int UI_PACKAGE_CHANGED = 101;
 		public static final int UI_LOAD_BUNDLEDPACKAGE = 102;
+		public static final int UI_HIDE_TITLE = 103;
 	}
 
 	public enum ServiceState {
@@ -99,7 +100,7 @@ public interface CommonConsts {
 	}
 	
 	public enum UpdateUIType {
-		AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE;
+		AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE, HIDE_TITLE;
 		
 		public int getId() {
 			return ordinal();
@@ -119,6 +120,7 @@ public interface CommonConsts {
 		public static final String ACTION_SERVICE_END = "jie.android.el.action.service_end";
 		
 		public static final String ACTION_UPDATE_AUDIO = "jie.android.el.action.update_audio";
+		public static final String ACTION_UPDATE_AUDIO_PLAYING = "jie.android.el.action.update_audio_playing";
 		public static final String ACTION_UPDATE_UI = "jie.android.el.action.update_ui";
 		
 		public static final String DATA_TYPE = "jie.android.el.data.type";
@@ -141,6 +143,7 @@ public interface CommonConsts {
 		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
 		public static final String ACTION_AUDIO_NAVIGATE = "jie.android.el.action.audio_navigate";
 		public static final String ACTION_AUDIO_QUERY = "jie.android.el.action.audio_query";
+//		public static final String ACTION_AUDIO_PLAYING = "jie.android.el.action.audio_play";
 //		public static final String ACTION_AUDIO_CHANGE = "jie.android.el.action.audio_change";
 	}
 	
@@ -152,6 +155,7 @@ public interface CommonConsts {
 	public interface WidgetAction extends BroadcastAction {
 		public static final String ACTION_NAVIGATE = "jie.android.el.action.widget_navigate";
 		public static final String ACTION_RANDOMMODE = "jie.android.el.action.widget_randmommode";
+		public static final String ACTION_STARTACTIVITY = "jie.android.el.action.widget_startactivity";
 	}
 	
 //	public interface NotificationAction {
@@ -176,7 +180,7 @@ public interface CommonConsts {
 	}
 
 	public enum PlayState {
-		INVALID, NONE, PREPARED, PLAY, PLAYING, PAUSED, STOP, COMPLETED, ERROR;
+		INVALID, NONE, PREPARED, PLAY, /*PLAYING,*/ PAUSED, STOP, COMPLETED, ERROR;
 
 		public int getId() {
 			return this.ordinal();

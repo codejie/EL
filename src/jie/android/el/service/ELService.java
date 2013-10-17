@@ -7,6 +7,7 @@ import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts.ServiceState;
+import jie.android.el.CommonConsts.WidgetAction;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import jie.android.el.service.receiver.ServiceReceiver;
@@ -317,6 +318,8 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		filter.addAction(AudioAction.ACTION_UPDATE_UI);
 		filter.addAction(AudioAction.ACTION_AUDIO_SEEK);
 		filter.addAction(AudioAction.ACTION_AUDIO_QUERY);
+		filter.addAction(AudioAction.ACTION_UPDATE_AUDIO_PLAYING);
+//		filter.addAction(WidgetAction.ACTION_STARTACTIVITY);
 		
 		registerReceiver(serviceReceiver, filter);
 	}

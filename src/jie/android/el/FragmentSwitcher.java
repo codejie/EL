@@ -198,8 +198,9 @@ public class FragmentSwitcher {
 	}
 
 	public void remvoeAll() {
-		while (fragmentManager.getBackStackEntryCount() > 0) {
-			fragmentManager.popBackStackImmediate();
-		}
+		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//		while (fragmentManager.getBackStackEntryCount() > 0) {
+//			fragmentManager.popBackStackImmediate();
+//		}
 	}
 }

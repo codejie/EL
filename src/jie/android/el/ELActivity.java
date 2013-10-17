@@ -11,10 +11,13 @@ import jie.android.el.utils.Utils;
 import jie.android.el.utils.XmlTranslator;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.AudioAction;
+import jie.android.el.CommonConsts.BroadcastAction;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.NotificationType;
 import jie.android.el.CommonConsts.ServiceState;
+import jie.android.el.CommonConsts.Setting;
 import jie.android.el.CommonConsts.UIMsg;
+import jie.android.el.CommonConsts.UpdateUIType;
 import jie.android.el.R;
 import android.app.ProgressDialog;
 import android.content.ComponentName;
@@ -78,6 +81,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			case UIMsg.SERVICE_UPDATE_AUDIO:
 				onServiceUpdateAutio((Intent)msg.obj);
 				break;
+			case UIMsg.UI_HIDE_TITLE:
+				onUIHideTile();
+				break;
 			default:;
 			}
 		}		
@@ -96,6 +102,12 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			final String action = intent.getAction();
 			if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
 				showFragment(FragmentSwitcher.Type.SHOW, null);
+				
+				if (getSharedPreferences().getBoolean(Setting.CONTENT_HIDE_TITLE, false)) {
+					Message msg = Message.obtain(handler, UIMsg.UI_HIDE_TITLE);
+					handler.sendMessageDelayed(msg, 1500);
+				}
+				
 			}
 			
 			Message msg = Message.obtain(handler, UIMsg.SERVICE_AUDIO_ACTION, intent);
@@ -199,9 +211,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	
 	@Override
 	protected void onPause() {
-		super.onPause();
-		
 		fragmentSwitcher.remvoeAll();
+
+		super.onPause();
 		
 		registServiceNotification(false);
 //		if (fragmentSwitcher.isRemovedType()) {
@@ -515,5 +527,14 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
 			fragmentSwitcher.getFragment().onIntent(intent);
 		}
-	}	
+	}
+	
+	protected void onUIHideTile() {
+		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
+			Intent intent = new Intent(BroadcastAction.ACTION_UPDATE_UI);
+			intent.putExtra(BroadcastAction.DATA_TYPE, UpdateUIType.HIDE_TITLE.getId());
+			fragmentSwitcher.getFragment().onIntent(intent);
+		}
+	}
+	
 }

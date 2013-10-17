@@ -11,6 +11,7 @@ import jie.android.el.CommonConsts.UpdateUIType;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.AppArgument;
 import jie.android.el.CommonConsts.AudioAction;
+import jie.android.el.CommonConsts.AudioNavigateData;
 import jie.android.el.CommonConsts.ListItemFlag;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
@@ -39,13 +40,12 @@ import android.view.View;
 public class AudioPlayer {
 
 	private static final String Tag = AudioPlayer.class.getSimpleName();
-	
-	
+
 	private class TickCounterRunnable implements Runnable {
 
 		@Override
 		public void run() {
-			//while (listener != null && isPlaying()) {
+			// while (listener != null && isPlaying()) {
 			while (isAudioWindowShow && isPlaying()) {
 				try {
 					onPlayPlaying(player.getCurrentPosition());
@@ -61,13 +61,13 @@ public class AudioPlayer {
 	private Context context = null;
 
 	private MediaPlayer player = null;
-//	private OnPlayAudioListener listener = null;
+	// private OnPlayAudioListener listener = null;
 
 	private int audioIndex = -1;
 	private String audioTitle;
 	private int audioSlowDialog = -1;
 	private int audioExplanation = -1;
-	private int audioFastDialog = -1;	
+	private int audioFastDialog = -1;
 
 	private PlayState playState = PlayState.NONE;
 
@@ -125,61 +125,73 @@ public class AudioPlayer {
 			}
 		}
 
+		audioIndex = -1;
+		audioTitle = null;
+		audioSlowDialog = -1;
+		audioExplanation = -1;
+		audioFastDialog = -1;
+
+		onAudioChanged();
+
 		// showNotification(false);
 
-//		changePlayState(PlayState.NONE);
+		// changePlayState(PlayState.NONE);
 	}
 
-//	public void setOnPlayAudioListener(OnPlayAudioListener listener) {
-//		this.listener = listener;
-//
-//		if (this.listener != null) {
-////			if (isPlaying() || isPause()) {
-////				try {
-////					this.listener.onIsPlaying(audioIndex, playState.getId(), player.getDuration(), player.getCurrentPosition());
-////				} catch (RemoteException e) {
-////					// TODO Auto-generated catch block
-////					e.printStackTrace();
-////				}
-////			}
-//
-//			if (isPlaying()) {
-//				new Thread(new TickCounterRunnable()).start();
-//			}
-//
-//			showNotification(false);
-//		} else {
-//			if (isPlaying() || isPause()) {
-//				showNotification(true);
-//			}
-//		}
-//	}
+	// public void setOnPlayAudioListener(OnPlayAudioListener listener) {
+	// this.listener = listener;
+	//
+	// if (this.listener != null) {
+	// // if (isPlaying() || isPause()) {
+	// // try {
+	// // this.listener.onIsPlaying(audioIndex, playState.getId(),
+	// player.getDuration(), player.getCurrentPosition());
+	// // } catch (RemoteException e) {
+	// // // TODO Auto-generated catch block
+	// // e.printStackTrace();
+	// // }
+	// // }
+	//
+	// if (isPlaying()) {
+	// new Thread(new TickCounterRunnable()).start();
+	// }
+	//
+	// showNotification(false);
+	// } else {
+	// if (isPlaying() || isPause()) {
+	// showNotification(true);
+	// }
+	// }
+	// }
 
 	public void setData(int index, boolean forcePlay) {
 
+		changePlayState(PlayState.NONE);
+
 		releasePlayer();
-		
+
 		if (index == -1) {
 			return;
 		}
 
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);
-		Cursor cursor = context.getContentResolver().query(uri, new String[] { "title", "audio", "slowdialog", "explanations", "fastdialog" }, null, null, null);
+		Cursor cursor = context.getContentResolver()
+				.query(uri, new String[] { "title", "audio", "slowdialog", "explanations", "fastdialog" }, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
-				
+
 				audioIndex = index;
 				audioTitle = cursor.getString(0);
-				
-				audioSlowDialog = cursor.getInt(2);
-				audioExplanation = cursor.getInt(3);
-				audioFastDialog = cursor.getInt(4);					
-				
+
+				audioSlowDialog = cursor.getInt(2) * 1000;
+				audioExplanation = cursor.getInt(3) * 1000;
+				audioFastDialog = cursor.getInt(4) * 1000;
+
 				if (prepareData(cursor.getString(1))) {
-					
-//					audioSlowDialog = cursor.getInt(2);
-//					audioExplanation = cursor.getInt(3);
-//					audioFastDialog = cursor.getInt(4);					
+
+					// audioSlowDialog = cursor.getInt(2);
+					// audioExplanation = cursor.getInt(3);
+					// audioFastDialog = cursor.getInt(4);
 
 					SharedPreferences prefs = Utils.getSharedPreferences(this.context);
 
@@ -198,8 +210,8 @@ public class AudioPlayer {
 
 	private boolean prepareData(String audio) {
 
-//		audioIndex = index;
-//		audioTitle = title;
+		// audioIndex = index;
+		// audioTitle = title;
 
 		// check audio
 		audio = Utils.getExtenalSDCardDirectory() + CommonConsts.AppArgument.PATH_EL + audio;
@@ -216,26 +228,27 @@ public class AudioPlayer {
 			// player.prepareAsync();
 			player.prepare();
 
-//			if (listener != null) {
-//				listener.onPrepared(player.getDuration());
-//			}
+			// if (listener != null) {
+			// listener.onPrepared(player.getDuration());
+			// }
 
-			onAudioChanged();
-//			Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-//			pp.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED.getId());
-//			pp.putExtra(AudioAction.DATA_ID, audioIndex);
-//			pp.putExtra(AudioAction.DATA_TITLE, audioTitle);
-//			pp.putExtra(AudioAction.DATA_POSITION, 0);
-//			pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
-//			pp.putExtra(AudioAction.DATA_STATE, playState.getId());				
-//			sendBroadcast(pp);
-			
-//			bundle.putInt(AudioAction.DATA_ID, audioIndex);
-//			bundle.putString(AudioAction.DATA_TITLE, audioTitle);
-//			bundle.putInt(AudioAction.DATA_POSITION, 0);
-//			bundle.putInt(AudioAction.DATA_DURATION, player.getDuration());
-			
+			// Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+			// pp.putExtra(AudioAction.DATA_TYPE,
+			// UpdateAudioType.AUDIO_CHANGED.getId());
+			// pp.putExtra(AudioAction.DATA_ID, audioIndex);
+			// pp.putExtra(AudioAction.DATA_TITLE, audioTitle);
+			// pp.putExtra(AudioAction.DATA_POSITION, 0);
+			// pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+			// pp.putExtra(AudioAction.DATA_STATE, playState.getId());
+			// sendBroadcast(pp);
+
+			// bundle.putInt(AudioAction.DATA_ID, audioIndex);
+			// bundle.putString(AudioAction.DATA_TITLE, audioTitle);
+			// bundle.putInt(AudioAction.DATA_POSITION, 0);
+			// bundle.putInt(AudioAction.DATA_DURATION, player.getDuration());
+
 			changePlayState(PlayState.PREPARED, null);
+			onAudioChanged();
 
 			setAudioPlayFlag(audioIndex, true);
 
@@ -252,14 +265,14 @@ public class AudioPlayer {
 			e.printStackTrace();
 			return false;
 		}
-//		catch (DeadObjectException e) {
-//			listener = null;
-//			e.printStackTrace();
-//			return false;
-//		} catch (RemoteException e) {
-//			e.printStackTrace();
-//			return false;
-//		}
+		// catch (DeadObjectException e) {
+		// listener = null;
+		// e.printStackTrace();
+		// return false;
+		// } catch (RemoteException e) {
+		// e.printStackTrace();
+		// return false;
+		// }
 
 		return true;
 	}
@@ -269,14 +282,14 @@ public class AudioPlayer {
 			return;
 
 		player.start();
-		
+
 		changePlayState(PlayState.PLAY);
 
-//		if (listener != null) {
+		// if (listener != null) {
 		if (isAudioWindowShow) {
 			new Thread(new TickCounterRunnable()).start();
 		}
-		
+
 		showNotification(true);
 	}
 
@@ -285,7 +298,7 @@ public class AudioPlayer {
 			player.pause();
 
 			changePlayState(PlayState.PAUSED);
-			//if (listener == null) {
+			// if (listener == null) {
 			showNotification(true);
 		}
 	}
@@ -294,17 +307,17 @@ public class AudioPlayer {
 		if (isPlaying()) {
 			player.pause();
 			changePlayState(PlayState.PAUSED);
-			//if (listener == null) {
+			// if (listener == null) {
 		} else {
 			player.start();
 			changePlayState(PlayState.PLAY);
 
-			//if (listener != null) {
-			if (isAudioWindowShow) {			
+			// if (listener != null) {
+			if (isAudioWindowShow) {
 				new Thread(new TickCounterRunnable()).start();
 			}
 		}
-		showNotification(true);		
+		showNotification(true);
 	}
 
 	public void stop() {
@@ -312,7 +325,10 @@ public class AudioPlayer {
 			player.stop();
 		}
 
+		changePlayState(PlayState.STOP);
+
 		releasePlayer();
+
 	}
 
 	public void seekTo(int msec) {
@@ -324,17 +340,17 @@ public class AudioPlayer {
 
 	private void navigateTo(int nv) {
 		switch (nv) {
-		case 0://slowdialog
+		case AudioNavigateData.SLOWDIALOG:// slowdialog
 			if (audioSlowDialog != -1) {
 				seekTo(audioSlowDialog);
 			}
 			break;
-		case 1://explanation
+		case AudioNavigateData.EXPLANATION:// explanation
 			if (audioExplanation != -1) {
 				seekTo(audioExplanation);
 			}
 			break;
-		case 2://fastdialog
+		case AudioNavigateData.FASTDIALOG:// fastdialog
 			if (audioFastDialog != -1) {
 				seekTo(audioFastDialog);
 			}
@@ -343,7 +359,7 @@ public class AudioPlayer {
 			break;
 		}
 	}
-	
+
 	public boolean isPlaying() {
 		if (player != null) {
 			synchronized (player) {
@@ -379,24 +395,24 @@ public class AudioPlayer {
 	}
 
 	private void getNextAudio(boolean next) {
-		
+
 		if (audioIndex == -1) {
 			return;
 		}
-		
+
 		boolean random = Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_RANDOM_ORDER, false);
 
 		Cursor cursor = Utils.getNextAudio(context, audioIndex, new String[] { "idx" }, random, next);
 
 		try {
 			if (cursor.moveToFirst()) {
-//				if (listener != null) {
-//					try {
-//						listener.onAudioChanged(cursor.getInt(0));
-//					} catch (RemoteException e) {
-//						e.printStackTrace();
-//					}
-//				}
+				// if (listener != null) {
+				// try {
+				// listener.onAudioChanged(cursor.getInt(0));
+				// } catch (RemoteException e) {
+				// e.printStackTrace();
+				// }
+				// }
 				setData(cursor.getInt(0), false);
 			}
 		} finally {
@@ -447,84 +463,82 @@ public class AudioPlayer {
 	}
 
 	protected void onPlayPlaying(int position) {
-		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-		intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.STATE_CHANGED.getId());
-		intent.putExtra(AudioAction.DATA_STATE, PlayState.PLAYING.getId());
+		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO_PLAYING);
 		intent.putExtra(AudioAction.DATA_POSITION, position);
 		sendBroadcast(intent);
-//		
-//		if (listener != null) {
-//			try {
-//				listener.onPlaying(position);
-//			} catch (RemoteException e) {
-//				listener = null;
-//				e.printStackTrace();
-//			}
-//		}
+		//
+		// if (listener != null) {
+		// try {
+		// listener.onPlaying(position);
+		// } catch (RemoteException e) {
+		// listener = null;
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
 	protected void onPlaySeekComplete(int msec) {
-//		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-//		intent.putExtra(AudioAction.DATA_STATE, PlayState.PLAYING.getId());
-//		intent.putExtra(AudioAction.DATA_POSITION, msec);
-		
-//		if (listener != null) {
-//			try {
-//				listener.onSeekTo(msec);
-//			} catch (RemoteException e) {
-//				listener = null;
-//				e.printStackTrace();
-//			}
-//		}
+		// Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+		// intent.putExtra(AudioAction.DATA_STATE, PlayState.PLAYING.getId());
+		// intent.putExtra(AudioAction.DATA_POSITION, msec);
+
+		// if (listener != null) {
+		// try {
+		// listener.onSeekTo(msec);
+		// } catch (RemoteException e) {
+		// listener = null;
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
 	protected void onPlayCompletion() {
 
-		releasePlayer();
-		
 		changePlayState(PlayState.COMPLETED);
 
-//		if (listener != null) {
-//			try {
-//				listener.onCompleted();
-//			} catch (RemoteException e) {
-//				listener = null;
-//				e.printStackTrace();
-//			}
-//		}
+		releasePlayer();
+
+		// if (listener != null) {
+		// try {
+		// listener.onCompleted();
+		// } catch (RemoteException e) {
+		// listener = null;
+		// e.printStackTrace();
+		// }
+		// }
 
 		if (!Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
 			getNextAudio(true);
-		} else {			
+		} else {
 			showNotification(false);
 		}
 	}
 
 	private void onPlayError(int what, int extra) {
 
+		changePlayState(PlayState.ERROR);
+
 		releasePlayer();
 
-		changePlayState(PlayState.ERROR);
-		
 		showNotification(false);
 
-//		if (listener != null) {
-//			try {
-//				listener.onError(what, extra);
-//			} catch (RemoteException e) {
-//				listener = null;
-//				e.printStackTrace();
-//			}
-//		}
+		// if (listener != null) {
+		// try {
+		// listener.onError(what, extra);
+		// } catch (RemoteException e) {
+		// listener = null;
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
 	private void changePlayState(PlayState state) {
 		changePlayState(state, null);
 	}
-	
+
 	private void changePlayState(PlayState state, Bundle bundle) {
 		playState = state;
-		
+
 		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
 		intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.STATE_CHANGED.getId());
 		intent.putExtra(AudioAction.DATA_STATE, state.getId());
@@ -532,41 +546,41 @@ public class AudioPlayer {
 			intent.putExtras(bundle);
 		}
 		sendBroadcast(intent);
-//		
-//		
-//		if (listener != null) {
-//			try {
-//				listener.onStateChanged(playState.getId());
-//			} catch (DeadObjectException e) {
-//				listener = null;
-//			} catch (RemoteException e) {
-//				listener = null;
-//				e.printStackTrace();
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
+		//
+		//
+		// if (listener != null) {
+		// try {
+		// listener.onStateChanged(playState.getId());
+		// } catch (DeadObjectException e) {
+		// listener = null;
+		// } catch (RemoteException e) {
+		// listener = null;
+		// e.printStackTrace();
+		// } catch (Exception e) {
+		// e.printStackTrace();
+		// }
+		// }
 	}
 
-//	public void onNotificationClick(final String action) {
-////		if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
-////			this.togglePlay();
-////		} else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
-////			this.getNextAudio(true);
-////		} else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
-////			this.getNextAudio(false);
-////		} else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
-////			this.stop();
-////			showNotification(false);
-////		}
-//	}
-	
+	// public void onNotificationClick(final String action) {
+	// // if (action.equals(NotificationAction.ACTION_CLICK_PLAY)) {
+	// // this.togglePlay();
+	// // } else if (action.equals(NotificationAction.ACTION_CLICK_NEXT)) {
+	// // this.getNextAudio(true);
+	// // } else if (action.equals(NotificationAction.ACTION_CLICK_PREV)) {
+	// // this.getNextAudio(false);
+	// // } else if (action.equals(NotificationAction.ACTION_CLICK_CLOSE)) {
+	// // this.stop();
+	// // showNotification(false);
+	// // }
+	// }
+
 	private int getLastPlayAudio() {
-		
+
 		Log.d(Tag, "getLastPlayAudio() - playflag");
-		
-		final String selection = "flag & " + ListItemFlag.LAST_PLAY + "=" + ListItemFlag.LAST_PLAY;		
-		
+
+		final String selection = "flag & " + ListItemFlag.LAST_PLAY + "=" + ListItemFlag.LAST_PLAY;
+
 		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "idx" }, selection, null, null);
 		try {
 			if (cursor.moveToFirst()) {
@@ -577,7 +591,7 @@ public class AudioPlayer {
 		}
 
 		Log.d(Tag, "getLastPlayAudio() - random");
-		
+
 		cursor = context.getContentResolver().query(ELContentProvider.URI_EL_ESL_RANDOM, null, null, null, null);
 		try {
 			if (cursor.moveToFirst()) {
@@ -589,7 +603,7 @@ public class AudioPlayer {
 
 		return -1;
 	}
-	
+
 	private void onAudioChanged() {
 		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
 		intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED.getId());
@@ -607,8 +621,8 @@ public class AudioPlayer {
 		n |= (audioExplanation != -1 ? 2 : 0);
 		n |= (audioFastDialog != -1 ? 4 : 0);
 		intent.putExtra(AudioAction.DATA_NAVIGATE, n);
-		intent.putExtra(AudioAction.DATA_STATE, playState.getId());				
-		sendBroadcast(intent);		
+		intent.putExtra(AudioAction.DATA_STATE, playState.getId());
+		sendBroadcast(intent);
 	}
 
 	public void onAction(Intent intent) {
@@ -616,7 +630,7 @@ public class AudioPlayer {
 		if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
 			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
 			if (index == -1) {
-				index = getLastPlayAudio();				
+				index = getLastPlayAudio();
 			}
 			setData(index, false);
 		} else if (action.equals(AudioAction.ACTION_AUDIO_PLAY)) {
@@ -626,7 +640,7 @@ public class AudioPlayer {
 				if (audioIndex == -1) {
 					audioIndex = getLastPlayAudio();
 				}
-				setData(audioIndex, true);				
+				setData(audioIndex, true);
 			}
 		} else if (action.equals(AudioAction.ACTION_AUDIO_NEXT)) {
 			if (audioIndex == -1) {
@@ -636,7 +650,7 @@ public class AudioPlayer {
 		} else if (action.equals(AudioAction.ACTION_AUDIO_PREV)) {
 			if (audioIndex == -1) {
 				audioIndex = getLastPlayAudio();
-			}			
+			}
 			getNextAudio(false);
 		} else if (action.equals(AudioAction.ACTION_AUDIO_STOP)) {
 			stop();
@@ -650,73 +664,77 @@ public class AudioPlayer {
 			int nv = intent.getIntExtra(AudioAction.DATA_NAVIGATE, -1);
 			if (nv != -1) {
 				navigateTo(nv);
-			}				
+			}
 		} else if (action.equals(AudioAction.ACTION_AUDIO_QUERY)) {
 			onAudioChanged();
-//			Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-//			pp.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED.getId());
-//			pp.putExtra(AudioAction.DATA_ID, audioIndex);
-//			pp.putExtra(AudioAction.DATA_TITLE, audioTitle);
-//			if (isPlaying() || isPause()) {
-//				pp.putExtra(AudioAction.DATA_POSITION, player.getCurrentPosition());
-//				pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
-//			} else {
-//				pp.putExtra(AudioAction.DATA_POSITION, 0);
-//				pp.putExtra(AudioAction.DATA_DURATION, 0);				
-//			}
-//			pp.putExtra(AudioAction.DATA_STATE, playState.getId());				
-//			sendBroadcast(pp);			
+			// Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+			// pp.putExtra(AudioAction.DATA_TYPE,
+			// UpdateAudioType.AUDIO_CHANGED.getId());
+			// pp.putExtra(AudioAction.DATA_ID, audioIndex);
+			// pp.putExtra(AudioAction.DATA_TITLE, audioTitle);
+			// if (isPlaying() || isPause()) {
+			// pp.putExtra(AudioAction.DATA_POSITION,
+			// player.getCurrentPosition());
+			// pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+			// } else {
+			// pp.putExtra(AudioAction.DATA_POSITION, 0);
+			// pp.putExtra(AudioAction.DATA_DURATION, 0);
+			// }
+			// pp.putExtra(AudioAction.DATA_STATE, playState.getId());
+			// sendBroadcast(pp);
 		}
 	}
 
 	public void onUIUpdate(Intent intent) {
 		int state = intent.getIntExtra(AudioAction.DATA_TYPE, -1);
 		if (state == UpdateUIType.AUDIO_WINDOW_SHOW.getId()) {
-			isAudioWindowShow  = true;
+			isAudioWindowShow = true;
 
-			onAudioChanged();
-//			Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-//			pp.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED.getId());
-//			pp.putExtra(AudioAction.DATA_ID, audioIndex);
-//			pp.putExtra(AudioAction.DATA_TITLE, audioTitle);
-//			if (isPlaying() || isPause()) {
-//				pp.putExtra(AudioAction.DATA_POSITION, player.getCurrentPosition());
-//				pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
-//			} else {
-//				pp.putExtra(AudioAction.DATA_POSITION, 0);
-//				pp.putExtra(AudioAction.DATA_DURATION, 0);				
-//			}
-//			pp.putExtra(AudioAction.DATA_STATE, playState.getId());				
-//			sendBroadcast(pp);			
-			
-			
-//			if (isPlaying() || isPause()) {
-//				Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-//				pp.putExtra(AudioAction.DATA_ID, audioIndex);
-//				pp.putExtra(AudioAction.DATA_POSITION, player.getCurrentPosition());
-//				pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
-//				pp.putExtra(AudioAction.DATA_STATE, PlayState.PREPARED.getId());				
-//				sendBroadcast(pp);
-//				
-//				Intent st = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-//				st.putExtra(AudioAction.DATA_STATE, playState.getId());
-//				sendBroadcast(st);
-//			}
+			// onAudioChanged();
+			// Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+			// pp.putExtra(AudioAction.DATA_TYPE,
+			// UpdateAudioType.AUDIO_CHANGED.getId());
+			// pp.putExtra(AudioAction.DATA_ID, audioIndex);
+			// pp.putExtra(AudioAction.DATA_TITLE, audioTitle);
+			// if (isPlaying() || isPause()) {
+			// pp.putExtra(AudioAction.DATA_POSITION,
+			// player.getCurrentPosition());
+			// pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+			// } else {
+			// pp.putExtra(AudioAction.DATA_POSITION, 0);
+			// pp.putExtra(AudioAction.DATA_DURATION, 0);
+			// }
+			// pp.putExtra(AudioAction.DATA_STATE, playState.getId());
+			// sendBroadcast(pp);
+
+			// if (isPlaying() || isPause()) {
+			// Intent pp = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+			// pp.putExtra(AudioAction.DATA_ID, audioIndex);
+			// pp.putExtra(AudioAction.DATA_POSITION,
+			// player.getCurrentPosition());
+			// pp.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+			// pp.putExtra(AudioAction.DATA_STATE, PlayState.PREPARED.getId());
+			// sendBroadcast(pp);
+			//
+			// Intent st = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+			// st.putExtra(AudioAction.DATA_STATE, playState.getId());
+			// sendBroadcast(st);
+			// }
 			if (isPlaying()) {
 				new Thread(new TickCounterRunnable()).start();
 			}
-			
+
 			showNotification(false);
-			
+
 		} else {
 			isAudioWindowShow = false;
-			
+
 			if (isPlaying() || isPause()) {
-				showNotification(true);				
+				showNotification(true);
 			}
 		}
 	}
-	
+
 	public void sendBroadcast(Intent intent) {
 		if (context != null) {
 			context.sendBroadcast(intent);

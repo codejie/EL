@@ -19,7 +19,7 @@ public class BaseFragment extends SherlockFragment {
 
 	private int layoutRes = -1;
 	private int menuRes = -1;
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		if (layoutRes != -1) {
@@ -32,7 +32,7 @@ public class BaseFragment extends SherlockFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		
+
 		if (menuRes != -1) {
 			getSherlockActivity().invalidateOptionsMenu();
 		}
@@ -40,11 +40,11 @@ public class BaseFragment extends SherlockFragment {
 
 	@Override
 	public void onDetach() {
-		
+
 		if (menuRes != -1) {
 			getSherlockActivity().invalidateOptionsMenu();
-		}		
-		
+		}
+
 		super.onDetach();
 	}
 
@@ -53,16 +53,16 @@ public class BaseFragment extends SherlockFragment {
 		if (menuRes != -1) {
 			menu.clear();
 			inflater.inflate(menuRes, menu);
-		}		
+		}
 	}
 
-//	@Override
-//	public void onPrepareOptionsMenu(Menu menu) {
-//		if (menuRes != -1) {
-//			menu.clear();
-//			getELActivity().getSupportMenuInflater().inflate(menuRes, menu);
-//		}
-//	}
+	// @Override
+	// public void onPrepareOptionsMenu(Menu menu) {
+	// if (menuRes != -1) {
+	// menu.clear();
+	// getELActivity().getSupportMenuInflater().inflate(menuRes, menu);
+	// }
+	// }
 
 	public int getLayoutRes() {
 		return layoutRes;
@@ -82,14 +82,14 @@ public class BaseFragment extends SherlockFragment {
 			this.getSherlockActivity().invalidateOptionsMenu();
 		}
 	}
-	
+
 	public ELActivity getELActivity() {
-		return (ELActivity)this.getSherlockActivity();
+		return (ELActivity) this.getSherlockActivity();
 	}
 
-	public void onArguments(Bundle args) {		
+	public void onArguments(Bundle args) {
 	}
-	
+
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		return false;
 	}
@@ -97,14 +97,14 @@ public class BaseFragment extends SherlockFragment {
 	public boolean OnOptionsItemSelected(MenuItem item) {
 		return false;
 	}
-	
+
 	protected void sendBroadcast(Intent intent) {
 		Context context = getELActivity();
 		if (context != null) {
 			context.sendBroadcast(intent);
 		}
 	}
-	
-	public void onIntent(Intent intent) {		
+
+	public void onIntent(Intent intent) {
 	}
 }

@@ -11,13 +11,16 @@
         android:layout_alignParentTop="true"
         android:layout_marginTop="36dp"
         android:background="#DD222222"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp" >
 
         <TextView
             android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="72dp"
+            android:maxLines="1"
+            android:paddingLeft="64dp"
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -99,8 +102,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_marginLeft="14dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="24dp"
         android:background="#cc222222"
         android:orientation="vertical"
         android:padding="2dp"
@@ -135,7 +138,6 @@
             android:padding="2dp"
             android:text="@string/el_menu_show_fastdialog"
             android:textAppearance="?android:attr/textAppearanceMedium" />
-
     </LinearLayout>
 
 </RelativeLayout>

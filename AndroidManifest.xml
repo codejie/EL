@@ -53,6 +53,9 @@
                 <action android:name="jie.android.el.action.widget_navigate"/>
                 <action android:name="jie.android.el.action.update_data"/>
                 <action android:name="jie.android.el.action.audio_navigate"/>
+                <action android:name="jie.android.el.action.update_audio"/>
+                <action android:name="jie.android.el.action.widget_randmommode"/>
+                <action android:name="jie.android.el.action.widget_startactivity"/>
             </intent-filter>
 
             <meta-data

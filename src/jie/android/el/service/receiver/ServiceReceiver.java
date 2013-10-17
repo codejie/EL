@@ -1,6 +1,8 @@
 package jie.android.el.service.receiver;
 
+import jie.android.el.ELActivity;
 import jie.android.el.CommonConsts.AudioAction;
+import jie.android.el.CommonConsts.WidgetAction;
 import jie.android.el.service.ELService;
 import jie.android.el.service.ServiceAccess;
 import android.content.BroadcastReceiver;
@@ -36,12 +38,15 @@ public class ServiceReceiver extends BroadcastReceiver {
 //		if (action.equals(AudioAction.ACTION_SERVICE_INIT) || action.equals(AudioAction.ACTION_SERVICE_BINDED)) {
 //			initService(context);
 //		} 
-		if (action.startsWith(AudioAction.ACTION_AUDIO)) {
-			onAudioAction(intent);
-		} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
+		if (action.equals(AudioAction.ACTION_UPDATE_AUDIO_PLAYING) || action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
 			onUpdateAudio(intent);
+		} else if (action.startsWith(AudioAction.ACTION_AUDIO)) {
+			onAudioAction(intent);
 		} else if (action.equals(AudioAction.ACTION_UPDATE_UI)) {
 			onUIUpdate(intent);
+		} else if (action.equals(WidgetAction.ACTION_STARTACTIVITY)) {
+ 			Intent sa = new Intent(context, ELActivity.class);
+ 			context.startActivity(sa);
 		} else {
 			
 		}

@@ -1,18 +1,26 @@
 package jie.android.el.service.receiver;
 
+import jie.android.el.CommonConsts.AudioNavigateData;
+import jie.android.el.CommonConsts.PlayState;
+import jie.android.el.CommonConsts.Setting;
 import jie.android.el.CommonConsts.UpdateAudioType;
 import jie.android.el.CommonConsts.WidgetAction;
+import jie.android.el.ELActivity;
 import jie.android.el.R;
 import jie.android.el.CommonConsts.AudioAction;
+import jie.android.el.utils.Utils;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RemoteViews;
+import android.widget.TextView;
 
 public class ELWidgetProvider extends AppWidgetProvider {
 
@@ -23,8 +31,8 @@ public class ELWidgetProvider extends AppWidgetProvider {
 	private static RemoteViews remoteViews = null;
 	private static boolean showNavigator = false; 
 	private static boolean isPlaying = false;
-
-	private static String audioTitle = "<no audio>";
+	private static String audioTitle = "<No Audio>";
+	private static int audioNavigate = AudioNavigateData.DISABLE;
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -49,7 +57,11 @@ public class ELWidgetProvider extends AppWidgetProvider {
 		if (remoteViews == null) {
 			remoteViews = new RemoteViews(context.getPackageName(), R.layout.layout_widget);
 		}
-//		widgetId = widgetManager.getAppWidgetIds(new ComponentName(context, ELWidgetProvider.class));
+		
+		setPendingIntent(context, remoteViews, R.id.imageView1, WidgetAction.ACTION_STARTACTIVITY);
+		
+		remoteViews.setImageViewResource(R.id.playImageView4, isPlaying ? R.drawable.el_audio_pause : R.drawable.el_audio_play);
+		remoteViews.setTextViewText(R.id.textView1, audioTitle);	
 
 		setPendingIntent(context, remoteViews, R.id.playImageView1, WidgetAction.ACTION_NAVIGATE);		
 		setPendingIntent(context, remoteViews, R.id.playImageView2, WidgetAction.ACTION_RANDOMMODE);		
@@ -57,12 +69,39 @@ public class ELWidgetProvider extends AppWidgetProvider {
 		setPendingIntent(context, remoteViews, R.id.playImageView4, AudioAction.ACTION_AUDIO_PLAY);
 		setPendingIntent(context, remoteViews, R.id.playImageView5, AudioAction.ACTION_AUDIO_NEXT);
 		
-		remoteViews.setViewVisibility(R.id.linearLayout2, showNavigator ? View.VISIBLE : View.GONE);
-		if (showNavigator) {
-			setNavigatePendingIntent(context, remoteViews, R.id.textView2, 0);
-			setNavigatePendingIntent(context, remoteViews, R.id.textView3, 1);
-			setNavigatePendingIntent(context, remoteViews, R.id.textView4, 2);
+		if (audioNavigate != AudioNavigateData.DISABLE) {
+			if ((audioNavigate & AudioNavigateData.SLOWDIALOG) == AudioNavigateData.SLOWDIALOG) {
+				remoteViews.setViewVisibility(R.id.textView2, View.VISIBLE);
+				setNavigatePendingIntent(context, remoteViews, R.id.textView2, AudioNavigateData.SLOWDIALOG);
+			} else {
+				remoteViews.setViewVisibility(R.id.textView2, View.GONE);
+			}
+			
+			if ((audioNavigate & AudioNavigateData.EXPLANATION) == AudioNavigateData.EXPLANATION) {
+				remoteViews.setViewVisibility(R.id.textView3, View.VISIBLE);
+				setNavigatePendingIntent(context, remoteViews, R.id.textView3, AudioNavigateData.EXPLANATION);
+			} else {
+				remoteViews.setViewVisibility(R.id.textView3, View.GONE);
+			}
+			
+			if ((audioNavigate & AudioNavigateData.FASTDIALOG) == AudioNavigateData.FASTDIALOG) {
+				remoteViews.setViewVisibility(R.id.textView4, View.VISIBLE);
+				setNavigatePendingIntent(context, remoteViews, R.id.textView4, AudioNavigateData.FASTDIALOG);
+			} else {
+				remoteViews.setViewVisibility(R.id.textView4, View.GONE);
+			}			
+		} else {
+			showNavigator = false;
 		}
+		
+		SharedPreferences prefs = Utils.getSharedPreferences(context);
+		if (prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false)) {
+			remoteViews.setImageViewResource(R.id.playImageView2, R.drawable.el_audio_shuffle_sel);
+		} else {
+			remoteViews.setImageViewResource(R.id.playImageView2, R.drawable.el_audio_shuffle);
+		}
+
+		remoteViews.setViewVisibility(R.id.linearLayout2, showNavigator ? View.VISIBLE : View.GONE);
 
 		appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
 	}
@@ -87,7 +126,6 @@ public class ELWidgetProvider extends AppWidgetProvider {
 		PendingIntent castIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 		view.setOnClickPendingIntent(id, castIntent);
 	}
-	
 
 	@Override
 	public void onDeleted(Context context, int[] appWidgetIds) {
@@ -97,7 +135,7 @@ public class ELWidgetProvider extends AppWidgetProvider {
 
 	@Override
 	public void onReceive(Context context, Intent intent) {
-		Log.d(Tag, "onReceive - " + intent.getAction());
+//		Log.d(Tag, "onReceive - " + intent.getAction());
 		super.onReceive(context, intent);
 		
 		final String action = intent.getAction();
@@ -112,21 +150,41 @@ public class ELWidgetProvider extends AppWidgetProvider {
  		} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
  			int type = intent.getIntExtra(AudioAction.DATA_TYPE, -1);
  			if (type == UpdateAudioType.STATE_CHANGED.getId()) {
- 				onStateChange(intent);
+ 				onStateChange(context, intent);
  			} else if (type == UpdateAudioType.AUDIO_CHANGED.getId()) {
- 				onAudioChanged(intent);
+ 				onAudioChanged(context, intent);
  			}
+ 		} else if (action.equals(WidgetAction.ACTION_RANDOMMODE)) {
+ 			onRandomModeChanged(context, intent);
+ 		} else if (action.equals(WidgetAction.ACTION_STARTACTIVITY)) {
+ 			Intent sa = new Intent(context, ELActivity.class);
+ 			sa.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+ 			context.startActivity(sa);
  		}
 	}
 
-	private void onAudioChanged(Intent intent) {
-		// TODO Auto-generated method stub
-		
+	private void onAudioChanged(Context context, Intent intent) {		
+		audioTitle = intent.getStringExtra(AudioAction.DATA_TITLE);
+		if (audioTitle == null) {
+			audioTitle = "<No Audio>";
+		}
+		audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
+		updateRemoteView(context);
 	}
 
-	private void onStateChange(Intent intent) {
-		// TODO Auto-generated method stub
-		
+	private void onStateChange(Context context, Intent intent) {
+		int state = intent.getIntExtra(AudioAction.DATA_STATE, -1);
+		if (state == PlayState.PLAY.getId()) {
+			if (!isPlaying) {
+				isPlaying = true;
+				updateRemoteView(context);
+			}
+		} else {
+			if (isPlaying) {
+				isPlaying = false;
+				updateRemoteView(context);
+			}			
+		}
 	}
 
 	private void queryPlayState(Context context) {
@@ -134,4 +192,11 @@ public class ELWidgetProvider extends AppWidgetProvider {
 		context.sendBroadcast(intent);
 	}
 
+	private void onRandomModeChanged(Context context, Intent intent) {
+		SharedPreferences prefs = Utils.getSharedPreferences(context);
+		boolean random = prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false);
+		prefs.edit().putBoolean(Setting.PLAY_RANDOM_ORDER, !random).commit();
+		updateRemoteView(context);
+	}
+	
 }
