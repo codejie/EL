@@ -1,16 +1,30 @@
 package jie.android.el.fragment;
 
+import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.AudioAction;
+import jie.android.el.CommonConsts.AudioNavigateData;
+import jie.android.el.CommonConsts.BroadcastAction;
+import jie.android.el.CommonConsts.PlayState;
+import jie.android.el.CommonConsts.Setting;
+import jie.android.el.CommonConsts.UpdateAudioType;
+import jie.android.el.CommonConsts.UpdateUIType;
+import jie.android.el.R;
+import jie.android.el.database.ELContentProvider;
+import jie.android.el.utils.ScoreHelper;
+import jie.android.el.utils.Speaker;
+import jie.android.el.utils.Utils;
+import jie.android.el.utils.WordLoader;
+import jie.android.el.view.ELPopupMenu;
+import jie.android.el.view.ELPopupWindow;
+import jie.android.el.view.LACWebViewClient;
+import jie.android.el.view.OnPopupWindowDefaultListener;
+import jie.android.el.view.OnUrlLoadingListener;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Looper;
-import android.os.Message;
-import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,28 +39,6 @@ import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
-import jie.android.el.CommonConsts.AudioAction;
-import jie.android.el.CommonConsts.AudioNavigateData;
-import jie.android.el.CommonConsts.BroadcastAction;
-import jie.android.el.CommonConsts.FragmentArgument;
-import jie.android.el.CommonConsts.PlayState;
-import jie.android.el.CommonConsts;
-import jie.android.el.CommonConsts.Setting;
-import jie.android.el.CommonConsts.UpdateAudioType;
-import jie.android.el.CommonConsts.UpdateUIType;
-import jie.android.el.R;
-import jie.android.el.database.ELContentProvider;
-import jie.android.el.service.OnPlayAudioListener;
-import jie.android.el.service.ServiceAccess;
-import jie.android.el.utils.ScoreHelper;
-import jie.android.el.utils.Speaker;
-import jie.android.el.utils.Utils;
-import jie.android.el.utils.WordLoader;
-import jie.android.el.view.ELPopupMenu;
-import jie.android.el.view.ELPopupWindow;
-import jie.android.el.view.LACWebViewClient;
-import jie.android.el.view.OnPopupWindowDefaultListener;
-import jie.android.el.view.OnUrlLoadingListener;
 
 public class ShowFragment extends BaseFragment implements OnClickListener, OnSeekBarChangeListener {
 
@@ -343,8 +335,8 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		playNext = (ImageView) view.findViewById(R.id.playImageView5);
 		playNext.setOnClickListener(this);
 
-		Intent intent = new Intent(AudioAction.ACTION_AUDIO_QUERY);
-		sendBroadcast(intent);
+//		Intent intent = new Intent(AudioAction.ACTION_AUDIO_QUERY);
+//		sendBroadcast(intent);
 	}
 
 	@Override
@@ -838,7 +830,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		if (fromUser) {
-			seekAudio(progress);
+			Intent intent = new Intent(AudioAction.ACTION_AUDIO_SEEK);
+			intent.putExtra(AudioAction.DATA_POSITION, progress * 1000);
+			sendBroadcast(intent);			
+//			seekAudio(progress);
 		}
 	}
 
@@ -928,11 +923,13 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		Intent intent = new Intent(AudioAction.ACTION_UPDATE_UI);
 		intent.putExtra(AudioAction.DATA_TYPE, UpdateUIType.AUDIO_WINDOW_SHOW.getId());
 		sendBroadcast(intent);
+		
+		sendBroadcast(new Intent(AudioAction.ACTION_AUDIO_QUERY));
 
 		if (playShuffle != null) {
 			playShuffle.setSelected(getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_RANDOM_ORDER, false));
 		}
-
+		
 		// setAudioPlayListener(true);
 	}
 
@@ -957,8 +954,10 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 			if (type != -1) {
 				if (type == UpdateAudioType.STATE_CHANGED.getId()) {
 					onStateChanged(intent);
-				} else if (type == UpdateAudioType.AUDIO_CHANGED.getId()) {
-					onAudioChanged(intent);
+				} else if (type == UpdateAudioType.AUDIO_CHANGED_OPEN.getId()) {
+					onAudioChanged(true, intent);
+				} else if (type == UpdateAudioType.AUDIO_CHANGED_CLOSE.getId()) {
+					onAudioChanged(false, intent);
 				}
 			}
 		} else if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
@@ -1007,16 +1006,18 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}
 	}
 
-	private void onAudioChanged(Intent intent) {
-		int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
-		if (index != audioIndex) {
-			onIndex(index);
+	private void onAudioChanged(boolean open, Intent intent) {
+		if (open) {
+			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
+			if (index != audioIndex) {
+				onIndex(index);
+			}
+			audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
+			onPlayPrepared(intent.getIntExtra(AudioAction.DATA_DURATION, 0), intent.getIntExtra(AudioAction.DATA_POSITION, 0));
+			onStateChanged(intent);
 		} else {
 			//
 		}
-		audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
-		onPlayPrepared(intent.getIntExtra(AudioAction.DATA_DURATION, 0), intent.getIntExtra(AudioAction.DATA_POSITION, 0));
-		onStateChanged(intent);
 	}
 
 }

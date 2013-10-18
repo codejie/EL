@@ -121,7 +121,18 @@ public class ELWidgetProvider extends AppWidgetProvider {
 	}
 	
 	private void setNavigatePendingIntent(Context context, RemoteViews view, int id, int value) {
-		Intent intent = new Intent(AudioAction.ACTION_AUDIO_NAVIGATE);
+		String action = null;
+		if (value == AudioNavigateData.SLOWDIALOG) {
+			action = AudioAction.ACTION_AUDIO_NAVIGATE_SLOWDIALOG;
+		} else if (value == AudioNavigateData.EXPLANATION) {
+			action = AudioAction.ACTION_AUDIO_NAVIGATE_EXPLANATION;
+		} else if (value == AudioNavigateData.FASTDIALOG) {
+			action = AudioAction.ACTION_AUDIO_NAVIGATE_FASTDIALOG;
+		} else {
+			return;
+		}
+
+		Intent intent = new Intent(action);
 		intent.putExtra(AudioAction.DATA_NAVIGATE, value);
 		PendingIntent castIntent = PendingIntent.getBroadcast(context, 0, intent, 0);
 		view.setOnClickPendingIntent(id, castIntent);
@@ -144,31 +155,45 @@ public class ELWidgetProvider extends AppWidgetProvider {
 		} else if (action.equals(WidgetAction.ACTION_NAVIGATE)) {
 			showNavigator = !showNavigator;
 			updateRemoteView(context);
- 		} else if (action.equals(AudioAction.ACTION_AUDIO_NAVIGATE)) {
+ 		} else if (action.startsWith(AudioAction.ACTION_AUDIO_NAVIGATE)) {
  			showNavigator = false;
  			updateRemoteView(context);
  		} else if (action.equals(AudioAction.ACTION_UPDATE_AUDIO)) {
+			showNavigator = false;
+
  			int type = intent.getIntExtra(AudioAction.DATA_TYPE, -1);
  			if (type == UpdateAudioType.STATE_CHANGED.getId()) {
  				onStateChange(context, intent);
- 			} else if (type == UpdateAudioType.AUDIO_CHANGED.getId()) {
- 				onAudioChanged(context, intent);
+ 			} else if (type == UpdateAudioType.AUDIO_CHANGED_OPEN.getId()) {
+ 				onAudioChanged(context, true, intent);
+ 			} else if (type == UpdateAudioType.AUDIO_CHANGED_CLOSE.getId()) {
+ 				onAudioChanged(context, false, intent);
  			}
  		} else if (action.equals(WidgetAction.ACTION_RANDOMMODE)) {
+			showNavigator = false;
+ 			
  			onRandomModeChanged(context, intent);
  		} else if (action.equals(WidgetAction.ACTION_STARTACTIVITY)) {
+			showNavigator = false;
+
  			Intent sa = new Intent(context, ELActivity.class);
  			sa.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
  			context.startActivity(sa);
  		}
 	}
 
-	private void onAudioChanged(Context context, Intent intent) {		
-		audioTitle = intent.getStringExtra(AudioAction.DATA_TITLE);
-		if (audioTitle == null) {
+	private void onAudioChanged(Context context, boolean open, Intent intent) {
+		if (open) {
+			audioTitle = intent.getStringExtra(AudioAction.DATA_TITLE);
+			audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
+			onStateChange(context, intent);
+		} else {
 			audioTitle = "<No Audio>";
+			showNavigator = false; 
+			isPlaying = false;
+			audioTitle = "<No Audio>";
+			audioNavigate = AudioNavigateData.DISABLE; 
 		}
-		audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
 		updateRemoteView(context);
 	}
 

@@ -125,11 +125,11 @@ public class AudioPlayer {
 			}
 		}
 
-		audioIndex = -1;
-		audioTitle = null;
-		audioSlowDialog = -1;
-		audioExplanation = -1;
-		audioFastDialog = -1;
+//		audioIndex = -1;
+//		audioTitle = null;
+//		audioSlowDialog = -1;
+//		audioExplanation = -1;
+//		audioFastDialog = -1;
 
 		onAudioChanged();
 
@@ -606,22 +606,26 @@ public class AudioPlayer {
 
 	private void onAudioChanged() {
 		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
-		intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED.getId());
-		intent.putExtra(AudioAction.DATA_ID, audioIndex);
-		intent.putExtra(AudioAction.DATA_TITLE, audioTitle);
-		if (isPlaying() || isPause()) {
-			intent.putExtra(AudioAction.DATA_POSITION, player.getCurrentPosition());
-			intent.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+		if (playState == PlayState.PREPARED || playState == PlayState.PLAY || playState == PlayState.PAUSED) {
+			intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED_OPEN.getId());
+			intent.putExtra(AudioAction.DATA_ID, audioIndex);
+			intent.putExtra(AudioAction.DATA_TITLE, audioTitle);
+			if (player != null) {
+				intent.putExtra(AudioAction.DATA_POSITION, player.getCurrentPosition());
+				intent.putExtra(AudioAction.DATA_DURATION, player.getDuration());
+			} else {
+				intent.putExtra(AudioAction.DATA_POSITION, 0);
+				intent.putExtra(AudioAction.DATA_DURATION, 0);
+			}
+			int n = 0;
+			n |= (audioSlowDialog > 0 ? 1 : 0);
+			n |= (audioExplanation > 0 ? 2 : 0);
+			n |= (audioFastDialog > 0 ? 4 : 0);
+			intent.putExtra(AudioAction.DATA_NAVIGATE, n);
+			intent.putExtra(AudioAction.DATA_STATE, playState.getId());
 		} else {
-			intent.putExtra(AudioAction.DATA_POSITION, 0);
-			intent.putExtra(AudioAction.DATA_DURATION, 0);
+			intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_CHANGED_CLOSE.getId());
 		}
-		int n = 0;
-		n |= (audioSlowDialog != -1 ? 1 : 0);
-		n |= (audioExplanation != -1 ? 2 : 0);
-		n |= (audioFastDialog != -1 ? 4 : 0);
-		intent.putExtra(AudioAction.DATA_NAVIGATE, n);
-		intent.putExtra(AudioAction.DATA_STATE, playState.getId());
 		sendBroadcast(intent);
 	}
 
@@ -660,7 +664,7 @@ public class AudioPlayer {
 			if (pos != -1) {
 				seekTo(pos);
 			}
-		} else if (action.equals(AudioAction.ACTION_AUDIO_NAVIGATE)) {
+		} else if (action.startsWith(AudioAction.ACTION_AUDIO_NAVIGATE)) {
 			int nv = intent.getIntExtra(AudioAction.DATA_NAVIGATE, -1);
 			if (nv != -1) {
 				navigateTo(nv);

@@ -56,6 +56,9 @@
                 <action android:name="jie.android.el.action.update_audio"/>
                 <action android:name="jie.android.el.action.widget_randmommode"/>
                 <action android:name="jie.android.el.action.widget_startactivity"/>
+                <action android:name="jie.android.el.action.audio_navigate_slowdialog"/>
+                <action android:name="jie.android.el.action.audio_navigate_explanation"/>
+                <action android:name="jie.android.el.action.audio_navigate_fastdialog"/>
             </intent-filter>
 
             <meta-data

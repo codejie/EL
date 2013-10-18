@@ -92,7 +92,7 @@ public interface CommonConsts {
 	}
 
 	public enum UpdateAudioType {
-		STATE_CHANGED, AUDIO_CHANGED;
+		STATE_CHANGED, AUDIO_CHANGED_OPEN, AUDIO_CHANGED_CLOSE;
 		
 		public int getId() {
 			return ordinal();
@@ -142,6 +142,9 @@ public interface CommonConsts {
 		public static final String ACTION_AUDIO_STOP = "jie.android.el.action.audio_stop";
 		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
 		public static final String ACTION_AUDIO_NAVIGATE = "jie.android.el.action.audio_navigate";
+		public static final String ACTION_AUDIO_NAVIGATE_SLOWDIALOG = "jie.android.el.action.audio_navigate_slowdialog";
+		public static final String ACTION_AUDIO_NAVIGATE_EXPLANATION = "jie.android.el.action.audio_navigate_explanation";
+		public static final String ACTION_AUDIO_NAVIGATE_FASTDIALOG = "jie.android.el.action.audio_navigate_fastdialog";
 		public static final String ACTION_AUDIO_QUERY = "jie.android.el.action.audio_query";
 //		public static final String ACTION_AUDIO_PLAYING = "jie.android.el.action.audio_play";
 //		public static final String ACTION_AUDIO_CHANGE = "jie.android.el.action.audio_change";
@@ -186,8 +189,6 @@ public interface CommonConsts {
 			return this.ordinal();
 		}
 	}
-	
-
 	
 	public interface DownloadRequest {
 		public static final String SKYDRIVE_AUTHORIZATION_KEY = "3BAF6CAC74F7919";

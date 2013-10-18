@@ -12,6 +12,7 @@ import jie.android.el.fragment.VocabFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 public class FragmentSwitcher {
 	
@@ -127,6 +128,7 @@ public class FragmentSwitcher {
 		}
 		
 		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commitAllowingStateLoss();//commit();
+		//fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commitAllowingStateLoss();//commit();
 		
 		return fragment;
 	}
@@ -198,9 +200,18 @@ public class FragmentSwitcher {
 	}
 
 	public void remvoeAll() {
-		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//		while (fragmentManager.getBackStackEntryCount() > 0) {
-//			fragmentManager.popBackStackImmediate();
-//		}
+		curType = null;
+		int i = fragmentManager.getBackStackEntryCount();
+//		Log.d("====", "fragment count = " + i);
+//	
+//		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+//		i = fragmentManager.getBackStackEntryCount();
+		Log.d("====1", "fragment count = " + i);
+		while (fragmentManager.getBackStackEntryCount() > 0) {
+			fragmentManager.popBackStackImmediate();
+		}
+		i = fragmentManager.getBackStackEntryCount();
+		Log.d("====2", "fragment count = " + i);
+		
 	}
 }

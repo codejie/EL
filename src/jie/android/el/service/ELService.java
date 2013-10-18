@@ -314,6 +314,9 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		filter.addAction(AudioAction.ACTION_AUDIO_PLAY);
 		filter.addAction(AudioAction.ACTION_AUDIO_STOP);
 		filter.addAction(AudioAction.ACTION_AUDIO_NAVIGATE);
+		filter.addAction(AudioAction.ACTION_AUDIO_NAVIGATE_SLOWDIALOG);
+		filter.addAction(AudioAction.ACTION_AUDIO_NAVIGATE_EXPLANATION);
+		filter.addAction(AudioAction.ACTION_AUDIO_NAVIGATE_FASTDIALOG);
 		filter.addAction(AudioAction.ACTION_UPDATE_AUDIO);
 		filter.addAction(AudioAction.ACTION_UPDATE_UI);
 		filter.addAction(AudioAction.ACTION_AUDIO_SEEK);
