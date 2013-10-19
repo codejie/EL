@@ -1,5 +1,7 @@
 package jie.android.el;
 
+import java.util.Stack;
+
 import jie.android.el.fragment.AboutFragment;
 import jie.android.el.fragment.BaseFragment;
 import jie.android.el.fragment.DictionaryFragment;
@@ -57,6 +59,8 @@ public class FragmentSwitcher {
 	private Type curType = null;
 	private OnSwitchListener  onSwitchListener = null;
 	
+	private Stack<Type> stackType = new Stack<Type>();
+	
 	public FragmentSwitcher(final ELActivity activity) {
 		this.activity = activity;
 		fragmentManager = this.activity.getSupportFragmentManager();
@@ -67,24 +71,122 @@ public class FragmentSwitcher {
 	}
 	
 	public boolean show(Type type, Bundle args) {
-		if (curType != null) {
-			if (curType == type) {
-				((BaseFragment) fragmentManager.findFragmentByTag(type.getTitle())).onArguments(args);				
-				return true;
-			} else {
-				hide(curType);
-			}
+		if (type == null) {
+			return false;
 		}
 		
+		if (curType == type) {
+			BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
+			if (fragment != null) {
+				fragment.onArguments(args);
+				return true;
+			} else {
+				return false;
+			}				
+		}
+		
+		boolean found = false;
 		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
 		if (fragment == null) {
 			fragment = create(type);
 			if (fragment == null) {
 				return false;
 			}
+			found = false;
+		} else {
+			found = true;
+		}
+
+		FragmentTransaction ft = fragmentManager.beginTransaction();
+		if (curType != null) {
+			if (found) {
+				if (!curType.hasRemoved()) {
+					hideFragment(ft, curType);
+				} else {
+					removeFragment(ft, curType);
+				}
+				ft.show(fragment);				
+			} else {
+				if (!curType.hasRemoved()) {
+					hideFragment(ft, curType);
+					ft.add(R.id.main, fragment, type.getTitle());
+				} else {
+					ft.replace(R.id.main, fragment, type.getTitle());
+				}
+			}
+			
+			
+//			if (!curType.hasRemoved()) {
+//				hideFragment(ft, curType);
+//				if (found) {
+//					ft.show(fragment);
+//				} else {
+//					ft.add(R.id.main, fragment, type.getTitle());
+//				}
+//			} else {
+//				if (found) {
+//					ft.show(fragment);
+//				} else {
+//					ft.replace(R.id.main, fragment, type.getTitle());
+//				}
+//			}
+		} else {
+			ft.add(R.id.main, fragment, type.getTitle());
 		}
 		
-		fragmentManager.beginTransaction().show(fragment).commitAllowingStateLoss();//.commit();
+		ft.commit();
+//		
+//		if (curType != null && !curType.hasRemoved())
+//		
+//		if (found) {
+//			if (curType.)
+//		} else {
+//			
+//		}
+//		
+//		if (curType.hasRemoved()) {
+//			replaceFragment(ft, found, type, fragment);
+//		} else {
+//			addFragment(ft, found, type, fragment);
+//		}
+//		
+//		showFragment(ft, found, curType, type, fragment);			
+//		
+//		
+//		if (curType != null) {
+//			if (curType.hasRemoved()) {
+//				//fragmentManager.beginTransaction().replace(R.id.main, fragment, type.getTitle()).commit();
+//				if (found) {
+//					fragmentManager.beginTransaction().show(fragment).commit();
+//				} else {
+//					fragmentManager.beginTransaction().replace(R.id.main, fragment, type.getTitle()).commit();
+//				}
+//			} else {
+//				hide(curType);			
+////				fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+//				if (found) {
+//					fragmentManager.beginTransaction().show(fragment).commit();
+//				} else {
+//					fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+//				}
+//			}
+//		} else {
+//			//fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+//			if (found) {
+//				fragmentManager.beginTransaction().show(fragment).commit();
+//			} else {
+//				fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+//			}			
+//		}
+//		ft.commit();
+		
+//		if (!type.hasRemoved()) {
+//		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+//		}
+		
+
+//		fragmentManager.beginTransaction().show(fragment).commit();
+		
 		fragment.onArguments(args);
 		
 		if (onSwitchListener != null) {
@@ -94,6 +196,50 @@ public class FragmentSwitcher {
 		curType = type;
 		
 		return true;
+		
+		
+//		if (curType != null) {
+//			if (curType == type) {
+//				((BaseFragment) fragmentManager.findFragmentByTag(type.getTitle())).onArguments(args);				
+//				return true;
+//			} else {
+//				hide(curType);
+//			}
+//		}
+//		
+//		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
+//		if (fragment == null) {
+//			fragment = create(type);
+//			if (fragment == null) {
+//				return false;
+//			}
+//		}
+//		
+//		fragmentManager.beginTransaction().show(fragment).commitAllowingStateLoss();//.commit();
+//		fragment.onArguments(args);
+//		
+//		if (onSwitchListener != null) {
+//			onSwitchListener.onSwitch(curType, type);
+//		}
+//		
+//		curType = type;
+//		
+//		return true;
+	}
+
+	private void removeFragment(FragmentTransaction ft, Type type) {
+		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
+		if (fragment != null) {
+			ft.remove(fragment);
+		}
+	}
+
+	private void hideFragment(FragmentTransaction ft, Type type) {
+		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
+		if (fragment != null) {
+			ft.hide(fragment);
+			stackType.push(type);
+		}		
 	}
 
 	private BaseFragment create(Type type) {
@@ -127,7 +273,10 @@ public class FragmentSwitcher {
 			return null;
 		}
 		
-		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commitAllowingStateLoss();//commit();
+//		if (!type.hasRemoved()) {
+//			fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commit();
+//		}
+//		fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commitAllowingStateLoss();//commit();
 		//fragmentManager.beginTransaction().add(R.id.main, fragment, type.getTitle()).commitAllowingStateLoss();//commit();
 		
 		return fragment;
@@ -136,19 +285,27 @@ public class FragmentSwitcher {
 	private void hide(Type type) {
 		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
 		if (fragment != null) {
-			if (type.hasRemoved()) {
-				fragmentManager.beginTransaction().remove(fragment).commit();
-			} else {
-				FragmentTransaction ft = fragmentManager.beginTransaction();
-				ft.addToBackStack(type.getTitle());
-				ft.hide(fragment);
-				ft.commit();
-//				fragmentManager.beginTransaction().hide(fragment).commit();
-			}
-			
+			fragmentManager.beginTransaction().hide(fragment).commit();
 //			curType = null;			
 		}
 	}
+	
+//	private void hide(Type type) {
+//		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
+//		if (fragment != null) {
+//			if (type.hasRemoved()) {
+//				fragmentManager.beginTransaction().remove(fragment).commit();
+//			} else {
+//				FragmentTransaction ft = fragmentManager.beginTransaction();
+//				ft.addToBackStack(type.getTitle());
+//				ft.hide(fragment);
+//				ft.commit();
+////				fragmentManager.beginTransaction().hide(fragment).commit();
+//			}
+//			
+////			curType = null;			
+//		}
+//	}
 
 	public BaseFragment getFragment() {
 		if (curType == null) {
@@ -168,18 +325,30 @@ public class FragmentSwitcher {
 	}
 	
 	public boolean showPrevFragment() {
-		int count = fragmentManager.getBackStackEntryCount();
-		if (count > 0) {
-			String name = fragmentManager.getBackStackEntryAt(count - 1).getName();
-			fragmentManager.popBackStack();// .popBackStackImmediate();
-			Type type = Type.getType(name);
-			if (type != null) {
+		if (stackType.size() > 0) {
+			Type type = stackType.pop();
+//			if (type == Type.LIST) {
+//				return false;
+//			} else {
 				show(type);
 				return true;
-			}
+//			}
+		} else {
+			return false;
 		}
 		
-		return false;
+//		int count = fragmentManager.getBackStackEntryCount();
+//		if (count > 0) {
+//			String name = fragmentManager.getBackStackEntryAt(count - 1).getName();
+//			fragmentManager.popBackStack();// .popBackStackImmediate();
+//			Type type = Type.getType(name);
+//			if (type != null) {
+//				show(type);
+//				return true;
+//			}
+//		}
+//		
+//		return false;
 	}
 
 	public void saveInstanceState(Bundle outState) {
