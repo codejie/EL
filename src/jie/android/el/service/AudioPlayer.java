@@ -686,6 +686,11 @@ public class AudioPlayer {
 			// }
 			// pp.putExtra(AudioAction.DATA_STATE, playState.getId());
 			// sendBroadcast(pp);
+		} else if (action.equals(AudioAction.ACTION_AUDIO_FORCE_PAUSE)) {
+			if (isPlaying()) {
+				player.pause();
+				changePlayState(PlayState.PAUSED);				
+			}
 		}
 	}
 

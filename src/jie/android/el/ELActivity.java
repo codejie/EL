@@ -207,7 +207,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	@Override
 	protected void onPause() {
-		fragmentSwitcher.remvoeAll();
+		fragmentSwitcher.restore();
 
 		super.onPause();
 
@@ -430,7 +430,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	protected void onServiceNotification(int state) {
 		if (state == ServiceState.READY.getId()) {
-			showFragment(FragmentSwitcher.Type.LIST, null);
+			if (fragmentSwitcher.getCurrentType() == null) {			
+				showFragment(FragmentSwitcher.Type.LIST, null);
+			}
 			showProgressDialog(false, null);
 		} else if (state == ServiceState.PLAYING.getId()) {
 			// Bundle args = new Bundle();
@@ -459,7 +461,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		fragmentSwitcher.saveInstanceState(outState);
+//		fragmentSwitcher.saveInstanceState(outState);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -467,7 +469,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	@Override
 	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
-		fragmentSwitcher.restoreInstanceState(savedInstanceState);
+//		fragmentSwitcher.restoreInstanceState(savedInstanceState);
 	}
 
 	@Override
@@ -482,9 +484,21 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		} else {
 			watchSearchChanged = true;
 		}
+		
+//		if (oldType == FragmentSwitcher.Type.SHOW) {
+//			BaseFragment fragment = fragmentSwitcher.getFragment();
+//			if (fragment != null) {
+//				fragment.on
+//			}
+//		}
 	}
 
 	protected void pausePlaying() {
+		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
+			Intent intent = new Intent(AudioAction.ACTION_AUDIO_FORCE_PAUSE);
+			sendBroadcast(intent);
+		}
+		
 		// if (serviceAccess != null) {
 		// try {
 		// serviceAccess.pauseAudio();

@@ -99,21 +99,34 @@ public class FragmentSwitcher {
 
 		FragmentTransaction ft = fragmentManager.beginTransaction();
 		if (curType != null) {
+			if (!curType.hasRemoved()) {
+				hideFragment(ft, curType);
+			} else {
+				removeFragment(ft, curType);
+			}
+			
 			if (found) {
-				if (!curType.hasRemoved()) {
-					hideFragment(ft, curType);
-				} else {
-					removeFragment(ft, curType);
-				}
 				ft.show(fragment);				
 			} else {
-				if (!curType.hasRemoved()) {
-					hideFragment(ft, curType);
-					ft.add(R.id.main, fragment, type.getTitle());
-				} else {
-					ft.replace(R.id.main, fragment, type.getTitle());
-				}
+				ft.add(R.id.main, fragment, type.getTitle());
 			}
+			
+			
+//			if (found) {
+//				if (!curType.hasRemoved()) {
+//					hideFragment(ft, curType);
+//				} else {
+//					removeFragment(ft, curType);
+//				}
+//				ft.show(fragment);				
+//			} else {
+//				if (!curType.hasRemoved()) {
+//					hideFragment(ft, curType);
+//					ft.add(R.id.main, fragment, type.getTitle());
+//				} else {
+//					ft.replace(R.id.main, fragment, type.getTitle());
+//				}
+//			}
 			
 			
 //			if (!curType.hasRemoved()) {
@@ -130,7 +143,7 @@ public class FragmentSwitcher {
 //					ft.replace(R.id.main, fragment, type.getTitle());
 //				}
 //			}
-		} else {
+		} else {			
 			ft.add(R.id.main, fragment, type.getTitle());
 		}
 		
@@ -282,13 +295,13 @@ public class FragmentSwitcher {
 		return fragment;
 	}
 
-	private void hide(Type type) {
-		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
-		if (fragment != null) {
-			fragmentManager.beginTransaction().hide(fragment).commit();
-//			curType = null;			
-		}
-	}
+//	private void hide(Type type) {
+//		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
+//		if (fragment != null) {
+//			fragmentManager.beginTransaction().hide(fragment).commit();
+////			curType = null;			
+//		}
+//	}
 	
 //	private void hide(Type type) {
 //		BaseFragment fragment = (BaseFragment) fragmentManager.findFragmentByTag(type.getTitle());
@@ -351,36 +364,41 @@ public class FragmentSwitcher {
 //		return false;
 	}
 
-	public void saveInstanceState(Bundle outState) {
-//		hide(curType);
-//		FragmentTransaction ft = fragmentManager.beginTransaction();
-//		while (!ft.isEmpty()) {
-//			fragmentManager.popBackStackImmediate();
-//		}
-//		ft.commit();
-	}
-
-	public void restoreInstanceState(Bundle savedInstanceState) {
-//		show(curType);
-	}
+//	public void saveInstanceState(Bundle outState) {
+////		hide(curType);
+////		FragmentTransaction ft = fragmentManager.beginTransaction();
+////		while (!ft.isEmpty()) {
+////			fragmentManager.popBackStackImmediate();
+////		}
+////		ft.commit();
+//	}
+//
+//	public void restoreInstanceState(Bundle savedInstanceState) {
+////		show(curType);
+//	}
 	
 	public void setOnSwitchListener(OnSwitchListener listener) {
 		onSwitchListener = listener;
 	}
 
-	public void remvoeAll() {
-		curType = null;
-		int i = fragmentManager.getBackStackEntryCount();
-//		Log.d("====", "fragment count = " + i);
-//	
-//		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-//		i = fragmentManager.getBackStackEntryCount();
-		Log.d("====1", "fragment count = " + i);
-		while (fragmentManager.getBackStackEntryCount() > 0) {
-			fragmentManager.popBackStackImmediate();
+	public void restore() {
+		if (curType != null) {
+			if (curType.hasRemoved()) {
+				showPrevFragment();
+			}
 		}
-		i = fragmentManager.getBackStackEntryCount();
-		Log.d("====2", "fragment count = " + i);
+//		curType = null;
+//		int i = fragmentManager.getBackStackEntryCount();
+////		Log.d("====", "fragment count = " + i);
+////	
+////		fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+////		i = fragmentManager.getBackStackEntryCount();
+//		Log.d("====1", "fragment count = " + i);
+//		while (fragmentManager.getBackStackEntryCount() > 0) {
+//			fragmentManager.popBackStackImmediate();
+//		}
+//		i = fragmentManager.getBackStackEntryCount();
+//		Log.d("====2", "fragment count = " + i);
 		
 	}
 }

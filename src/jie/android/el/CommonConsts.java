@@ -139,6 +139,7 @@ public interface CommonConsts {
 		public static final String ACTION_AUDIO_PREV = "jie.android.el.action.audio_prev";
 		public static final String ACTION_AUDIO_NEXT = "jie.android.el.action.audio_next";
 		public static final String ACTION_AUDIO_PLAY = "jie.android.el.action.audio_play";
+		public static final String ACTION_AUDIO_FORCE_PAUSE = "jie.android.el.action.audio_force_pause";
 		public static final String ACTION_AUDIO_STOP = "jie.android.el.action.audio_stop";
 		public static final String ACTION_AUDIO_SEEK = "jie.android.el.action.audio_seek";
 		public static final String ACTION_AUDIO_NAVIGATE = "jie.android.el.action.audio_navigate";
