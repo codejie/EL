@@ -65,10 +65,6 @@ public class FragmentSwitcher {
 		fragmentManager = this.activity.getSupportFragmentManager();
 	}
 
-	public boolean show(Type type) {
-		return show(type, null);
-	}
-
 	public boolean show(Type type, Bundle args) {
 		if (type == null) {
 			return false;
@@ -212,7 +208,7 @@ public class FragmentSwitcher {
 		if (stackType.size() > 0) {
 			Type type = stackType.pop();
 			if (type != null) {
-				show(type);
+				show(type, null);
 			}
 			return true;
 		} else {

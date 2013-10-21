@@ -347,7 +347,9 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	public void showFragment(FragmentSwitcher.Type type, Bundle args) {
-		fragmentSwitcher.show(type, args);
+		synchronized(this) {
+			fragmentSwitcher.show(type, args);
+		}
 	}
 
 	@Override
