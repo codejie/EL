@@ -1,9 +1,6 @@
 package jie.android.el.utils;
 
-import java.util.Calendar;
-
 import jie.android.el.database.ELContentProvider;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

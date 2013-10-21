@@ -12,6 +12,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.CommonConsts.BroadcastAction;
+import jie.android.el.CommonConsts.DownloadCompletedType;
 import jie.android.el.CommonConsts.DownloadRequest;
 import jie.android.el.CommonConsts.NotificationAction;
 import jie.android.el.CommonConsts.NotificationType;
@@ -56,14 +58,14 @@ public class Downloader {
 		}
 	}
 
-	private ELService service = null;
+	private Context context = null;
 	private DownloadManager downloadManager = null;
 	private DownloadReceiver receiver = null;
 
 	private String outputCachePath = null;
 
-	public Downloader(ELService service) {
-		this.service = service;
+	public Downloader(Context context) {
+		this.context = context;
 	}
 
 	public static boolean checkDownloaded(Context context) {
@@ -129,7 +131,7 @@ public class Downloader {
 																									// +
 																									// "/jie/cache";
 
-		downloadManager = (DownloadManager) service.getSystemService(Context.DOWNLOAD_SERVICE);
+		downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 
 		regiestReceiver();
 
@@ -266,7 +268,7 @@ public class Downloader {
 		// public int status = -1; //-1: initial; 0: done; 1: start; 2: update
 		// public int type = -1; //0: update.xml; 1: package.zip
 
-		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE,
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE,
 				new String[] { "idx", "type", "url", "local", "syncid", "status" }, "status != 0", null, "idx");
 		try {
 			if (cursor.moveToFirst()) {
@@ -383,12 +385,12 @@ public class Downloader {
 
 		receiver = new DownloadReceiver();
 
-		service.registerReceiver(receiver, filter);
+		context.registerReceiver(receiver, filter);
 	}
 
 	private void unregistReceiver() {
 		if (receiver != null) {
-			service.unregisterReceiver(receiver);
+			context.unregisterReceiver(receiver);
 		}
 	}
 
@@ -441,7 +443,7 @@ public class Downloader {
 	private void insertUpdateData(final String request, int type, final String url, final String local, int size, long syncid, int status) {
 
 		// check
-		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "count(*)" }, "local=? and status!=?",
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "count(*)" }, "local=? and status!=?",
 				new String[] { local, String.valueOf(STATUS_DONE) }, null);
 		try {
 			if (cursor.moveToFirst()) {
@@ -464,11 +466,11 @@ public class Downloader {
 		values.put("status", status);
 		values.put("updatetime", System.currentTimeMillis());
 
-		service.getContentResolver().insert(ELContentProvider.URI_LAC_SYS_UPDATE, values);
+		context.getContentResolver().insert(ELContentProvider.URI_LAC_SYS_UPDATE, values);
 	}
 
 	private void removeUpdateDataBySyncId(long syncid) {
-		service.getContentResolver().delete(ELContentProvider.URI_LAC_SYS_UPDATE, "syncid=" + syncid, null);
+		context.getContentResolver().delete(ELContentProvider.URI_LAC_SYS_UPDATE, "syncid=" + syncid, null);
 	}
 
 	private void updateStatusByIdx(int idx, long syncid, int status) {
@@ -477,7 +479,7 @@ public class Downloader {
 		values.put("syncid", syncid);
 		values.put("status", status);
 
-		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);
+		context.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "idx=" + idx, null);
 	}
 
 	private void updateStatusBySyncId(long syncid, final String url, int status) {
@@ -489,12 +491,12 @@ public class Downloader {
 		values.put("status", status);
 		values.put("updatetime", System.currentTimeMillis());
 
-		service.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "syncid=" + syncid, null);
+		context.getContentResolver().update(ELContentProvider.URI_LAC_SYS_UPDATE, values, "syncid=" + syncid, null);
 	}
 
 	private int queryTypeBySyncId(long syncid) {
 
-		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "type" }, "syncid=" + syncid, null, null);
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "type" }, "syncid=" + syncid, null, null);
 		try {
 			if (cursor.moveToFirst()) {
 				return cursor.getInt(0);
@@ -506,7 +508,7 @@ public class Downloader {
 	}
 
 	private String queryLocalBySyncId(long syncid) {
-		Cursor cursor = service.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "local" }, "syncid=" + syncid, null, null);
+		Cursor cursor = context.getContentResolver().query(ELContentProvider.URI_LAC_SYS_UPDATE, new String[] { "local" }, "syncid=" + syncid, null, null);
 		try {
 			if (cursor.moveToFirst()) {
 				return cursor.getString(0);
@@ -630,7 +632,7 @@ public class Downloader {
 		String local = null;
 		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.HONEYCOMB) {
 			Uri uri = Uri.parse(url);
-			Cursor cursor = service.getContentResolver().query(uri, null, null, null, null);
+			Cursor cursor = context.getContentResolver().query(uri, null, null, null, null);
 			if (cursor != null) {
 				try {
 					if (cursor.moveToFirst()) {
@@ -675,7 +677,11 @@ public class Downloader {
 
 			updateStatusBySyncId(syncid, null, STATUS_DONE);
 
-			service.onPackageReady(null);
+			Intent intent = new Intent(BroadcastAction.ACTION_DOWNLOAD_COMPLETED);
+			intent.putExtra(BroadcastAction.DATA_TYPE, DownloadCompletedType.PACKAGE.getId());
+			context.sendBroadcast(intent);
+			
+//			context.onPackageReady(null);
 		}
 		//
 		// updateStatusBySyncId(syncid, null, STATUS_DONE);
@@ -721,7 +727,12 @@ public class Downloader {
 
 			updateStatusBySyncId(syncid, null, STATUS_DONE);
 
-			service.onLatestVersionReady(local);
+			Intent intent = new Intent(BroadcastAction.ACTION_DOWNLOAD_COMPLETED);
+			intent.putExtra(BroadcastAction.DATA_TYPE, DownloadCompletedType.LATEST_VERSION.getId());
+			intent.putExtra(BroadcastAction.DATA_TITLE, local);
+			context.sendBroadcast(intent);
+		
+//			context.onLatestVersionReady(local);
 		}
 
 		this.checkUpdateData();
@@ -819,17 +830,17 @@ public class Downloader {
 	}
 
 	private void cleanNewPackageData() {
-		service.getContentResolver().delete(ELContentProvider.URI_EL_NEW_PACKAGES, null, null);
+		context.getContentResolver().delete(ELContentProvider.URI_EL_NEW_PACKAGES, null, null);
 	}
 
 	private void insertCheckNewPackageUpdateData(ContentValues values) {
-		service.getContentResolver().insert(ELContentProvider.URI_EL_NEW_PACKAGES, values);
+		context.getContentResolver().insert(ELContentProvider.URI_EL_NEW_PACKAGES, values);
 	}
 
 	private void insertLatestVersionUpdateData(ContentValues values) {
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_SYS_INFO, values.getAsInteger("idx"));
-		service.getContentResolver().delete(uri, null, null);
-		service.getContentResolver().insert(ELContentProvider.URI_EL_SYS_INFO, values);
+		context.getContentResolver().delete(uri, null, null);
+		context.getContentResolver().insert(ELContentProvider.URI_EL_SYS_INFO, values);
 	}
 
 	private void showNotification(String title, String text) {
@@ -838,7 +849,7 @@ public class Downloader {
 		intent.putExtra(NotificationAction.DATA_TITLE, title);
 		intent.putExtra(NotificationAction.DATA_TEXT, text);
 
-		service.sendBroadcast(intent);
+		context.sendBroadcast(intent);
 	}
 
 }

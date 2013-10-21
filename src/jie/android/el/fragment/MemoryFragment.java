@@ -1,10 +1,7 @@
 package jie.android.el.fragment;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.FutureTask;
-
 import com.actionbarsherlock.view.MenuItem;
 
 import jie.android.el.CommonConsts.Setting;

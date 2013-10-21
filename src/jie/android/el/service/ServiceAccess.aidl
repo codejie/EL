@@ -1,7 +1,7 @@
 package jie.android.el.service;
 
 import jie.android.el.service.ServiceNotification;
-import jie.android.el.service.OnPlayAudioListener;
+//import jie.android.el.service.OnPlayAudioListener;
 import jie.android.el.database.Word;
 
 interface ServiceAccess {

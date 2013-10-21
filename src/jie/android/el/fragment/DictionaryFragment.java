@@ -5,11 +5,9 @@ import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.OnRefreshListener;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.RemoteException;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.animation.Animation;
@@ -24,13 +22,11 @@ import android.widget.TextView;
 
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.Setting;
-import jie.android.el.database.Word;
 import jie.android.el.fragment.adapter.DictionaryFragmentListAdapter;
 import jie.android.el.utils.ScoreHelper;
 import jie.android.el.utils.Speaker;
 import jie.android.el.utils.Utils;
 import jie.android.el.utils.WordLoader;
-import jie.android.el.utils.XmlTranslator;
 import jie.android.el.view.ELPopupWindow;
 import jie.android.el.view.OnPopupWindowDefaultListener;
 import jie.android.el.R;

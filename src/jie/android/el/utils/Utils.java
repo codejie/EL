@@ -28,7 +28,6 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Xml;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 public class Utils {

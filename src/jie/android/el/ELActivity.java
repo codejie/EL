@@ -67,9 +67,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			case UIMsg.SERVICE_NOTIFICATION:
 				onServiceNotification(msg.arg1);
 				break;
-			// case UIMsg.SERVICE_AUDIOPLAYING:
-			// onServiceAudioPlaying((Bundle)msg.obj);
-			// break;
 			case UIMsg.SERVICE_AUDIO_ACTION:
 				onServiceAudioAction((Intent) msg.obj);
 				break;
@@ -123,25 +120,11 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		public void onServiceConnected(ComponentName name, IBinder binder) {
 			serviceAccess = ServiceAccess.Stub.asInterface(binder);
 			registServiceNotification(true);
-
-			//
-			// try {
-			// serviceAccess.regServiceNotification(0, serviceNotification);
-			// } catch (RemoteException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 		}
 
 		@Override
 		public void onServiceDisconnected(ComponentName name) {
 			registServiceNotification(false);
-			// try {
-			// serviceAccess.unregServiceNotification(0);
-			// } catch (RemoteException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 			serviceAccess = null;
 		}
 
@@ -164,8 +147,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		initService();
 		initSpeaker();
 		initTranslator();
-		// // initPackageImporter();
-		//
+
 		handler.sendEmptyMessage(UIMsg.UI_CREATED);
 	}
 
@@ -212,18 +194,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		super.onPause();
 
 		registServiceNotification(false);
-		// if (fragmentSwitcher.isRemovedType()) {
-		// fragmentSwitcher.showPrevFragment();
-		// }
 	}
-
-	// @Override
-	// protected void onStop() {
-	// // releaseSpeasker();
-	// // releaseService(false);
-	//
-	// super.onStop();
-	// }
 
 	@Override
 	protected void onDestroy() {
@@ -249,7 +220,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		} catch (IOException e) {
 			Log.e(Tag, "init transformer failed.");
 		}
-
 	}
 
 	private void initService() {
@@ -269,14 +239,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			serviceAccess = null;
 		}
 	}
-
-	// private void initPackageImporter() {
-	// final String[] res = PackageImporter.check();
-	// if (res != null && res.length > 0) {
-	// packageImporter = new PackageImporter(this, res);
-	// packageImporter.startImport();
-	// }
-	// }
 
 	public ServiceAccess getServiceAccess() {
 		return serviceAccess;
@@ -305,16 +267,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 		return true;
 	}
-
-	// @Override
-	// public boolean onPrepareOptionsMenu(Menu menu) {
-	//
-	// BaseFragment fragment = fragmentSwitcher.getFragment();
-	// if (fragment != null) {
-	// fragment.onPrepareOptionsMenu(menu);
-	// }
-	// return super.onPrepareOptionsMenu(menu);
-	// }
 
 	private void initSearchView(MenuItem menu) {
 
@@ -430,14 +382,11 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	protected void onServiceNotification(int state) {
 		if (state == ServiceState.READY.getId()) {
-			if (fragmentSwitcher.getCurrentType() == null) {			
+			if (fragmentSwitcher.getCurrentType() == null) {
 				showFragment(FragmentSwitcher.Type.LIST, null);
 			}
 			showProgressDialog(false, null);
 		} else if (state == ServiceState.PLAYING.getId()) {
-			// Bundle args = new Bundle();
-			// args.putInt(FragmentArgument.ACTION,
-			// FragmentArgument.Action.SERVICE_NOTIFICATION.getId());
 			showFragment(FragmentSwitcher.Type.SHOW, null);
 		}
 	}
@@ -460,19 +409,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-//		fragmentSwitcher.saveInstanceState(outState);
-
-		super.onSaveInstanceState(outState);
-	}
-
-	@Override
-	protected void onRestoreInstanceState(Bundle savedInstanceState) {
-		super.onRestoreInstanceState(savedInstanceState);
-//		fragmentSwitcher.restoreInstanceState(savedInstanceState);
-	}
-
-	@Override
 	public void onSwitch(FragmentSwitcher.Type oldType, FragmentSwitcher.Type newType) {
 		if (newType != FragmentSwitcher.Type.DICTIONARY) {
 			watchSearchChanged = false;
@@ -484,13 +420,13 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		} else {
 			watchSearchChanged = true;
 		}
-		
-//		if (oldType == FragmentSwitcher.Type.SHOW) {
-//			BaseFragment fragment = fragmentSwitcher.getFragment();
-//			if (fragment != null) {
-//				fragment.on
-//			}
-//		}
+
+		// if (oldType == FragmentSwitcher.Type.SHOW) {
+		// BaseFragment fragment = fragmentSwitcher.getFragment();
+		// if (fragment != null) {
+		// fragment.on
+		// }
+		// }
 	}
 
 	protected void pausePlaying() {
@@ -498,14 +434,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			Intent intent = new Intent(AudioAction.ACTION_AUDIO_FORCE_PAUSE);
 			sendBroadcast(intent);
 		}
-		
-		// if (serviceAccess != null) {
-		// try {
-		// serviceAccess.pauseAudio();
-		// } catch (RemoteException e) {
-		// e.printStackTrace();
-		// }
-		// }
 	}
 
 	private void registServiceNotification(boolean reg) {

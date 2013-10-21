@@ -2,26 +2,19 @@ package jie.android.el.service;
 
 import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.BroadcastAction;
+import jie.android.el.CommonConsts.DownloadCompletedType;
 import jie.android.el.CommonConsts.DownloadRequest;
-import jie.android.el.CommonConsts.NotificationAction;
-import jie.android.el.CommonConsts.NotificationType;
-import jie.android.el.CommonConsts.PlayState;
 import jie.android.el.CommonConsts.ServiceState;
-import jie.android.el.CommonConsts.WidgetAction;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.database.Word;
 import jie.android.el.service.receiver.ServiceReceiver;
 import android.app.Service;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.DeadObjectException;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
 import android.widget.Toast;
@@ -49,44 +42,6 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 			return dictionary.getWordXmlResult(word);// null;//dictionary.getWordXmlResult(word);
 		}
 
-		// @Override
-		// public void setAudio(int index) throws RemoteException {
-		// player.setData(index);
-		// }
-
-//		@Override
-//		public void setAudioListener(OnPlayAudioListener listener) throws RemoteException {
-//			player.setOnPlayAudioListener(listener);
-//		}
-
-		// @Override
-		// public void playAudio() throws RemoteException {
-		// player.play();
-		// }
-		//
-		// @Override
-		// public void stopAudio() throws RemoteException {
-		// player.stop();
-		// }
-		//
-		// @Override
-		// public void pauseAudio() throws RemoteException {
-		// player.pause();
-		// }
-
-//		@Override
-//		public void seekAudio(int poistion) throws RemoteException {
-//			player.seekTo(poistion);
-//		}
-
-		// @Override
-		// public int getPlayState() throws RemoteException {
-		// if (player == null) {
-		// return PlayState.INVALID.getId();
-		// }
-		// return player.getPlayState().getId();
-		// }
-
 		@Override
 		public boolean canExit() throws RemoteException {
 			// TODO Auto-generated method stub
@@ -98,72 +53,18 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 			return onDownloadRequest(request, check);
 		}
 
-//		@Override
-//		public void setUIState(int state) throws RemoteException {
-//			onUIStateChanged(state);
-//		}
-
 		@Override
 		public void setAudioAction(Intent intent) throws RemoteException {
 			onAudioAction(intent);
 		}
-
 	}
-
-//	public class NotificationReceiver extends BroadcastReceiver {
-//
-//		@Override
-//		public void onReceive(Context context, Intent intent) {
-//			final String action = intent.getAction();
-//
-//			// if (action.equals(NotificationAction.ACTION_SHOW)) {
-//			// final int type =
-//			// intent.getExtras().getInt(NotificationAction.DATA_TYPE);
-//			// final String title =
-//			// intent.getExtras().getString(NotificationAction.DATA_TITLE);
-//			// final String text =
-//			// intent.getExtras().getString(NotificationAction.DATA_TEXT);
-//			// final boolean play =
-//			// intent.getExtras().getBoolean(NotificationAction.DATA_STATE,
-//			// false);
-//			// if (title != null && text != null) {
-//			// onShowNotification(type, play, title, text);
-//			// }
-//			// } else if (action.equals(NotificationAction.ACTION_REMOVE)) {
-//			// onRemoveNotification(intent.getExtras().getInt(NotificationAction.DATA_TYPE),
-//			// intent.getExtras().getInt(NotificationAction.DATA_ID));
-//			// } else if (action.startsWith(NotificationAction.ACTION_CLICK)) {
-//			// onNotificationClick(action);
-//			// }
-//		}
-//	}
-
-	// private NotificationReceiver notificationReceiver = null;
+	
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
 	private Downloader downloader = null;
 	private PackageImporter packageImporter = null;
-	// private NotificationSetter notificationSetter = null;
 
 	private ServiceNotification serviceNotification = null;
-
-//	private ServiceReceiver.OnServiceIntentListener onServiceIntentListener = new ServiceReceiver.OnServiceIntentListener() {
-//		
-//		@Override
-//		public void onUIUpdate(Intent intent) {
-//			
-//		}
-//		
-//		@Override
-//		public void onAudioUpdate(Intent intent) {
-//			ELService.this.onAudioUpdate(intent);
-//		}
-//		
-//		@Override
-//		public void onAudioAction(Intent intent) {
-//			ELService.this.onAudioAction(intent);
-//		}
-//	};
 	
 	private ServiceReceiver serviceReceiver = new ServiceReceiver(this);
 	
@@ -179,14 +80,8 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 	public void onUIConnected() {
 		postServiceState(ServiceState.READY);
 
-		// Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
-		// ELService.this.sendBroadcast(intent);
-
 		if (player.isPlaying() || player.isPause()) {
 			postServiceState(ServiceState.PLAYING);
-			// postServiceIsPlaying(player.getPlayState(),
-			// player.getAudioIndex(), player.getDuration(),
-			// player.getCurrentPosition());
 		}
 
 		if (Downloader.checkIncomplete(this)) {
@@ -207,24 +102,12 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 
 		// android.os.Debug.waitForDebugger();
 
-		// initNotification();
 		initDictionary();
 		initPlayer();
-
-		// final String[] res = PackageImporter.check();
-		// if (res != null && res.length > 0) {
-		// onPackageReady(res);
-		// }
 
 		initServiceReceiver();
 		
 		sendBroadcast(new Intent(BroadcastAction.ACTION_SERVICE_INIT));
-
-		// Intent intent = new Intent(BroadcastAction.ACTION_SERVICE_INIT);
-		// this.sendBroadcast(intent);
-		// Message msg = Message.obtain(handler, ServiceState.READY.getId());
-		// handler.sendMessageDelayed(msg, 100);
-		// msg.send .sendToTarget();
 	}
 
 	@Override
@@ -238,7 +121,6 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		releaseDownloader();
 		releasePlayer();
 		releaseDictionary();
-		// releaseNotification();
 
 		super.onDestroy();
 	}
@@ -279,32 +161,6 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		}
 	}
 
-	// private void initNotification() {
-	// notificationSetter = new NotificationSetter(this);
-	//
-	// notificationReceiver = new NotificationReceiver();
-	//
-	// IntentFilter filter = new IntentFilter();
-	// filter.addAction(NotificationAction.ACTION_SHOW);
-	// filter.addAction(NotificationAction.ACTION_REMOVE);
-	// // filter.addAction(NotificationAction.ACTION_CLICK_PREV);
-	// // filter.addAction(NotificationAction.ACTION_CLICK_NEXT);
-	// // filter.addAction(NotificationAction.ACTION_CLICK_PLAY);
-	// // filter.addAction(NotificationAction.ACTION_CLICK_CLOSE);
-	//
-	// registerReceiver(notificationReceiver, filter);
-	// }
-
-	// private void releaseNotification() {
-	// if (notificationReceiver != null) {
-	// unregisterReceiver(notificationReceiver);
-	// }
-	//
-	// if (notificationSetter != null) {
-	// notificationSetter.release();
-	// }
-	// }
-
 	private void initServiceReceiver() {
 		IntentFilter filter = new IntentFilter();
 		filter.addAction(AudioAction.ACTION_AUDIO);
@@ -323,6 +179,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		filter.addAction(AudioAction.ACTION_AUDIO_QUERY);
 		filter.addAction(AudioAction.ACTION_UPDATE_AUDIO_PLAYING);
 		filter.addAction(AudioAction.ACTION_AUDIO_FORCE_PAUSE);
+		filter.addAction(BroadcastAction.ACTION_DOWNLOAD_COMPLETED);
 //		filter.addAction(WidgetAction.ACTION_STARTACTIVITY);
 		
 		registerReceiver(serviceReceiver, filter);
@@ -366,11 +223,6 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		}
 	}
 
-//	public void onUIStateChanged(int state) {
-//		// TODO Auto-generated method stub
-//
-//	}
-
 	private void loadBundledPackage() {
 
 		Cursor cursor = this.getContentResolver().query(ELContentProvider.URI_EL_ESL, new String[] { "count(*)" }, null, null, null);
@@ -388,33 +240,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		}
 	}
 
-	// public int onShowNotification(int level, boolean play, String title,
-	// String text) {
-	// if (notificationSetter != null) {
-	// NotificationType type = NotificationType.getType(level);
-	// if (type != null) {
-	// notificationSetter.show(type, play, title, text);
-	// }
-	// }
-	// return 0;
-	// }
-	//
-	// public void onRemoveNotification(int level, int id) {
-	// if (notificationSetter != null) {
-	// NotificationType type = NotificationType.getType(level);
-	// if (type != null) {
-	// notificationSetter.remove(type, id);
-	// }
-	// }
-	// }
-
-//	public void onNotificationClick(final String action) {
-//		if (player != null) {
-//			player.onNotificationClick(action);
-//		}
-//	}
-
-	public void onLatestVersionReady(final String file) {
+	private void onLatestVersionReady(final String file) {
 		Log.d(Tag, "latest version file = " + file);
 		Toast.makeText(this, "ready to install the latest of EL..", Toast.LENGTH_LONG).show();
 		//
@@ -439,8 +265,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		
 		if (player != null) {
 			player.onAction(intent);
-		}
-		
+		}		
 	}
 
 	public void onAudioUpdate(Intent intent) {
@@ -458,6 +283,19 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 	public void onUIUpdate(Intent intent) {
 		if (player != null) {
 			player.onUIUpdate(intent);
+		}
+	}
+
+	@Override
+	public void onDownloadCompleted(Intent intent) {
+		int type = intent.getIntExtra(BroadcastAction.DATA_TYPE, -1);
+		if (type == DownloadCompletedType.PACKAGE.getId()) {
+			onPackageReady(null);
+		} else if (type == DownloadCompletedType.LATEST_VERSION.getId()) {
+			final String file = intent.getStringExtra(BroadcastAction.DATA_TITLE);
+			if (file != null) {
+				onLatestVersionReady(file);
+			}
 		}
 	}	
 }
