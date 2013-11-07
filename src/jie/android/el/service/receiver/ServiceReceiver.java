@@ -12,20 +12,23 @@ import android.util.Log;
 public class ServiceReceiver extends BroadcastReceiver {
 
 	private static final String Tag = ServiceReceiver.class.getSimpleName();
-	
+
 	public interface OnServiceIntentListener {
 		void onAudioAction(Intent intent);
+
 		void onAudioUpdate(Intent intent);
+
 		void onUIUpdate(Intent intent);
+
 		void onDownloadCompleted(Intent intent);
 	}
-	
+
 	private OnServiceIntentListener listener;
-	
+
 	public ServiceReceiver(OnServiceIntentListener l) {
 		listener = l;
 	}
-	
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 		final String action = intent.getAction();
@@ -37,8 +40,8 @@ public class ServiceReceiver extends BroadcastReceiver {
 		} else if (action.equals(AudioAction.ACTION_UPDATE_UI)) {
 			onUIUpdate(intent);
 		} else if (action.equals(WidgetAction.ACTION_STARTACTIVITY)) {
- 			Intent sa = new Intent(context, ELActivity.class);
- 			context.startActivity(sa);
+			Intent sa = new Intent(context, ELActivity.class);
+			context.startActivity(sa);
 		} else if (action.equals(BroadcastAction.ACTION_DOWNLOAD_COMPLETED)) {
 			onDownloadCompleted(intent);
 		} else {
@@ -63,11 +66,11 @@ public class ServiceReceiver extends BroadcastReceiver {
 			listener.onUIUpdate(intent);
 		}
 	}
-	
+
 	private void onDownloadCompleted(Intent intent) {
 		if (listener != null) {
 			listener.onDownloadCompleted(intent);
-		}		
+		}
 	}
-	
+
 }

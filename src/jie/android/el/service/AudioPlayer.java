@@ -469,6 +469,12 @@ public class AudioPlayer {
 		sendBroadcast(intent);
 	}
 
+	private void notifyAudioSet() {
+		Intent intent = new Intent(AudioAction.ACTION_UPDATE_AUDIO);
+		intent.putExtra(AudioAction.DATA_TYPE, UpdateAudioType.AUDIO_IS_SET.getId());
+		this.sendBroadcast(intent);
+	}
+
 	public void onAction(Intent intent) {
 		final String action = intent.getAction();
 		if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
@@ -477,6 +483,9 @@ public class AudioPlayer {
 				index = getLastPlayAudio();
 			}
 			setData(index, false);
+
+			notifyAudioSet();
+
 		} else if (action.equals(AudioAction.ACTION_AUDIO_PLAY)) {
 			if (isPlaying() || isPause()) {
 				togglePlay();
@@ -528,11 +537,15 @@ public class AudioPlayer {
 			}
 
 			showNotification(false);
-		} else {
+		} else if (state == UpdateUIType.AUDIO_WINDOW_CLOSE.getId()) {
 			isAudioWindowShow = false;
 
 			if (isPlaying() || isPause()) {
 				showNotification(true);
+			}
+		} else if (state == UpdateUIType.LIST_WINDOW_CREATED.getId()) {
+			if (isPlaying() || isPause()) {
+				notifyAudioSet();
 			}
 		}
 	}

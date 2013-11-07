@@ -16,6 +16,7 @@ import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.ServiceState;
 import jie.android.el.CommonConsts.Setting;
 import jie.android.el.CommonConsts.UIMsg;
+import jie.android.el.CommonConsts.UpdateAudioType;
 import jie.android.el.CommonConsts.UpdateUIType;
 import jie.android.el.R;
 import android.app.ProgressDialog;
@@ -71,7 +72,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 				onServiceAudioAction((Intent) msg.obj);
 				break;
 			case UIMsg.SERVICE_UPDATE_AUDIO:
-				onServiceUpdateAutio((Intent) msg.obj);
+				onServiceUpdateAudio((Intent) msg.obj);
 				break;
 			case UIMsg.UI_HIDE_TITLE:
 				onUIHideTile();
@@ -94,6 +95,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		public void onAudioAction(Intent intent) throws RemoteException {
 			final String action = intent.getAction();
 			if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
+
 				showFragment(FragmentSwitcher.Type.SHOW, null);
 
 				if (getSharedPreferences().getBoolean(Setting.CONTENT_HIDE_TITLE, false)) {
@@ -189,8 +191,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 
 	@Override
 	protected void onPause() {
-		fragmentSwitcher.restore();
-		//fragmentSwitcher.removeAllFragments();
+		fragmentSwitcher.removeAllFragments();
 
 		super.onPause();
 
@@ -200,8 +201,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	@Override
 	protected void onDestroy() {
 		Log.d(Tag, "onDestroy");
-		
-		fragmentSwitcher.removeAllFragments();
 
 		releaseSpeasker();
 		releaseService(false);
@@ -350,9 +349,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	public void showFragment(FragmentSwitcher.Type type, Bundle args) {
-		synchronized(this) {
-			fragmentSwitcher.show(type, args);
-		}
+		fragmentSwitcher.show(type, args);
 	}
 
 	@Override
@@ -391,8 +388,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 				showFragment(FragmentSwitcher.Type.LIST, null);
 			}
 			showProgressDialog(false, null);
-		} else if (state == ServiceState.PLAYING.getId()) {
-			showFragment(FragmentSwitcher.Type.SHOW, null);
 		}
 	}
 
@@ -425,13 +420,6 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		} else {
 			watchSearchChanged = true;
 		}
-
-		// if (oldType == FragmentSwitcher.Type.SHOW) {
-		// BaseFragment fragment = fragmentSwitcher.getFragment();
-		// if (fragment != null) {
-		// fragment.on
-		// }
-		// }
 	}
 
 	protected void pausePlaying() {
@@ -461,22 +449,35 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	}
 
 	protected void onServiceAudioAction(Intent intent) {
-		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
-			fragmentSwitcher.getFragment().onIntent(intent);
+		FragmentSwitcher.Type type = fragmentSwitcher.getCurrentType();
+		if (type != null) {
+			if (type == FragmentSwitcher.Type.SHOW) {
+				fragmentSwitcher.getFragment().onIntent(intent);
+			}
 		}
 	}
 
-	protected void onServiceUpdateAutio(Intent intent) {
-		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
-			fragmentSwitcher.getFragment().onIntent(intent);
+	protected void onServiceUpdateAudio(Intent intent) {
+		FragmentSwitcher.Type type = fragmentSwitcher.getCurrentType();
+		if (type != null) {
+			if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
+				fragmentSwitcher.getFragment().onIntent(intent);
+			} else {
+				if (intent.getIntExtra(AudioAction.DATA_TYPE, -1) == UpdateAudioType.AUDIO_IS_SET.getId()) {
+					showFragment(FragmentSwitcher.Type.SHOW, null);
+				}
+			}
 		}
 	}
 
 	protected void onUIHideTile() {
-		if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
-			Intent intent = new Intent(BroadcastAction.ACTION_UPDATE_UI);
-			intent.putExtra(BroadcastAction.DATA_TYPE, UpdateUIType.HIDE_TITLE.getId());
-			fragmentSwitcher.getFragment().onIntent(intent);
+		FragmentSwitcher.Type type = fragmentSwitcher.getCurrentType();
+		if (type != null) {
+			if (type == FragmentSwitcher.Type.SHOW) {
+				Intent intent = new Intent(BroadcastAction.ACTION_UPDATE_UI);
+				intent.putExtra(BroadcastAction.DATA_TYPE, UpdateUIType.HIDE_TITLE.getId());
+				fragmentSwitcher.getFragment().onIntent(intent);
+			}
 		}
 	}
 

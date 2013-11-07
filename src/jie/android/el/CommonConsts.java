@@ -63,7 +63,7 @@ public interface CommonConsts {
 	}
 
 	public enum ServiceState {
-		READY, UNZIP, ERROR, PLAYING;
+		READY, UNZIP, ERROR;
 
 		public int getId() {
 			return this.ordinal();
@@ -92,7 +92,7 @@ public interface CommonConsts {
 	}
 
 	public enum UpdateAudioType {
-		STATE_CHANGED, AUDIO_CHANGED_OPEN, AUDIO_CHANGED_CLOSE;
+		STATE_CHANGED, AUDIO_IS_SET, AUDIO_CHANGED_OPEN, AUDIO_CHANGED_CLOSE;
 
 		public int getId() {
 			return ordinal();
@@ -100,7 +100,7 @@ public interface CommonConsts {
 	}
 
 	public enum UpdateUIType {
-		AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE, HIDE_TITLE;
+		LIST_WINDOW_CREATED, AUDIO_WINDOW_SHOW, AUDIO_WINDOW_CLOSE, HIDE_TITLE;
 
 		public int getId() {
 			return ordinal();
@@ -156,6 +156,7 @@ public interface CommonConsts {
 		public static final String ACTION_AUDIO_NAVIGATE_EXPLANATION = "jie.android.el.action.audio_navigate_explanation";
 		public static final String ACTION_AUDIO_NAVIGATE_FASTDIALOG = "jie.android.el.action.audio_navigate_fastdialog";
 		public static final String ACTION_AUDIO_QUERY = "jie.android.el.action.audio_query";
+//		public static final String ACTION_AUDIO_CHECK = "jie.android.el.action.audio_check";
 	}
 
 	public interface NotificationAction extends BroadcastAction {

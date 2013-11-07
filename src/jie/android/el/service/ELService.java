@@ -58,16 +58,16 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 			onAudioAction(intent);
 		}
 	}
-	
+
 	private Dictionary dictionary = null;
 	private AudioPlayer player = null;
 	private Downloader downloader = null;
 	private PackageImporter packageImporter = null;
 
 	private ServiceNotification serviceNotification = null;
-	
+
 	private ServiceReceiver serviceReceiver = new ServiceReceiver(this);
-	
+
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(Tag, "onBind:" + intent.getAction());
@@ -79,10 +79,6 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 
 	public void onUIConnected() {
 		postServiceState(ServiceState.READY);
-
-		if (player.isPlaying() || player.isPause()) {
-			postServiceState(ServiceState.PLAYING);
-		}
 
 		if (Downloader.checkIncomplete(this)) {
 			initDownloader();
@@ -106,7 +102,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		initPlayer();
 
 		initServiceReceiver();
-		
+
 		sendBroadcast(new Intent(BroadcastAction.ACTION_SERVICE_INIT));
 	}
 
@@ -117,7 +113,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		this.sendBroadcast(intent);
 
 		releaseServiceReceiver();
-		
+
 		releaseDownloader();
 		releasePlayer();
 		releaseDictionary();
@@ -180,15 +176,15 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 		filter.addAction(AudioAction.ACTION_UPDATE_AUDIO_PLAYING);
 		filter.addAction(AudioAction.ACTION_AUDIO_FORCE_PAUSE);
 		filter.addAction(BroadcastAction.ACTION_DOWNLOAD_COMPLETED);
-//		filter.addAction(WidgetAction.ACTION_STARTACTIVITY);
-		
+		// filter.addAction(WidgetAction.ACTION_STARTACTIVITY);
+
 		registerReceiver(serviceReceiver, filter);
 	}
-	
+
 	private void releaseServiceReceiver() {
 		unregisterReceiver(serviceReceiver);
 	}
-	
+
 	private void postServiceState(ServiceState state) {
 		if (serviceNotification != null) {
 			try {
@@ -252,20 +248,9 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 
 	public void onAudioAction(Intent intent) {
 
-		if (intent.getAction().endsWith(AudioAction.ACTION_AUDIO_SET)) {
-			if (serviceNotification != null) {
-				try {
-					serviceNotification.onAudioAction(intent);
-				} catch (RemoteException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		}
-		
 		if (player != null) {
 			player.onAction(intent);
-		}		
+		}
 	}
 
 	public void onAudioUpdate(Intent intent) {
@@ -276,7 +261,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -297,5 +282,5 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 				onLatestVersionReady(file);
 			}
 		}
-	}	
+	}
 }

@@ -14,9 +14,12 @@ import jie.android.el.fragment.VocabFragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 
 public class FragmentSwitcher {
 
+	private static final String Tag = FragmentSwitcher.class.getSimpleName();
+	
 	public interface OnSwitchListener {
 		public void onSwitch(Type oldType, Type newType);
 	}
@@ -65,7 +68,7 @@ public class FragmentSwitcher {
 		fragmentManager = this.activity.getSupportFragmentManager();
 	}
 
-	public boolean show(Type type, Bundle args) {
+	public synchronized boolean show(Type type, Bundle args) {
 		if (type == null) {
 			return false;
 		}
@@ -114,8 +117,7 @@ public class FragmentSwitcher {
 			}
 		}
 
-		//ft.commit();
-		ft.commitAllowingStateLoss();
+		ft.commit();		
 
 		fragment.onArguments(args);
 
@@ -176,24 +178,24 @@ public class FragmentSwitcher {
 		return fragment;
 	}
 
-	public BaseFragment getFragment() {
+	public synchronized BaseFragment getFragment() {
 		if (curType == null) {
 			return null;
 		}
 		return (BaseFragment) fragmentManager.findFragmentByTag(curType.getTitle());
 	}
 
-	public Type getCurrentType() {
+	public synchronized Type getCurrentType() {
 		return curType;
 	}
 
-	public boolean isRemovedType() {
-		if (curType == null)
-			return false;
-		return curType.hasRemoved();
-	}
+//	public boolean isRemovedType() {
+//		if (curType == null)
+//			return false;
+//		return curType.hasRemoved();
+//	}
 
-	public boolean showPrevFragment() {
+	public synchronized boolean showPrevFragment() {
 		if (stackType.size() > 0) {
 			Type type = stackType.pop();
 			if (type != null) {
@@ -209,16 +211,16 @@ public class FragmentSwitcher {
 		onSwitchListener = listener;
 	}
 
-	public void restore() {
-		if (curType != null) {
-			if (curType.hasRemoved()) {
-				showPrevFragment();
-			}
-		}
-	}
+//	public void restore() {
+//		if (curType != null) {
+//			if (curType.hasRemoved()) {
+//				showPrevFragment();
+//			}
+//		}
+//	}
 	
-	public void removeAllFragments() {
-		FragmentTransaction ft = fragmentManager.beginTransaction();
+	public synchronized void removeAllFragments() {
+		FragmentTransaction ft = fragmentManager.beginTransaction();		
 		if (curType != null) {
 			this.removeFragment(ft, curType);
 		}
@@ -229,7 +231,7 @@ public class FragmentSwitcher {
 				this.removeFragment(ft, type);
 			}			
 		}
-		ft.commitAllowingStateLoss();
+		ft.commit();
 		curType = null;
 	}
 }

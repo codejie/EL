@@ -297,9 +297,9 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		sendBroadcast(new Intent(AudioAction.ACTION_AUDIO_PLAY));
 	}
 
-	//	private void pauseAudio() {
-	//		sendBroadcast(new Intent(AudioAction.ACTION_AUDIO_PLAY));
-	//	}
+	// private void pauseAudio() {
+	// sendBroadcast(new Intent(AudioAction.ACTION_AUDIO_PLAY));
+	// }
 
 	private void stopAudio() {
 		sendBroadcast(new Intent(AudioAction.ACTION_AUDIO_STOP));

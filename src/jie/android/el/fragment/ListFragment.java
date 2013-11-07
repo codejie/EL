@@ -18,6 +18,7 @@ import android.widget.TextView;
 import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.FragmentArgument;
 import jie.android.el.CommonConsts.ListItemFlag;
+import jie.android.el.CommonConsts.UpdateUIType;
 import jie.android.el.R;
 import jie.android.el.database.ELContentProvider;
 import jie.android.el.utils.Utils;
@@ -102,6 +103,10 @@ public class ListFragment extends BaseFragment implements OnItemClickListener {
 		listView.setOnItemClickListener(this);
 
 		listView.setAdapter(adapter);
+
+		Intent intent = new Intent(AudioAction.ACTION_UPDATE_UI);
+		intent.putExtra(AudioAction.DATA_TYPE, UpdateUIType.LIST_WINDOW_CREATED.getId());
+		sendBroadcast(intent);
 	}
 
 	@Override
