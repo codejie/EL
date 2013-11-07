@@ -1,10 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
-    <item android:id="@+id/el_menu_search" android:showAsAction="always" android:actionViewClass="com.actionbarsherlock.widget.SearchView" android:icon="@drawable/el_menu_search"></item>
-    <item android:id="@+id/el_menu_overflow" android:icon="@drawable/el_menu_over" android:showAsAction="always" android:title="Sys">
+
+    <item
+        android:id="@+id/el_menu_search"
+        android:actionViewClass="com.actionbarsherlock.widget.SearchView"
+        android:icon="@drawable/el_menu_search"
+        android:showAsAction="always">
+    </item>
+    <item
+        android:id="@+id/el_menu_overflow"
+        android:icon="@drawable/el_menu_over"
+        android:showAsAction="always"
+        android:title="Sys">
         <menu>
-            <item android:id="@+id/el_menu_vocab" android:title="@string/el_menu_vocab" android:showAsAction="always" /><item android:id="@+id/el_menu_setting" android:title="@string/el_menu_setting" android:showAsAction="always"/><item android:id="@+id/el_menu_download" android:showAsAction="always" android:title="@string/el_menu_download"/><item android:id="@+id/el_menu_about" android:title="@string/el_menu_about" android:showAsAction="always"/>
-            
+            <item
+                android:id="@+id/el_menu_vocab"
+                android:showAsAction="always"
+                android:title="@string/el_menu_vocab"/>
+            <item
+                android:id="@+id/el_menu_setting"
+                android:showAsAction="always"
+                android:title="@string/el_menu_setting"/>
+            <item
+                android:id="@+id/el_menu_download"
+                android:showAsAction="always"
+                android:title="@string/el_menu_download"/>
+            <item
+                android:id="@+id/el_menu_about"
+                android:showAsAction="always"
+                android:title="@string/el_menu_about"/>
         </menu>
     </item>
+
 </menu>

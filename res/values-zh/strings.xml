@@ -1,0 +1,57 @@
+<resources>
+
+    <string name="app_name">ESL &amp; LAC</string>
+    <string name="el_setting_play_preference">播放选项</string>
+    <string name="el_setting_play_stop_after_current">禁止连续播放</string>
+    <string name="el_setting_play_random_play">随机播放</string>
+    <string name="el_setting_content_display">课程显示选项</string>
+    <string name="el_setting_content_font_medium">使用中号字体</string>
+    <string name="el_setting_content_font_large">使用大号字体</string>
+    <string name="app_version">1.6.0</string>
+    <string name="app_author">codejie</string>
+    <string name="app_email">codejie@gmail.com</string>
+    <string name="el_menu_show_slowdialog">慢速片段</string>
+    <string name="el_menu_show_explanation">课程解释</string>
+    <string name="el_menu_show_fastdialog">快速片段</string>
+    <string name="el_fragment_downloader_removeall">清除当前下载项</string>
+    <string name="el_setting_play_auto">自动播放</string>
+    <string name="el_fragment_dict_inputquery">请输入关键字..</string>
+    <string name="el_fragment_dict_pulltorefresh">拖动刷新</string>
+    <string name="el_fragment_dict_loading">加载..</string>
+    <string name="el_fragment_dict_releasetorefresh">拖动刷新</string>
+    <string name="el_fragment_dict_nomoreresults">没有更多的单词</string>
+    <string name="el_fragment_dict_nomatchresult">没有匹配的单词</string>
+    <string name="el_setting_content_hide_title">自动隐藏标题</string>
+    <string name="el_setting_dictionary_preference">词典选项</string>
+    <string name="el_setting_dictionary_notextension">禁止加载扩展单词</string>
+    <string name="el_fragment_about_checkpackage">查询新的课程包</string>
+    <string name="el_play_el_is_playing">EL正在播放..</string>
+    <string name="el_play_el_pause_playback">EL暂停播放..</string>
+    <string name="el_menu_vocab">我的生词本</string>
+    <string name="el_menu_about">关于</string>
+    <string name="el_menu_download">下载</string>
+    <string name="el_menu_setting">设置</string>
+    <string name="el_toast_add_word_to_score">\'%s\'已加入到生词本.</string>
+    <string name="el_memory_level0">简单 !</string>
+    <string name="el_memory_level1">认识.</string>
+    <string name="el_memory_level2">可能是..</string>
+    <string name="el_memory_level3">没概念 ?</string>
+    <string name="el_memory_level_title">你认识这个单词吗 ?</string>
+    <string name="el_memory_level_title_1">酷, 强力 !</string>
+    <string name="el_setting_memory_preference">单词背诵选项</string>
+    <string name="el_setting_memory_random_load">随机加载单词</string>
+    <string name="el_setting_memory_double_check">确定结果</string>
+    <string name="el_setting_memory_show_result">显示单词解释</string>
+    <string name="el_setting_memory_auto_delete">自动删除熟悉单词</string>
+    <string name="el_menu_vocab_edit">编辑</string>
+    <string name="el_menu_vocab_sortbyalpha">字母排序</string>
+    <string name="el_menu_vocab_sortbyscore">熟悉程度排序</string>
+    <string name="el_menu_vocab_groupbylesson">课程分组</string>
+    <string name="el_menu_vocab_groupbyscore">熟悉程度分组</string>
+    <string name="el_menu_vocab_groupbydate">日期分组</string>
+    <string name="el_menu_vocab_groupbynone">无分组</string>
+    <string name="el_menu_vocab_edit_1">完成</string>
+    <string name="el_setting_memory_auto_speak">自动播放单词发音</string>
+    <string name="el_about_download_dialog_title">是否下载安装EL新版本 ?</string>
+
+</resources>

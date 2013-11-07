@@ -190,6 +190,7 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	@Override
 	protected void onPause() {
 		fragmentSwitcher.restore();
+		//fragmentSwitcher.removeAllFragments();
 
 		super.onPause();
 
@@ -199,6 +200,8 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 	@Override
 	protected void onDestroy() {
 		Log.d(Tag, "onDestroy");
+		
+		fragmentSwitcher.removeAllFragments();
 
 		releaseSpeasker();
 		releaseService(false);

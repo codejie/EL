@@ -106,27 +106,16 @@ public class FragmentSwitcher {
 				ft.add(R.id.main, fragment, type.getTitle());
 			}
 
-			// if (found) {
-			// if (!curType.hasRemoved()) {
-			// hideFragment(ft, curType);
-			// } else {
-			// removeFragment(ft, curType);
-			// }
-			// ft.show(fragment);
-			// } else {
-			// if (!curType.hasRemoved()) {
-			// hideFragment(ft, curType);
-			// ft.add(R.id.main, fragment, type.getTitle());
-			// } else {
-			// ft.replace(R.id.main, fragment, type.getTitle());
-			// }
-			// }
-
 		} else {
-			ft.add(R.id.main, fragment, type.getTitle());
+			if (!found) {
+				ft.add(R.id.main, fragment, type.getTitle());
+			} else {
+				ft.show(fragment);
+			}
 		}
 
-		ft.commit();
+		//ft.commit();
+		ft.commitAllowingStateLoss();
 
 		fragment.onArguments(args);
 
@@ -226,5 +215,21 @@ public class FragmentSwitcher {
 				showPrevFragment();
 			}
 		}
+	}
+	
+	public void removeAllFragments() {
+		FragmentTransaction ft = fragmentManager.beginTransaction();
+		if (curType != null) {
+			this.removeFragment(ft, curType);
+		}
+		
+		while (!stackType.empty()) {
+			Type type = stackType.pop();
+			if (type != null) {
+				this.removeFragment(ft, type);
+			}			
+		}
+		ft.commitAllowingStateLoss();
+		curType = null;
 	}
 }
