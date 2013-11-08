@@ -7,9 +7,11 @@
     <string name="el_setting_content_display">课程显示选项</string>
     <string name="el_setting_content_font_medium">使用中号字体</string>
     <string name="el_setting_content_font_large">使用大号字体</string>
-    <string name="app_version">1.6.0</string>
+<!--     
+    <string name="app_version">1.6.1</string>
     <string name="app_author">codejie</string>
     <string name="app_email">codejie@gmail.com</string>
+ -->    
     <string name="el_menu_show_slowdialog">慢速片段</string>
     <string name="el_menu_show_explanation">课程解释</string>
     <string name="el_menu_show_fastdialog">快速片段</string>
@@ -84,6 +86,6 @@
     <string name="el_about_dl_latest_version_failed">下载应用最新版本失败.</string>
     <string name="el_service_install_latest">准备安装应用最新版本..</string>
     <string name="el_speaker_init_missing_data">TTS初始失败 - 系统缺少必要数据或者不支持.</string>
-    <string name="el_speaker_init_failed">TTS 初始失败 - 错误状态:</string>
+    <string name="el_speaker_init_failed">TTS初始失败 - 错误状态:</string>
 
 </resources>
