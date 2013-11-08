@@ -11,7 +11,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 
 public class SettingFragment extends BaseFragment implements OnCheckedChangeListener {
 
-	private CheckBox checkPlayStopAfterCurrent = null;
+	private CheckBox checkPlayContinually = null;
 	private CheckBox checkPlayRandomOrder = null;
 	private CheckBox checkPlayDontAutoPlay = null;
 	private CheckBox checkContentFontMedium = null;
@@ -35,7 +35,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		checkPlayStopAfterCurrent = (CheckBox) view.findViewById(R.id.checkBox1);
+		checkPlayContinually = (CheckBox) view.findViewById(R.id.checkBox1);
 		checkPlayRandomOrder = (CheckBox) view.findViewById(R.id.checkBox2);
 		checkPlayDontAutoPlay = (CheckBox) view.findViewById(R.id.checkBox5);
 
@@ -53,7 +53,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 		updateSetting();
 
-		checkPlayStopAfterCurrent.setOnCheckedChangeListener(this);
+		checkPlayContinually.setOnCheckedChangeListener(this);
 		checkPlayRandomOrder.setOnCheckedChangeListener(this);
 		checkPlayDontAutoPlay.setOnCheckedChangeListener(this);
 		checkContentFontMedium.setOnCheckedChangeListener(this);
@@ -83,7 +83,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 	private void updateSetting() {
 		SharedPreferences prefs = getELActivity().getSharedPreferences();
 
-		checkPlayStopAfterCurrent.setChecked(prefs.getBoolean(Setting.PLAY_STOP_AFTER_CURRENT, false));
+		checkPlayContinually.setChecked(prefs.getBoolean(Setting.PLAY_CONTINUALLY, true));
 		checkPlayRandomOrder.setChecked(prefs.getBoolean(Setting.PLAY_RANDOM_ORDER, false));
 		checkPlayDontAutoPlay.setChecked(prefs.getBoolean(Setting.PLAY_AUTO_PLAY, true));
 		checkContentFontMedium.setChecked(prefs.getBoolean(Setting.CONTENT_MEDIUM_FONT_SIZE, false));
@@ -102,7 +102,7 @@ public class SettingFragment extends BaseFragment implements OnCheckedChangeList
 
 		SharedPreferences.Editor editor = getELActivity().getSharedPreferences().edit();
 
-		editor.putBoolean(Setting.PLAY_STOP_AFTER_CURRENT, checkPlayStopAfterCurrent.isChecked());
+		editor.putBoolean(Setting.PLAY_CONTINUALLY, checkPlayContinually.isChecked());
 		editor.putBoolean(Setting.PLAY_RANDOM_ORDER, checkPlayRandomOrder.isChecked());
 		editor.putBoolean(Setting.PLAY_AUTO_PLAY, checkPlayDontAutoPlay.isChecked());
 

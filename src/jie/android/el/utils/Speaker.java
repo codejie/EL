@@ -2,6 +2,8 @@ package jie.android.el.utils;
 
 import java.util.Locale;
 
+import jie.android.el.R;
+
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
@@ -21,7 +23,7 @@ public final class Speaker {
 				if(status == TextToSpeech.SUCCESS) {
 					int result = speaker.setLanguage(locale);
 					if(result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-						Toast.makeText(context, "TTS initialize failed - missing data or not supported.", Toast.LENGTH_LONG).show();
+						Toast.makeText(context, context.getString(R.string.el_speaker_init_missing_data), Toast.LENGTH_LONG).show();
 					}
 					else {
 						isReady = true;
@@ -29,7 +31,7 @@ public final class Speaker {
 					}
 				}
 				else {
-					Toast.makeText(context, "TTS initialize failed - status:" + status, Toast.LENGTH_LONG).show();
+					Toast.makeText(context, context.getString(R.string.el_speaker_init_failed) + status, Toast.LENGTH_LONG).show();
 				}				
 			}			
 		});

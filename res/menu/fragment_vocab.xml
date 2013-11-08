@@ -3,13 +3,13 @@
     <item
         android:id="@+id/el_menu_memory"
         android:icon="@drawable/el_menu_memory"
-        android:showAsAction="always">
+        android:showAsAction="always" android:title="@string/el_menu_memory_title">
     </item>
     <item
         android:id="@+id/el_menu_overflow"
         android:icon="@drawable/el_menu_over"
         android:showAsAction="always"
-        android:title="Sys">
+        android:title="@string/el_menu_system_title">
         <menu>
             <item android:id="@+id/el_menu_vocab_edit" android:showAsAction="always" android:title="@string/el_menu_vocab_edit"/>
             <item android:id="@+id/el_menu_vocab_sortbyalpha" android:title="@string/el_menu_vocab_sortbyalpha"/>

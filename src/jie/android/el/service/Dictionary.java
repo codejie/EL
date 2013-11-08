@@ -18,6 +18,7 @@ import android.database.Cursor;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.util.SparseArray;
 
 public class Dictionary {
 	
@@ -247,7 +248,7 @@ public class Dictionary {
 	//dictionay
 	private Context context = null;
 	private String dataPath = null;
-	private HashMap<Integer, Entity> mapEntity = new HashMap<Integer, Entity>();
+	private SparseArray<Entity> mapEntity = new SparseArray<Entity>();
 
 	public Dictionary(Context context) {
 		this.context = context;
@@ -272,9 +273,15 @@ public class Dictionary {
 	}
 
 	public void close() {
-		for(final Entity entity : mapEntity.values()) {
-			entity.close();
+		for (int i = 0; i < mapEntity.size(); ++ i) {
+			final Entity entity = mapEntity.valueAt(i);
+			if (entity != null) {
+				entity.close();
+			}
 		}
+//		for(final Entity entity : mapEntity.) {
+//			entity.close();
+//		}
 	}
 	
 //	public Word.XmlResult getWordXmlResult(final String word) {
@@ -290,12 +297,21 @@ public class Dictionary {
 //	}
 		
 	public Word.XmlResult getWordXmlResult(final String word) {
-		Word.XmlResult result = new Word.XmlResult();		
-		for (final Entity entity : mapEntity.values()) {
-			List<XmlResult> res = entity.getWordXmlResult(word);
-			if (res != null) {
-				result.addXmlData(entity.info.index, res);
-			}
+		Word.XmlResult result = new Word.XmlResult();	
+		
+		for (int i = 0; i < mapEntity.size(); ++ i) {
+			final Entity entity = mapEntity.valueAt(i);
+			if (entity != null) {
+				List<XmlResult> res = entity.getWordXmlResult(word);
+				if (res != null) {
+					result.addXmlData(entity.info.index, res);
+				}
+			}		
+//		for (final Entity entity : mapEntity.values()) {
+//			List<XmlResult> res = entity.getWordXmlResult(word);
+//			if (res != null) {
+//				result.addXmlData(entity.info.index, res);
+//			}
 		}
 		return result;
 	}

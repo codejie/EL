@@ -34,7 +34,7 @@ public class AboutFragment extends BaseFragment {
 
 		private Context context;
 
-		public DownloadAlertDialog(Context context) {
+		private DownloadAlertDialog(Context context) {
 			super();
 			this.context = context;
 		}
@@ -220,9 +220,9 @@ public class AboutFragment extends BaseFragment {
 	protected void onCheckNewPackages() {
 		try {
 			if (getELActivity().getServiceAccess().addDownloadRequest(DownloadRequest.CHECK_NEW_PACKAGES, null)) {
-				Toast.makeText(getELActivity(), "retrieving the info of new packages..", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getELActivity(), getString(R.string.el_about_retrieving), Toast.LENGTH_SHORT).show();
 			} else {
-				Toast.makeText(getELActivity(), "check for new packages failed.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(getELActivity(), getString(R.string.el_about_retrieving_failed), Toast.LENGTH_SHORT).show();
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
@@ -239,9 +239,9 @@ public class AboutFragment extends BaseFragment {
 			if (cursor.moveToFirst()) {
 				String link = cursor.getString(0);
 				if (getELActivity().getServiceAccess().addDownloadRequest(DownloadRequest.DOWNLOAD_LATEST_VERSION, link)) {
-					Toast.makeText(getELActivity(), "downloading latest version of EL..", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getELActivity(), getString(R.string.el_about_dl_latest_version), Toast.LENGTH_SHORT).show();
 				} else {
-					Toast.makeText(getELActivity(), "try to download latest version failed.", Toast.LENGTH_SHORT).show();
+					Toast.makeText(getELActivity(), getString(R.string.el_about_dl_latest_version_failed), Toast.LENGTH_SHORT).show();
 				}
 			}
 		} catch (RemoteException e) {

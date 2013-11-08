@@ -2,7 +2,7 @@
 
     <string name="app_name">ESL &amp; LAC</string>
     <string name="el_setting_play_preference">播放选项</string>
-    <string name="el_setting_play_stop_after_current">禁止连续播放</string>
+    <string name="el_setting_play_continually_playback">连续播放</string>
     <string name="el_setting_play_random_play">随机播放</string>
     <string name="el_setting_content_display">课程显示选项</string>
     <string name="el_setting_content_font_medium">使用中号字体</string>
@@ -24,10 +24,10 @@
     <string name="el_setting_content_hide_title">自动隐藏标题</string>
     <string name="el_setting_dictionary_preference">词典选项</string>
     <string name="el_setting_dictionary_notextension">禁止加载扩展单词</string>
-    <string name="el_fragment_about_checkpackage">查询新的课程包</string>
+    <string name="el_fragment_about_checkpackage">查询新的应用内容包</string>
     <string name="el_play_el_is_playing">EL正在播放..</string>
     <string name="el_play_el_pause_playback">EL暂停播放..</string>
-    <string name="el_menu_vocab">我的生词本</string>
+    <string name="el_menu_vocab">生词本</string>
     <string name="el_menu_about">关于</string>
     <string name="el_menu_download">下载</string>
     <string name="el_menu_setting">设置</string>
@@ -53,5 +53,37 @@
     <string name="el_menu_vocab_edit_1">完成</string>
     <string name="el_setting_memory_auto_speak">自动播放单词发音</string>
     <string name="el_about_download_dialog_title">是否下载安装EL新版本 ?</string>
+    <string name="el_download_request_code">Request Code (12位数字串)</string>
+    <string name="el_downlod_check_code">Check Code (4位数字串)</string>
+    <string name="el_download_submit">提交</string>
+    <string name="el_menu_search_title">内置词典中搜索</string>
+    <string name="el_menu_system_title">系统</string>
+    <string name="el_about_site_info">请访问http://www.cppblog.com/codejie以获得应用更多信息</string>
+    <string name="el_about_dict_info">应用内置词典(Vicon English-Chinese)来自Lingoes (www.lingoes.net).</string>
+    <string name="el_menu_vocab_title">生词本</string>
+    <string name="el_show_noaudio">&lt;No Audio&gt;</string>
+    <string name="el_menu_memory_title">背单词</string>
+    <string name="el_download_request_added">请求已加入到下载队列中.</string>
+    <string name="el_download_request_wrong">错误的Request Code, 请重新输入.</string>
+    <string name="el_memory_nowords">没有更多单词了</string>
+    <string name="el_vocab_nowords">生词本中没有单词了</string>
+    <string name="el_play_playfailed">无法播放音频文件 - </string>
+    <string name="el_downloader_dl_update_script">正在下载内容吧脚本..</string>
+    <string name="el_downloader_dl_package">正在下载内容包..</string>
+    <string name="el_downloader_dl_check_packages">正在检查内容包更新..</string>
+    <string name="el_downloader_dl_latest_version">正在下载应用最新版本..</string>
+    <string name="el_downloader_dl_failed">下载失败</string>
+    <string name="el_downloader_check_request">EL - 请检查Request Code</string>
+    <string name="el_downloader_input_request">EL - 请再次输入Request Code</string>
+    <string name="el_downloader_check_failed">检查内容吧更新失败</string>
+    <string name="el_downloader_try">EL - 请重试</string>
+    <string name="el_downloader_dl_version_failed">下载应用最新版本失败</string>
+    <string name="el_about_retrieving">开始查询应用内容包信息..</string>
+    <string name="el_about_retrieving_failed">查询应用内容包信息失败.</string>
+    <string name="el_about_dl_latest_version">开始下载应用最新版本..</string>
+    <string name="el_about_dl_latest_version_failed">下载应用最新版本失败.</string>
+    <string name="el_service_install_latest">准备安装应用最新版本..</string>
+    <string name="el_speaker_init_missing_data">TTS初始失败 - 系统缺少必要数据或者不支持.</string>
+    <string name="el_speaker_init_failed">TTS 初始失败 - 错误状态:</string>
 
 </resources>

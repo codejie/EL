@@ -12,6 +12,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import jie.android.el.CommonConsts;
+import jie.android.el.R;
 import jie.android.el.CommonConsts.BroadcastAction;
 import jie.android.el.CommonConsts.DownloadCompletedType;
 import jie.android.el.CommonConsts.DownloadRequest;
@@ -173,6 +174,8 @@ public class Downloader {
 			if (!request2Url_DownloadLatestVersion(request, check)) {
 				return false;
 			}
+		} else {
+			return false;
 		}
 
 		return checkUpdateData();
@@ -323,7 +326,7 @@ public class Downloader {
 		if (type == TYPE_UPDATE) {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
-			req.setDescription("downloading update script..");
+			req.setDescription(context.getString(R.string.el_downloader_dl_update_script));// "downloading update script..");
 
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
 				Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
@@ -334,14 +337,14 @@ public class Downloader {
 			// packages
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
-			req.setDescription("downloading package..");
+			req.setDescription(context.getString(R.string.el_downloader_dl_package));//"downloading package..");
 			Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
 			req.setDestinationUri(dest);
 			// req.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
 		} else if (type == TYPE_CHECKNEW) {
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
-			req.setDescription("check for new packages..");
+			req.setDescription(context.getString(R.string.el_downloader_dl_check_packages));//"check for new packages..");
 
 			if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.HONEYCOMB) {
 				Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
@@ -351,7 +354,7 @@ public class Downloader {
 			//latest version
 			req = new DownloadManager.Request(Uri.parse(url));
 			req.setTitle("EL");
-			req.setDescription("downloading latest version..");
+			req.setDescription(context.getString(R.string.el_downloader_dl_latest_version));//"downloading latest version..");
 			Uri dest = Uri.parse("file://" + outputCachePath + local + ".tmp");
 			req.setDestinationUri(dest);			
 		} else {
@@ -422,13 +425,13 @@ public class Downloader {
 					removeUpdateDataBySyncId(syncid);
 
 					if (type == TYPE_UPDATE) {
-						showNotification("download failed", "EL - please check request code");
+						showNotification(context.getString(R.string.el_downloader_dl_failed), context.getString(R.string.el_downloader_check_request));//"download failed", "EL - please check request code");
 					} else if (type == TYPE_PACKAGE) {
-						showNotification("download failed", "EL - please input request code again");
+						showNotification(context.getString(R.string.el_downloader_dl_failed), context.getString(R.string.el_downloader_input_request));//"download failed", "EL - please input request code again");
 					} else if (type == TYPE_CHECKNEW) {
-						showNotification("check for new packages failed", "EL - please try again");
+						showNotification(context.getString(R.string.el_downloader_check_failed), context.getString(R.string.el_downloader_try));//"check for new packages failed", "EL - please try again");
 					} else if (type == TYPE_LATESTVERSION) {
-						showNotification("download latest version of EL failed.", "EL - please try again");
+						showNotification(context.getString(R.string.el_downloader_dl_version_failed), context.getString(R.string.el_downloader_try));//"download latest version of EL failed.", "EL - please try again");
 					}
 
 					checkUpdateData();

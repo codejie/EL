@@ -34,7 +34,7 @@
         android:layout_marginTop="10dp"
         android:clickable="true"
         android:gravity="center_horizontal"
-        android:text="For more information, please visit http://www.cppblog.com/codejie" />
+        android:text="@string/el_about_site_info" />
 
     <ImageView
         android:id="@+id/imageView1"
@@ -94,7 +94,7 @@
         android:layout_below="@+id/textView4"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="The Vicon English-Chinese Dictionary bundled in app is from Lingoes (www.lingoes.net)." />
+        android:text="@string/el_about_dict_info" />
 
     <TextView
         android:id="@+id/textView3"

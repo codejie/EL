@@ -1,5 +1,6 @@
 package jie.android.el.service;
 
+import jie.android.el.R;
 import jie.android.el.CommonConsts.AudioAction;
 import jie.android.el.CommonConsts.BroadcastAction;
 import jie.android.el.CommonConsts.DownloadCompletedType;
@@ -238,7 +239,7 @@ public class ELService extends Service implements ServiceReceiver.OnServiceInten
 
 	private void onLatestVersionReady(final String file) {
 		Log.d(Tag, "latest version file = " + file);
-		Toast.makeText(this, "ready to install the latest of EL..", Toast.LENGTH_LONG).show();
+		Toast.makeText(this, this.getString(R.string.el_service_install_latest), Toast.LENGTH_LONG).show();
 		//
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		intent.setDataAndType(Uri.parse("file://" + file), "application/vnd.android.package-archive");

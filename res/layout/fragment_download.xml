@@ -12,14 +12,15 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
-        android:text="Request Code"
+        android:text="@string/el_download_request_code"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
         android:id="@+id/editText1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
+        android:ems="10"
+        android:inputType="number|numberDecimal" >
 
         <requestFocus />
     </EditText>
@@ -32,22 +33,23 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginTop="16dp"
-        android:text="Check Code"
+        android:text="@string/el_downlod_check_code"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <EditText
         android:id="@+id/editText2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" />
+        android:ems="10"
+        android:inputType="number|numberDecimal" />
 
     <Button
         android:id="@+id/button1"
-        android:layout_width="wrap_content"
+        android:layout_width="128dp"
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_margin="8dp"
-        android:text="Submit" />
+        android:text="@string/el_download_submit" />
 
     <RelativeLayout
         android:layout_width="match_parent"

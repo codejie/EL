@@ -56,11 +56,15 @@ public class DownloadFragment extends BaseFragment implements OnClickListener {
 		final String request = textRequestCode.getText().toString();
 		final String check = textCheckCode.getText().toString();
 		
+		if (request.isEmpty()) {
+			return;
+		}
+		
 		try {
 			if (getELActivity().getServiceAccess().addDownloadRequest(request, check)) {
-				showNotification("Request has been added the download queue.");
+				showNotification(getString(R.string.el_download_request_added));// "Request has been added the download queue.");
 			} else {
-				showNotification("wrong code, please try again.");
+				showNotification(getString(R.string.el_download_request_wrong));//"wrong code, please try again.");
 			}
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block

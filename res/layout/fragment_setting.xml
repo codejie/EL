@@ -24,7 +24,7 @@
 	        android:id="@+id/checkBox1"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:text="@string/el_setting_play_stop_after_current" />
+	        android:text="@string/el_setting_play_continually_playback" />
 	
 	    <CheckBox
 	        android:id="@+id/checkBox2"

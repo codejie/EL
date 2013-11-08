@@ -213,9 +213,9 @@ public class MemoryFragment extends BaseFragment implements OnCheckedChangeListe
 			}
 
 		} else {
-			Toast.makeText(getELActivity(), "No more words in vocab", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getELActivity(), getString(R.string.el_memory_nowords), Toast.LENGTH_SHORT).show();
 			textCounter.setText(String.format("%d/%d", tipCount, tipTotal));
-			textWord.setText("No more words");
+			textWord.setText(getString(R.string.el_memory_nowords));
 			enableLevelRadios(false);
 			radioGroup.setVisibility(View.INVISIBLE);
 			textTip.setText(R.string.el_memory_level_title_1);

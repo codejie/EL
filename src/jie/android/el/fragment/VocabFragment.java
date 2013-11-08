@@ -114,7 +114,7 @@ public class VocabFragment extends BaseFragment implements OnItemClickListener, 
 		View v = getELActivity().getLayoutInflater().inflate(R.layout.fragment_dictionary_list_foot, null);
 		// footLayout = (LinearLayout) v.findViewById(R.id.footLayout);
 		TextView footText = (TextView) v.findViewById(R.id.textFoot);
-		footText.setText("No Words in Vocab");
+		footText.setText(getString(R.string.el_vocab_nowords));//"No Words in Vocab");
 		pullList.getRefreshableView().setEmptyView(v);
 
 		adapter = new VocabFragmentFlatListAdapter(getELActivity());

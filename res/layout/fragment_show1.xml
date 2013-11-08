@@ -37,7 +37,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:padding="2dp"
-        android:text="&lt;No Audio>"
+        android:text="@string/el_show_noaudio"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
 </RelativeLayout>

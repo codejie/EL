@@ -432,7 +432,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	protected void onPlayError(int what, int extra) {
 		playNavigate.setEnabled(false);
 		playPlay.setEnabled(false);
-		Toast.makeText(getELActivity(), String.format("ERROR:%d Extra:%d", what, extra), Toast.LENGTH_SHORT).show();
+		Toast.makeText(getELActivity(), String.format("Play failed - ERROR:%d Extra:%d", what, extra), Toast.LENGTH_SHORT).show();
 	}
 
 	protected void onPlayCompleted() {

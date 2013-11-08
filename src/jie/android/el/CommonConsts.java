@@ -27,7 +27,7 @@ public interface CommonConsts {
 	}
 
 	public interface Setting {
-		public static final String PLAY_STOP_AFTER_CURRENT = "play_stop_after_current";
+		public static final String PLAY_CONTINUALLY = "play_continually";
 		public static final String PLAY_RANDOM_ORDER = "play_random_order";
 		public static final String PLAY_AUTO_PLAY = "play_auto_play";
 		public static final String CONTENT_MEDIUM_FONT_SIZE = "content_medium_font_size";

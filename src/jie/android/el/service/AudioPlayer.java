@@ -148,7 +148,7 @@ public class AudioPlayer {
 						play();
 					}
 				} else {
-					showWarningNotification("Can't play audio file - " + cursor.getString(0));
+					showWarningNotification(context.getString(R.string.el_play_playfailed) + cursor.getString(0));
 					onPlayError(-1, -1);
 				}
 			}
@@ -383,7 +383,7 @@ public class AudioPlayer {
 
 		releasePlayer();
 
-		if (!Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_STOP_AFTER_CURRENT, false)) {
+		if (Utils.getSharedPreferences(context).getBoolean(CommonConsts.Setting.PLAY_CONTINUALLY, true)) {
 			getNextAudio(true);
 		} else {
 			showNotification(false);
