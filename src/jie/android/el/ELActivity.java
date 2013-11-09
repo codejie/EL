@@ -306,8 +306,10 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 					Bundle data = new Bundle();
 					data.putInt(FragmentArgument.ACTION, FragmentArgument.Action.QUERY.getId());
 					data.putString(FragmentArgument.TEXT, newText);
-
-					fragmentSwitcher.getFragment().onArguments(data);
+					BaseFragment fragment = fragmentSwitcher.getFragment();
+					if (fragment != null) {
+						fragment.onArguments(data);
+					}
 					return true;
 				} else {
 					return false;
@@ -452,7 +454,10 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		FragmentSwitcher.Type type = fragmentSwitcher.getCurrentType();
 		if (type != null) {
 			if (type == FragmentSwitcher.Type.SHOW) {
-				fragmentSwitcher.getFragment().onIntent(intent);
+				BaseFragment fragment = fragmentSwitcher.getFragment();
+				if (fragment != null) {
+					fragment.onIntent(intent);
+				}
 			}
 		}
 	}
@@ -461,7 +466,10 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 		FragmentSwitcher.Type type = fragmentSwitcher.getCurrentType();
 		if (type != null) {
 			if (fragmentSwitcher.getCurrentType() == FragmentSwitcher.Type.SHOW) {
-				fragmentSwitcher.getFragment().onIntent(intent);
+				BaseFragment fragment = fragmentSwitcher.getFragment();
+				if (fragment != null) {
+					fragment.onIntent(intent);
+				}
 			} else {
 				if (intent.getIntExtra(AudioAction.DATA_TYPE, -1) == UpdateAudioType.AUDIO_IS_SET.getId()) {
 					showFragment(FragmentSwitcher.Type.SHOW, null);
@@ -476,7 +484,10 @@ public class ELActivity extends SherlockFragmentActivity implements FragmentSwit
 			if (type == FragmentSwitcher.Type.SHOW) {
 				Intent intent = new Intent(BroadcastAction.ACTION_UPDATE_UI);
 				intent.putExtra(BroadcastAction.DATA_TYPE, UpdateUIType.HIDE_TITLE.getId());
-				fragmentSwitcher.getFragment().onIntent(intent);
+				BaseFragment fragment = fragmentSwitcher.getFragment();
+				if (fragment != null) {
+					fragment.onIntent(intent);
+				}
 			}
 		}
 	}

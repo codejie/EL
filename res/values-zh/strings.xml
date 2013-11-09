@@ -12,9 +12,9 @@
     <string name="app_author">codejie</string>
     <string name="app_email">codejie@gmail.com</string>
  -->    
-    <string name="el_menu_show_slowdialog">慢速片段</string>
+    <string name="el_menu_show_slowdialog">慢速单元</string>
     <string name="el_menu_show_explanation">课程解释</string>
-    <string name="el_menu_show_fastdialog">快速片段</string>
+    <string name="el_menu_show_fastdialog">快速单元</string>
     <string name="el_fragment_downloader_removeall">清除当前下载项</string>
     <string name="el_setting_play_auto">自动播放</string>
     <string name="el_fragment_dict_inputquery">请输入关键字..</string>

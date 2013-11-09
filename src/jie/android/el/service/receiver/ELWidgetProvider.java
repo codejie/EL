@@ -186,10 +186,9 @@ public class ELWidgetProvider extends AppWidgetProvider {
 			audioNavigate = intent.getIntExtra(AudioAction.DATA_NAVIGATE, AudioNavigateData.DISABLE);
 			onStateChange(context, intent);
 		} else {
-			audioTitle = "<No Audio>";
+			audioTitle = context.getString(R.string.el_show_noaudio);
 			showNavigator = false; 
 			isPlaying = false;
-			audioTitle = "<No Audio>";
 			audioNavigate = AudioNavigateData.DISABLE; 
 		}
 		updateRemoteView(context);

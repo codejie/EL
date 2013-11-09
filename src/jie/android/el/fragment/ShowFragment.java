@@ -25,6 +25,7 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -166,10 +167,6 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		}
 	}
 
-	@Override
-	public void onArguments(Bundle args) {
-	}
-
 	private void initAnimation() {
 		animShow = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_show);
 		animHide = AnimationUtils.loadAnimation(getELActivity(), R.anim.popup_hide);
@@ -180,19 +177,23 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 	}
 
 	private void onIndex(int index) {
-		if (index == -1) {
+		if (index == -1 || index == audioIndex) {
 			return;
 		}
 
-		loadAudioData(index);
-
-		playPlay.setEnabled(false);
-		playPlay.setSelected(false);
-		playBar.setEnabled(false);
+		try {
+			loadAudioData(index);
+			playPlay.setEnabled(false);
+			playPlay.setSelected(false);
+			playBar.setEnabled(false);
+		} catch (NullPointerException e) {
+			Log.w(Tag, "fragment is not initialled yet.");
+			
+		}
 	}
 
 	private boolean loadAudioData(int index) {
-
+		
 		Uri uri = ContentUris.withAppendedId(ELContentProvider.URI_EL_ESL, index);
 		Cursor cursor = getELActivity().getContentResolver().query(uri, new String[] { "title", "script" }, null, null, null);
 		if (cursor != null) {
@@ -212,6 +213,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 				cursor.close();
 			}
 		}
+
 		return false;
 	}
 
@@ -521,6 +523,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 		if (playShuffle != null) {
 			playShuffle.setSelected(getELActivity().getSharedPreferences().getBoolean(Setting.PLAY_RANDOM_ORDER, false));
 		}
+		
 	}
 
 	protected void onHideTitle() {
@@ -529,6 +532,7 @@ public class ShowFragment extends BaseFragment implements OnClickListener, OnSee
 
 	@Override
 	public void onIntent(Intent intent) {
+		
 		final String action = intent.getAction();
 		if (action.equals(AudioAction.ACTION_UPDATE_AUDIO_PLAYING)) {
 			onPlayPlaying(intent.getIntExtra(AudioAction.DATA_POSITION, 0));

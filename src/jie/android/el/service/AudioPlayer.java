@@ -478,14 +478,16 @@ public class AudioPlayer {
 	public void onAction(Intent intent) {
 		final String action = intent.getAction();
 		if (action.equals(AudioAction.ACTION_AUDIO_SET)) {
+			
+			notifyAudioSet();
+			
 			int index = intent.getIntExtra(AudioAction.DATA_ID, -1);
 			if (index == -1) {
 				index = getLastPlayAudio();
 			}
 			setData(index, false);
-
-			notifyAudioSet();
-
+			
+//			onAudioChanged();
 		} else if (action.equals(AudioAction.ACTION_AUDIO_PLAY)) {
 			if (isPlaying() || isPause()) {
 				togglePlay();
@@ -532,10 +534,13 @@ public class AudioPlayer {
 		int state = intent.getIntExtra(AudioAction.DATA_TYPE, -1);
 		if (state == UpdateUIType.AUDIO_WINDOW_SHOW.getId()) {
 			isAudioWindowShow = true;
+			
+			onAudioChanged();
+			
 			if (isPlaying()) {
 				new Thread(new TickCounterRunnable()).start();
 			}
-
+			
 			showNotification(false);
 		} else if (state == UpdateUIType.AUDIO_WINDOW_CLOSE.getId()) {
 			isAudioWindowShow = false;
